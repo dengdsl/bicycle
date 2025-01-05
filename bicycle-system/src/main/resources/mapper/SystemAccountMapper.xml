@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace必须指向mapper接口 -->
+<mapper namespace="com.medical.mapper.menus.SystemMenuMapper">
+
+    <select id="queryUserPermission" parameterType="long" resultType="com.medical.entry.menus.SystemMenusEntry">
+        select
+            DISTINCT
+            sm.id,
+            sm.pid,
+            sm.menu_type,
+            sm.menu_name,
+            sm.menu_icon,
+            sm.menu_sort,
+            sm.perms,
+            sm.paths,
+            sm.component,
+            sm.selected,
+            sm.params,
+            sm.is_cache,
+            sm.is_show,
+            sm.is_disable,
+            sm.create_time,
+            sm.update_time
+        FROM sys_user su
+            LEFT JOIN sys_user_role sur on su.id = sur.user_id
+            LEFT JOIN sys_role sr ON sr.id = sur.role_id
+            LEFT JOIN sys_role_menu srm ON sr.id = srm.role_id
+            LEFT JOIN sys_menu sm ON srm.menu_id = sm.id
+        WHERE 1 = 1 AND sm.menu_type in ('C', 'A') AND su.id = #{adminId}
+    </select>
+
+    <select id="queryUserMenus" parameterType="long" resultType="com.medical.entry.menus.SystemMenusEntry">
+        select
+            DISTINCT
+            sm.id,
+            sm.pid,
+            sm.menu_type,
+            sm.menu_name,
+            sm.menu_icon,
+            sm.menu_sort,
+            sm.perms,
+            sm.paths,
+            sm.component,
+            sm.selected,
+            sm.params,
+            sm.is_cache,
+            sm.is_show,
+            sm.is_disable,
+            sm.create_time,
+            sm.update_time
+        FROM sys_user su
+                 LEFT JOIN sys_user_role sur on su.id = sur.user_id
+                 LEFT JOIN sys_role sr ON sr.id = sur.role_id
+                 LEFT JOIN sys_role_menu srm ON sr.id = srm.role_id
+                 LEFT JOIN sys_menu sm ON srm.menu_id = sm.id
+        WHERE 1 = 1 AND su.id = #{adminId} ORDER BY menu_sort DESC
+    </select>
+
+    <select id="queryUserRoutes" parameterType="long" resultType="com.medical.entry.menus.SystemMenusEntry">
+        select
+            DISTINCT
+            sm.id,
+            sm.pid,
+            sm.menu_type,
+            sm.menu_name,
+            sm.menu_icon,
+            sm.menu_sort,
+            sm.perms,
+            sm.paths,
+            sm.component,
+            sm.selected,
+            sm.params,
+            sm.is_cache,
+            sm.is_show,
+            sm.is_disable,
+            sm.create_time,
+            sm.update_time
+        FROM sys_user su
+                 LEFT JOIN sys_user_role sur on su.id = sur.user_id
+                 LEFT JOIN sys_role sr ON sr.id = sur.role_id
+                 LEFT JOIN sys_role_menu srm ON sr.id = srm.role_id
+                 LEFT JOIN sys_menu sm ON srm.menu_id = sm.id
+        WHERE 1 = 1 AND sm.menu_type IN ("M", "C") AND su.id = #{adminId} ORDER BY menu_sort DESC
+    </select>
+
+
+</mapper>

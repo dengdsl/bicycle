@@ -1,0 +1,96 @@
+# 项目启动端口号
+server:
+  port: 8888
+  servlet:
+    context-path: /bicycle
+
+# 数据库数据源四大属性
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/bicycle?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false
+    username: root
+    password: mysql
+  hikari:
+    connection-timeout: 30000     # 等待连接分配连接的最大时长(毫秒),超出时长还没可用连接则发送SQLException,默认30秒
+    minimum-idle: 5               # 最小连接数
+    maximum-pool-size: 20         # 最大连接数
+    auto-commit: true             # 自动提交
+    idle-timeout: 600000          # 连接超时的最大时长(毫秒),超时则被释放(retired),默认10分钟
+    pool-name: DateSourceMedical  # 连接池名称
+    max-lifetime: 1800000         # 连接的生命时长(毫秒),超时而且没被使用则被释放,默认30分钟(1800000ms)
+    connection-init-sql: SELECT 1 # 连接时发起SQL测试脚本
+
+  # Redis配置
+  data:
+    redis:
+      database: 0
+      host: 127.0.0.1
+      timeout: 5000
+      port: 6379
+      lettuce:
+        pool:
+          max-wait: 30000 # 连接池最大阻塞等待时间(使用负数表示没有限制,默认-1)
+          max-active: 100 # 连接池最大连接数(使用负数表示没有限制,默认8)
+          max-idle: 20    # 连接池中的最大空闲连接(默认8)
+          min-idle: 0     # 连接池中的最小空闲连接(默认0)
+  # 静态文件路径
+  web:
+    resources:
+      static-locations: classpath:/static/
+  mvc:
+    time-zone: GMT+8
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+## mybatis-plus配置信息
+mybatis-plus:
+  # mapper xml映射文件所在目录
+  mapper-locations: classpath:mapper/**Mapper.xml
+  typeAliasesPackage: com.medical.mapper
+  # 全局的配置信息
+  global-config:
+    db-config:
+      # 指定数据表主键生成策略:ID_WORKER(表示mybatis-plus的默认生成策略),AUTO表示根据数据库类型自动选择主键生成策略,mysql中自增,UUID(表示使用随机生成的UUID作为主键)
+      id-type: auto
+      # 字段验证策略NOT_EMPTY表示非空
+      field-strategy: NOT_EMPTY
+      # 数据库类型
+      db-type: MYSQL
+  configuration:
+    # 驼峰命名发开启,将数据库路中下划线命名方式映射为java驼峰命名方式映射为java中的驼峰命名法
+    map-underscore-to-camel-case: true
+    # 是否调用setter方法设置字段值,即当字段值为null时是否调用相应属性的setter方法
+    call-setters-on-nulls: true
+    # 配置myvatis-plus日志输出实现,这里是默认输出
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# 日志配置信息
+logging:
+  level:
+    com.potato.marketweb: info
+    # 根日志的日志等级
+    root: info
+  file:
+    name: medical-log  # 日志文件名称
+    path: ./logs  # 日志存放路径
+  pattern:
+    console: "%d{yyyy-MM-dd hh:mm:ss} [%thread] %-5level %logger{128} - %msg%n"      # 控制台日志输出格式
+    file: "%d{yyyy-MM-dd} === [%thread] === %-5level === %logger{128} === - %msg%n"  # 文件中的日志输出格式
+  config: classpath:logback-spring.xml
+
+# Sa-Token 配置 (文档: https://sa-token.cc)
+sa-token:
+  token-name: admin-token     # token名称，同时也是cookie的名称，默认是satoken
+  active-timeout: -1          # token最低活跃频率，为-1是表示不限制，永不冻结，否则超过设定的时长不请求，就会过期
+  timeout: -1                 # token有效期，默认是30天(2592000)，-1表示永不过期
+  is-concurrent: true         # 是否允许多处登录，为true时允许登录，为false时不允许登录
+  is-share: false             # 多人登录时是否公用一个token
+  token-style: random-128     # token 风格（默认可取值：uuid、simple-uuid、random-32、random-64、random-128、tik）
+  is-log: false               # 是否输出操作日志
+  is-print: false             # 是否输出版本字符画
+
+RSA:
+  privateKey: privateKey
+  publicKey: publicKey

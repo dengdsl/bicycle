@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace必须指向mapper接口 -->
+<mapper namespace="com.medical.mapper.role.SystemRoleMapper">
+
+    <!-- 在对应的 Mapper XML 文件中 -->
+    <delete id="deleteRoleAuth" parameterType="long">
+        DELETE FROM sys_role_menu WHERE role_id = #{id}
+    </delete>
+
+    <insert id="setRoleAuth" parameterType="map">
+        insert into sys_role_menu (role_id, menu_id) values
+             <foreach collection="menuIds" item="menuId" separator=",">
+                 (#{id}, #{menuId})
+             </foreach>
+    </insert>
+
+    <select id="queryRoleMenus" parameterType="long" resultType="java.lang.Integer">
+        SELECT menu_id
+        FROM sys_role_menu
+        WHERE role_id = #{id}
+    </select>
+
+</mapper>
