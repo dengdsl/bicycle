@@ -51,7 +51,7 @@
             <template #default="{ row }">
               <el-space :size="10">
                 <template v-for="src in row.image.split(';')" v-key="src">
-                  <el-image style="width: 50px; height: 50px" :src="src" fit="fill" :zoom-rate="2" :max-scale="7" :min-scale="0.2" :preview-src-list="row.image.split(';')" />
+                  <el-image style="width: 50px; height: 50px" :src="src" fit="fill" :zoom-rate="2" :max-scale="7" :min-scale="0.2" :preview-src-list="row.image.split(';')" :preview-teleported="true" />
                 </template>
               </el-space>
             </template>
