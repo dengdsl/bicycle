@@ -5,6 +5,9 @@ import com.medical.validate.bicycle.BicycleCreateValidate;
 import com.medical.validate.bicycle.BicycleUpdateValidate;
 import com.medical.validate.page.PageValidate;
 import com.medical.validate.bicycle.BicycleSearchValidate;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 public interface BicycleService {
 
@@ -36,7 +39,7 @@ public interface BicycleService {
     /**
      * 批量导入自行车信息
      * */
-     AjaxResult<Object> importBicycle( );
+     AjaxResult<Object> importBicycle(MultipartFile file) throws IOException;
 
      /**
       * 批量导出自行车信息

@@ -17,7 +17,7 @@ public class RandomServiceImpl implements RandomService {
         String timestamp = Long.toString(Instant.now().getEpochSecond()).substring(0, 10);
 
         // 计算需要补充的零的数量
-        int zeroCount = Math.max(0, 32 - prefix.length() - timestamp.length());
+        int zeroCount = Math.max(0, 20 - prefix.length() - timestamp.length());
 
         // 生成零的部分
         StringBuilder zeros = new StringBuilder();

@@ -1,29 +1,19 @@
 <template>
   <popup ref="popupRef" :title="popupTitle" :async="true" :loading="submitLoading" width="550px" @confirm="handleSubmit" @close="handleClose">
     <el-form ref="formRef" :model="formData" label-width="120px" :rules="formRules">
-      <el-form-item label="供应商名称" prop="supplierName">
-        <el-input v-model="formData.supplierName" placeholder="请输入供应商名称" clearable />
+      <el-form-item label="名称" prop="title">
+        <el-input v-model="formData.title" placeholder="请输入名称" clearable />
       </el-form-item>
-      <el-form-item label="供应商编码" prop="supplierCode">
-        <el-input v-model="formData.supplierCode" placeholder="请输入供应商编码" clearable />
+      <el-form-item label="图片" prop="image">
+        <el-upload v-model:file-list="fileList" accept="image/**" :action="action" list-type="picture-card" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="handleSuccess">
+          <icon name="el-icon-Plus"></icon>
+        </el-upload>
+        <el-dialog v-model="dialogVisible">
+          <img w-full :src="dialogImageUrl" alt="Preview Image" />
+        </el-dialog>
       </el-form-item>
-      <el-form-item label="供应商地址" prop="supplierAddress">
-        <el-input v-model="formData.supplierAddress" placeholder="请输入供应商地址" clearable />
-      </el-form-item>
-      <el-form-item label="供应商许可证号" prop="licenseNumber">
-        <el-input v-model="formData.licenseNumber" placeholder="请输入供应商许可证编号" clearable />
-      </el-form-item>
-      <el-form-item label="采购次数" prop="purchaseTimes">
-        <el-input v-model="formData.purchaseTimes" placeholder="请输入采购次数" clearable />
-      </el-form-item>
-      <el-form-item label="供应商状态" prop="state">
-        <el-radio-group v-model="formData.isDisabled">
-          <el-radio :label="0">正常</el-radio>
-          <el-radio :label="1">禁用</el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="备注" prop="dictRemark">
-        <el-input v-model="formData.remark" class="w-full" type="textarea" :autosize="{ minRows: 4, maxRows: 4 }" maxlength="255" show-word-limit clearable />
+      <el-form-item label="备注" prop="remark">
+        <el-input v-model="formData.remark" class="w-full" type="textarea" :autosize="{ minRows: 4, maxRows: 4 }" maxlength="1024" show-word-limit clearable />
       </el-form-item>
     </el-form>
   </popup>
@@ -32,9 +22,10 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import Popup from '@/components/popup/index.vue'
-import { ElForm } from 'element-plus'
-import feedback from '@/utils/feedback.ts'
-import {} from '@/api/bycicle'
+import { ElForm, UploadProps, UploadUserFile } from 'element-plus'
+import feedback from '@/utils/feedback'
+import { addBicycle, editBicycle, getBicycleDetail } from '@/api/bicycle'
+import config from '@/config'
 
 const emits = defineEmits(['close', 'success'])
 const popupRef = shallowRef<InstanceType<typeof Popup>>()
@@ -43,38 +34,63 @@ const submitLoading = ref(false)
 const openType = ref('')
 
 const popupTitle = computed(() => {
-  return openType.value === 'add' ? '新增供应商' : '编辑供应商'
+  return openType.value === 'add' ? '新增' : '编辑'
+})
+
+// 动态获取图片上传地址
+const action = computed(() => {
+  return `${config.baseUrl}api/upload/file`
 })
 
 const formData = reactive({
-  supplierId: '' as string | number,
-  supplierName: '',
-  supplierCode: '',
-  supplierAddress: '',
-  licenseNumber: '',
-  purchaseTimes: '',
+  id: '' as string | number,
+  title: '',
   remark: '',
-  isDisabled: 0
+  image: ''
 })
 
 const formRules = reactive({
-  supplierName: [{ required: true, message: '请输入供应商名称', trigger: ['blur'] }],
-  supplierCode: [{ required: true, message: '请输入供应商编码', trigger: ['blur'] }],
-  isDisabled: [{ required: true, message: '请选择供应商状态', trigger: ['blur'] }],
-  supplierAddress: [{ required: true, message: '请输入供应商地址', trigger: ['blur'] }],
-  licenseNumber: [{ required: true, message: '请输入供应商许可证', trigger: ['blur'] }],
-  purchaseTimes: [{ required: true, message: '请输入采购次数', trigger: ['blur'] }]
+  title: [{ required: true, message: '请输入名称', trigger: ['blur'] }],
+  image: [{ required: true, message: '请上传图片', trigger: ['blur'] }]
 })
+
+// 已上传的文件列表
+const fileList = ref<UploadUserFile[]>([])
+
+const dialogImageUrl = ref('')
+const dialogVisible = ref(false)
+
+const handleRemove: UploadProps['onRemove'] = (uploadFile, uploadFiles) => {
+  console.log(uploadFile, uploadFiles)
+
+  const res = uploadFile.response as unknown as { code: number; data: string }
+  formData.image = formData.image
+    .split(';')
+    .filter((item) => item !== res.data)
+    .join(';')
+}
+
+const handlePictureCardPreview: UploadProps['onPreview'] = (uploadFile) => {
+  dialogImageUrl.value = uploadFile.url!
+  dialogVisible.value = true
+}
+
+const handleSuccess: UploadProps['onSuccess'] = (response: any) => {
+  console.log(response)
+  if (response.code === 200) {
+    formData.image += response.data + ';'
+  }
+}
 
 const handleSubmit = async () => {
   try {
     submitLoading.value = true
-    formRef.value?.validate()
-    // openType.value === 'add' ? await supplierAdd(formData) : await supplierEdit(formData)
+    await formRef.value?.validate()
+    openType.value === 'add' ? await addBicycle(formData) : await editBicycle(formData)
     popupRef.value?.close()
     feedback.msgSuccess('操作成功')
     emits('success')
-  } catch {
+  } catch (err) {
   } finally {
     submitLoading.value = false
   }
@@ -89,23 +105,32 @@ const open = (type: 'add' | 'edit') => {
   popupRef.value?.open()
 }
 
-const getSupplierDetail = async (id: string) => {
-  // formData.supplierId = id
-  // try {
-  //   const data = await supplierDetail(id)
-  //   for (let key in formData) {
-  //     if (data.hasOwnProperty(key)) {
-  //       formData[key] = data[key]
-  //     }
-  //   }
-  // } catch {}
+const loadData = async (id: string) => {
+  formData.id = id
+  try {
+    const data = await getBicycleDetail({ id })
+    for (let key in formData) {
+      if (data.hasOwnProperty(key)) {
+        formData[key] = data[key]
+        if (key === 'image') {
+          fileList.value = data[key]
+            .split(';')
+            .filter((item) => !!item)
+            .map((item) => ({
+              url: item
+            }))
+        }
+      }
+    }
+  } catch (err) {
+    console.log('err ==>', err)
+  }
 }
 
 defineExpose({
   open,
-  getSupplierDetail
+  loadData
 })
 </script>
 
 <style scoped></style>
-@/api/bicycle

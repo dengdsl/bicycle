@@ -1,3 +1,4 @@
+import { ContentTypeEnum } from '@/enums/httpEnum'
 import request from '@/utils/request'
 
 /**
@@ -16,34 +17,28 @@ export function getBicycleList(params: any) {
 /**
  * 新增数据列表
  * */
-export function addBicycle(params: any) {
-  return request.post(
-    {
-      url: '/bicycle/add',
-      params,
-    },
-    { isParamsToData: false },
-  )
+export function addBicycle(data: any) {
+  return request.post({
+    url: '/bicycle/add',
+    data,
+  })
 }
 
 /**
  * 编辑数据列表
  * */
-export function editBicycle(params: any) {
-  return request.post(
-    {
-      url: '/bicycle/edit',
-      params,
-    },
-    { isParamsToData: false },
-  )
+export function editBicycle(data: any) {
+  return request.post({
+    url: '/bicycle/edit',
+    data,
+  })
 }
 
 /**
  * 删除数据列表
  * */
 export function deleteBicycle(params: any) {
-  return request.get({
+  return request.post({
     url: '/bicycle/delete',
     params,
   })
@@ -61,10 +56,13 @@ export function getBicycleDetail(params: any) {
 /**
  * 批量导入数据列表
  * */
-export function importBicycleList(params: any) {
-  return request.get({
+export function importBicycleList(data: any) {
+  return request.post({
     url: '/bicycle/import',
-    params,
+    data,
+    headers: {
+      'Content-Type': ContentTypeEnum.FORM_DATA,
+    },
   })
 }
 
@@ -72,7 +70,7 @@ export function importBicycleList(params: any) {
  * 批量导出数据列表
  * */
 export function exportBicycleList(params: any) {
-  return request.get({
+  return request.post({
     url: '/bicycle/export',
     params,
   })

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace必须指向mapper接口 -->
+<mapper namespace="com.medical.mapper.bicycle.BicycleMapper">
+
+    <!-- 在对应的 Mapper XML 文件中 -->
+    <insert id="insertList">
+        INSERT INTO bicycle_info (id, title, image, is_del, remark, create_time, update_time) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.id}, #{item.title}, #{item.image}, #{item.isDel}, #{item.remark}, #{item.createTime},
+            #{item.updateTime})
+        </foreach>
+    </insert>
+
+</mapper>

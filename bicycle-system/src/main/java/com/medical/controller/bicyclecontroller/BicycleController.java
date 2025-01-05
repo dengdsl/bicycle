@@ -10,6 +10,9 @@ import com.medical.validate.bicycle.BicycleSearchValidate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 /**
  * 供应商表实体类
@@ -36,7 +39,7 @@ public class BicycleController  {
     /**
      * 新增自行车信息
      * */
-    @GetMapping("add")
+    @PostMapping("add")
     public AjaxResult<Object> getAllSupplier(@Validated @RequestBody BicycleCreateValidate create){
         return bicycleService.addBicycle(create);
     }
@@ -44,7 +47,7 @@ public class BicycleController  {
     /**
      * 获取供应商详情
      * */
-    @GetMapping("edit")
+    @PostMapping("edit")
     public AjaxResult<Object> editBicycle(@Validated @RequestBody BicycleUpdateValidate update){
         return bicycleService.editBicycle(update);
     }
@@ -60,7 +63,7 @@ public class BicycleController  {
     /**
      * 获取自行车详情数据
      * */
-    @PostMapping("detail")
+    @GetMapping("detail")
     public AjaxResult<Object> getBicycle(@Validated String id){
         return bicycleService.getBicycleDetail(id);
     }
@@ -69,8 +72,11 @@ public class BicycleController  {
      * 批量导入
      * */
     @PostMapping("import")
-    public AjaxResult<Object> importBicycle(@Validated @RequestParam String id){
-        return bicycleService.importBicycle();
+    public AjaxResult<Object> importBicycle(MultipartFile file) throws IOException {
+        if (file.isEmpty()) {
+            return AjaxResult.failed("上传文件不能为空");
+        }
+        return bicycleService.importBicycle(file);
     }
 
     /**

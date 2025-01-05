@@ -1,12 +1,5 @@
 <template>
-  <el-upload
-    class="avatar-uploader"
-    accept="image/*"
-    :action="action"
-    :show-file-list="false"
-    :on-success="handleAvatarSuccess"
-    :on-error="handleError"
-  >
+  <el-upload class="avatar-uploader" :accept="accept" :action="action" :show-file-list="true" :on-success="handleAvatarSuccess" :on-error="handleError">
     <img v-if="imageUrl || avatar" :src="imageUrl || avatar" class="avatar" />
     <icon v-else name="el-icon-Plus" size="28" class="avatar-uploader-icon" />
   </el-upload>
@@ -16,29 +9,34 @@
 import { ref } from 'vue'
 import config from '@/config'
 import type { UploadProps } from 'element-plus'
-import feedback from '@/utils/feedback.ts'
+import feedback from '@/utils/feedback'
 
 const emits = defineEmits(['success', 'error'])
 
 const props = defineProps({
   avatar: {
     type: String,
-    default: '',
+    default: ''
   },
+  accept: {
+    type: String,
+    default: 'image/*'
+  },
+  server: {
+    type: String,
+    default: 'api/upload/image'
+  }
 })
 
 const imageUrl = ref('')
 
 // 动态获取图片上传地址
 const action = computed(() => {
-  return `${config.baseUrl}api/upload/image`
+  return `${config.baseUrl}${props.server}`
 })
 
 // 头像上传成功
-const handleAvatarSuccess: UploadProps['onSuccess'] = (
-  response,
-  uploadFile,
-) => {
+const handleAvatarSuccess: UploadProps['onSuccess'] = (response, uploadFile) => {
   if (response.code === 200) {
     imageUrl.value = URL.createObjectURL(uploadFile.raw!)
     emits('success', response.data)

@@ -48,6 +48,13 @@ export const constantRoutes: Array<RouteRecordRaw> = [
       },
     ],
   },
+  {
+    path: '/query',
+    component: () => import('@/views/query/index.vue'),
+    meta: {
+      title: '防伪查询',
+    },
+  },
 ]
 
 export const INDEX_ROUTE: RouteRecordRaw = {

@@ -93,4 +93,4 @@ sa-token:
 
 RSA:
   privateKey: privateKey
-  publicKey: publicKey
+  publicKey: publicKeyx
