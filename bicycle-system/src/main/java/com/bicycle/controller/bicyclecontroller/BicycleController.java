@@ -1,6 +1,8 @@
 package com.bicycle.controller.bicyclecontroller;
 
 
+import com.bicycle.annotation.NotLogin;
+import com.bicycle.annotation.NotPower;
 import com.bicycle.service.bicycle.BicycleService;
 import com.bicycle.utils.AjaxResult;
 import com.bicycle.validate.page.PageValidate;
@@ -80,11 +82,21 @@ public class BicycleController  {
     }
 
     /**
-     * 切换供应商状态
+     * 批量导出
      * */
     @PostMapping("export")
     public AjaxResult<Object> exportBicycle(@Validated @RequestParam String id){
         return bicycleService.exportBicycle();
+    }
+
+    /**
+     * 移动端查询接口
+     * */
+    @NotPower
+    @NotLogin
+    @PostMapping("query")
+    public AjaxResult<Object> query(){
+        return null;
     }
 }
 
