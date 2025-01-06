@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!-- namespace必须指向mapper接口 -->
-<mapper namespace="com.medical.mapper.bicycle.BicycleMapper">
+<mapper namespace="com.bicycle.mapper.bicycle.BicycleMapper">
 
     <!-- 在对应的 Mapper XML 文件中 -->
     <insert id="insertList">

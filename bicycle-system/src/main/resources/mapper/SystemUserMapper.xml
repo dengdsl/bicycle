@@ -4,8 +4,8 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!-- namespace必须指向mapper接口 -->
-<mapper namespace="com.medical.mapper.user.SystemUserMapper">
-    <select id="userList" resultType="com.medical.entry.user.SystemUserEntry">
+<mapper namespace="com.bicycle.mapper.user.SystemUserMapper">
+    <select id="userList" resultType="com.bicycle.entry.user.SystemUserEntry">
         SELECT su.*,
             (SELECT GROUP_CONCAT(sd.dept_name)
              FROM sys_dept_user sdu

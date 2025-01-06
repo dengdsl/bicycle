@@ -1,7 +1,7 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : medical
+ Source Server         : bicycle
  Source Server Type    : MySQL
  Source Server Version : 80029
  Source Host           : localhost:3306

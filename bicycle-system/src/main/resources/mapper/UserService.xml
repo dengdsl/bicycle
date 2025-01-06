@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!-- namespace必须指向mapper接口 -->
-<mapper namespace="com.medical.mapper.role.SystemRoleMapper">
+<mapper namespace="com.bicycle.mapper.role.SystemRoleMapper">
 
     <!-- 在对应的 Mapper XML 文件中 -->
     <delete id="deleteRoleAuth" parameterType="long">

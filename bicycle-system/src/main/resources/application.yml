@@ -48,7 +48,7 @@ spring:
 mybatis-plus:
   # mapper xml映射文件所在目录
   mapper-locations: classpath:mapper/**Mapper.xml
-  typeAliasesPackage: com.medical.mapper
+  typeAliasesPackage: com.bicycle.mapper
   # 全局的配置信息
   global-config:
     db-config:

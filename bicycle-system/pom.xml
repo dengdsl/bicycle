@@ -10,11 +10,11 @@
         <version>3.0.13</version>
     </parent>
 
-    <groupId>com.medical</groupId>
-    <artifactId>medical-system</artifactId>
+    <groupId>com.bicycle</groupId>
+    <artifactId>bicycle-system</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>medical-system</name>
-    <description>medical-system</description>
+    <name>bicycle-system</name>
+    <description>bicycle-system</description>
     <packaging>jar</packaging>
 
     <properties>
