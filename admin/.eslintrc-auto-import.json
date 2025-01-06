@@ -75,6 +75,8 @@
     "onWatcherCleanup": true,
     "useId": true,
     "useModel": true,
-    "useTemplateRef": true
+    "useTemplateRef": true,
+    "showToast": true,
+    "showFailToast": true
   }
 }

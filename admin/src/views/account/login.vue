@@ -9,7 +9,7 @@
           class="login-form bg-body flex flex-col justify-center px-10 py-10 md:w-[400px] w-[375px] flex-none mx-auto"
         >
           <div class="text-center text-3xl font-medium mb-8">
-            {{ config['webName'] || '苗医药管理系统' }}
+            {{ config['webName'] || '自行车管理系统' }}
           </div>
           <el-form ref="formRef" :model="formData" size="large" :rules="rules">
             <el-form-item prop="account">

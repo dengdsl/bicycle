@@ -1,6 +1,12 @@
 <template>
   <van-config-provider :theme="theme">
     <div class="bg-page min-h-[100vh] pb-5">
+      <van-nav-bar
+        title="查询结果"
+        left-text="返回"
+        left-arrow
+        @click-left="onClickLeft"
+      />
       <van-swipe :autoplay="3000" indicator-color="white">
         <van-swipe-item>
           <van-image
@@ -35,23 +41,40 @@
           />
         </van-swipe-item>
       </van-swipe>
-      <div
-        class="flex items-center justify-center py-10 flex-col"
-        @click="onScanClick"
-      >
-        <van-icon name="scan" size="100" color="#1989fa" />
-        <div class="text-[#1989fa] font-bold text-center mt-1">点击扫码</div>
+      <div class="p-2">
+        <van-collapse v-model="activeNames">
+          <van-collapse-item title="查询结果" name="result">
+            <van-row gutter="20">
+              <van-col span="4">编号</van-col>
+              <van-col span="20">BY1246546544546565</van-col>
+            </van-row>
+            <div class="h-2"></div>
+            <van-row gutter="20">
+              <van-col span="4">名称</van-col>
+              <van-col span="20">山地超级自行车</van-col>
+            </van-row>
+            <div class="h-2"></div>
+            <van-row gutter="20">
+              <van-col span="4">备注</van-col>
+              <van-col span="20">
+                这是备注信息这是备注信息这是备注信息这是备注信息这是备注信息
+              </van-col>
+            </van-row>
+          </van-collapse-item>
+          <van-collapse-item title="图片信息" name="image">
+            <div class="flex items-center flex-wrap p-3 gap-2 bg-page">
+              <div class="w-full" v-for="item in 10" :key="item">
+                <van-image
+                  width="100%"
+                  fit="scale-down"
+                  src="https://th.bing.com/th/id/R.637dc1fa4dd61b5a77def88ca9c724e7?rik=2%2bSHCPYt6REKJA&riu=http%3a%2f%2fpic22.nipic.com%2f20120621%2f9793155_093521392138_2.jpg&ehk=MgxNA6jIhF5ztRTxNdLDYEB7%2f%2bNDkWTprveaVW9Izzg%3d&risl=&pid=ImgRaw&r=0"
+                />
+              </div>
+            </div>
+          </van-collapse-item>
+        </van-collapse>
       </div>
-      <div class="flex items-center justify-center px-4 gap-2">
-        <van-field
-          v-model="searchValue"
-          input-align="center"
-          placeholder="请输入条形码"
-        />
-        <van-button type="primary" @click="onClickButton">
-          <span class="text-nowrap px-4">查询</span>
-        </van-button>
-      </div>
+
       <div
         class="flex items-center justify-center fixed left-[50%] bottom-1 -translate-x-[50%]"
       >
@@ -62,26 +85,16 @@
 </template>
 <script lang="ts" setup>
 import { useDark } from '@vueuse/core'
-import { PageEnum } from '@/enums/pageEnum.ts'
 
 const isDark = useDark()
-const router = useRouter()
 const theme = computed(() => {
   return isDark.value ? 'dark' : 'light'
 })
-const searchValue = ref('')
 
-// 打开手机摄像头扫码
-const onScanClick = () => {}
-
-// 发起查询
-const onClickButton = () => {
-  if (!searchValue.value) {
-    showFailToast({
-      message: '请输入条形码',
-    })
-    return
-  }
-  router.push(PageEnum.SEARCH_RESULT)
+const activeNames = ref(['result'])
+const router = useRouter()
+// 返回上一页
+const onClickLeft = () => {
+  router.back()
 }
 </script>

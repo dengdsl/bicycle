@@ -5,6 +5,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import { fileURLToPath, URL } from 'url'
+import { VantResolver } from '@vant/auto-import-resolver'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -25,14 +26,14 @@ export default defineConfig({
     vue(),
     AutoImport({
       imports: ['vue', 'vue-router'],
-      resolvers: [ElementPlusResolver()],
+      resolvers: [ElementPlusResolver(), VantResolver()],
       eslintrc: {
         enabled: true,
       },
     }),
     Components({
       directoryAsNamespace: true,
-      resolvers: [ElementPlusResolver()],
+      resolvers: [ElementPlusResolver(), VantResolver()],
     }),
     createSvgIconsPlugin({
       iconDirs: [fileURLToPath(new URL('./src/assets/icons', import.meta.url))],

@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-config-provider :locale="elConfig.locale" :z-index="elConfig.zIndex">
-      <router-view />
+        <router-view />
     </el-config-provider>
   </div>
 </template>

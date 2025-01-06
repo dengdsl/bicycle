@@ -6,4 +6,8 @@ export enum PageEnum {
   // 404
   ERROR_404 = '/:pathMatch(.*)*',
   INDEX = '/',
+  // 查询界面
+  SEARCH = '/query',
+  // 查询结果界面
+  SEARCH_RESULT = '/query/result',
 }

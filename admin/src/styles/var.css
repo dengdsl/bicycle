@@ -1,4 +1,5 @@
 :root {
+    --van-primary-color: #4A5DFF;
     --el-font-weight-primary: 400;
     --el-menu-item-height: 46px;
     --el-menu-sub-item-height: var(--el-menu-item-height);
