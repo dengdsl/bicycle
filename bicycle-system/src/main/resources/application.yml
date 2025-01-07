@@ -2,7 +2,7 @@
 server:
   port: 8888
   servlet:
-    context-path: /bicycle
+    context-path: /bicycle-api
 
 # 数据库数据源四大属性
 spring:

@@ -1,6 +1,7 @@
 package com.bicycle.utils;
 
 import io.micrometer.common.util.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,7 @@ import java.util.Objects;
  * 每次重启之后，都会生成一个一对新的公私钥
  */
 
+@Slf4j
 @Component
 public class RSAUtils {
 
