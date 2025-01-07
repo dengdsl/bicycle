@@ -43,8 +43,8 @@ public class ImageUploadController {
         String suffixName = fileName.substring(fileName.lastIndexOf("."));
         log.info("上传的后缀名为：" + suffixName);
         // 文件上传后的路径
-        String filePath = "F:\\workspace\\bicyclemanagement\\bicycle-system\\src\\main\\resources\\static\\";
-//        String filePath = "/home/server/static/userAvatar/";
+//        String filePath = "F:\\workspace\\bicyclemanagement\\bicycle-system\\src\\main\\resources\\static\\";
+        String filePath = "/home/server/static/userAvatar/";
         // 解决中文问题，liunx下中文路径，图片显示问题
 
         File dest = new File(filePath + fileName);
@@ -88,7 +88,8 @@ public class ImageUploadController {
         String suffixName = fileName.substring(fileName.lastIndexOf("."));
         log.info("上传的后缀名为：" + suffixName);
         // 文件上传后的路径
-        String filePath = "F:\\workspace\\bicyclemanagement\\bicycle-system\\src\\main\\resources\\static\\file\\";
+//        String filePath = "F:\\workspace\\bicyclemanagement\\bicycle-system\\src\\main\\resources\\static\\file\\";
+        String filePath = "/home/server/static/file/";
         File dest = new File(filePath + fileName);
         // 检测是否存在目录
         if (!dest.getParentFile().exists()) {

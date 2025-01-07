@@ -39,8 +39,8 @@
         class="flex items-center justify-center py-10 flex-col"
         @click="onScanClick"
       >
-        <van-icon name="scan" size="100" color="#1989fa" />
-        <div class="text-[#1989fa] font-bold text-center mt-1">点击扫码</div>
+        <van-icon name="scan" size="100" color="#409eff" />
+        <div class="text-primary font-bold text-center mt-1">点击扫码</div>
       </div>
       <div class="flex items-center justify-center px-4 gap-2">
         <van-field
@@ -55,7 +55,7 @@
       <div
         class="flex items-center justify-center fixed left-[50%] bottom-1 -translate-x-[50%]"
       >
-        <a class="text-xs text-[#1989fa]">备案链接</a>
+        <a class="text-xs text-primary">备案链接</a>
       </div>
     </div>
   </van-config-provider>

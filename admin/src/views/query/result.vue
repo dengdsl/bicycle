@@ -78,7 +78,7 @@
       <div
         class="flex items-center justify-center fixed left-[50%] bottom-1 -translate-x-[50%]"
       >
-        <a class="text-xs text-[#1989fa]">备案链接</a>
+        <a class="text-xs text-primary">备案链接</a>
       </div>
     </div>
   </van-config-provider>

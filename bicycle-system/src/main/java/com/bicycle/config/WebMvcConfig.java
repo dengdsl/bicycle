@@ -44,7 +44,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
      * */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/static/**").addResourceLocations("file:F:\\workspace\\bicyclemanagement\\bicycle-system\\src\\main\\resources\\static\\file\\");
-//        registry.addResourceHandler("/static/**").addResourceLocations("/home/server/static/");
+//        registry.addResourceHandler("/static/**").addResourceLocations("file:F:\\workspace\\bicyclemanagement\\bicycle-system\\src\\main\\resources\\static\\file\\");
+        registry.addResourceHandler("/static/**").addResourceLocations("/home/server/static/");
     }
 }
