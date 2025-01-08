@@ -33,6 +33,7 @@ export const generateVars = (
 ) => {
   const colos = {
     [`--el-color-${type}`]: color,
+    [`--van-${type}-color`]: color,
   }
   const config: Record<string, string> = isDark ? darkConfig : lightConfig
   for (const key in config) {
@@ -67,12 +68,12 @@ export const setTheme = (options: Record<string, string>, isDark = false) => {
     },
     {},
   )
-
+  console.log("varsMap ==>", varsMap)
   let theme = Object.keys(varsMap).reduce((prev, key) => {
     const color = colors.convert(varsMap[key])
     return `${prev}${key}:${color};`
   }, '')
-  theme = `:root{${theme}}`
+  theme = `:root:root{${theme}}`
   let style = document.getElementById(themeId)
   if (style) {
     style.innerHTML = theme

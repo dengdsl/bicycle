@@ -94,9 +94,9 @@ public class BicycleController  {
      * */
     @NotPower
     @NotLogin
-    @PostMapping("query")
-    public AjaxResult<Object> query(){
-        return null;
+    @GetMapping("query")
+    public AjaxResult<Object> query(@Validated @RequestParam String qrcode ){
+        return bicycleService.queryByQrcode(qrcode);
     }
 }
 

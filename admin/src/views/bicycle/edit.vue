@@ -1,11 +1,32 @@
 <template>
-  <popup ref="popupRef" :title="popupTitle" :async="true" :loading="submitLoading" width="550px" @confirm="handleSubmit" @close="handleClose">
-    <el-form ref="formRef" :model="formData" label-width="120px" :rules="formRules">
+  <popup
+    ref="popupRef"
+    :title="popupTitle"
+    :async="true"
+    :loading="submitLoading"
+    width="550px"
+    @confirm="handleSubmit"
+    @close="handleClose"
+  >
+    <el-form
+      ref="formRef"
+      :model="formData"
+      label-width="120px"
+      :rules="formRules"
+    >
       <el-form-item label="名称" prop="title">
         <el-input v-model="formData.title" placeholder="请输入名称" clearable />
       </el-form-item>
       <el-form-item label="图片" prop="image">
-        <el-upload v-model:file-list="fileList" accept="image/**" :action="action" list-type="picture-card" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="handleSuccess">
+        <el-upload
+          v-model:file-list="fileList"
+          accept="image/**"
+          :action="action"
+          list-type="picture-card"
+          :on-preview="handlePictureCardPreview"
+          :on-remove="handleRemove"
+          :on-success="handleSuccess"
+        >
           <icon name="el-icon-Plus"></icon>
         </el-upload>
         <el-dialog v-model="dialogVisible">
@@ -13,7 +34,15 @@
         </el-dialog>
       </el-form-item>
       <el-form-item label="备注" prop="remark">
-        <el-input v-model="formData.remark" class="w-full" type="textarea" :autosize="{ minRows: 4, maxRows: 4 }" maxlength="1024" show-word-limit clearable />
+        <el-input
+          v-model="formData.remark"
+          class="w-full"
+          type="textarea"
+          :autosize="{ minRows: 4, maxRows: 4 }"
+          maxlength="1024"
+          show-word-limit
+          clearable
+        />
       </el-form-item>
     </el-form>
   </popup>
@@ -46,12 +75,12 @@ const formData = reactive({
   id: '' as string | number,
   title: '',
   remark: '',
-  image: ''
+  image: '',
 })
 
 const formRules = reactive({
   title: [{ required: true, message: '请输入名称', trigger: ['blur'] }],
-  image: [{ required: true, message: '请上传图片', trigger: ['blur'] }]
+  image: [{ required: true, message: '请上传图片', trigger: ['blur'] }],
 })
 
 // 已上传的文件列表
@@ -79,6 +108,8 @@ const handleSuccess: UploadProps['onSuccess'] = (response: any) => {
   console.log(response)
   if (response.code === 200) {
     formData.image += response.data + ';'
+  } else {
+    feedback.msgError(response.message)
   }
 }
 
@@ -86,7 +117,9 @@ const handleSubmit = async () => {
   try {
     submitLoading.value = true
     await formRef.value?.validate()
-    openType.value === 'add' ? await addBicycle(formData) : await editBicycle(formData)
+    openType.value === 'add'
+      ? await addBicycle(formData)
+      : await editBicycle(formData)
     popupRef.value?.close()
     feedback.msgSuccess('操作成功')
     emits('success')
@@ -117,7 +150,7 @@ const loadData = async (id: string) => {
             .split(';')
             .filter((item) => !!item)
             .map((item) => ({
-              url: item
+              url: item,
             }))
         }
       }
@@ -129,7 +162,7 @@ const loadData = async (id: string) => {
 
 defineExpose({
   open,
-  loadData
+  loadData,
 })
 </script>
 

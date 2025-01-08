@@ -39,7 +39,7 @@
         class="flex items-center justify-center py-10 flex-col"
         @click="onScanClick"
       >
-        <van-icon name="scan" size="100" color="#409eff" />
+        <van-icon name="scan" size="100" color="#4A5DFF" />
         <div class="text-primary font-bold text-center mt-1">点击扫码</div>
       </div>
       <div class="flex items-center justify-center px-4 gap-2">
@@ -84,6 +84,9 @@ const onClickButton = () => {
     })
     return
   }
-  router.push(PageEnum.SEARCH_RESULT)
+  router.push({
+    path: PageEnum.SEARCH_RESULT,
+    query: { qrcode: searchValue.value },
+  })
 }
 </script>

@@ -14,20 +14,24 @@ export function getBicycleList(params: any) {
   )
 }
 
+export interface AddBicycleRequest {}
+
 /**
  * 新增数据列表
  * */
-export function addBicycle(data: any) {
+export function addBicycle(data: AddBicycleRequest) {
   return request.post({
     url: '/bicycle/add',
     data,
   })
 }
 
+export interface EditBicycleRequest {}
+
 /**
  * 编辑数据列表
  * */
-export function editBicycle(data: any) {
+export function editBicycle(data: EditBicycleRequest) {
   return request.post({
     url: '/bicycle/edit',
     data,
@@ -37,26 +41,31 @@ export function editBicycle(data: any) {
 /**
  * 删除数据列表
  * */
-export function deleteBicycle(params: any) {
+export function deleteBicycle(params: { id: string }) {
   return request.post({
     url: '/bicycle/delete',
     params,
   })
 }
+
 /**
  * 获取自行车详情
  * */
-export function getBicycleDetail(params: any) {
+export function getBicycleDetail(params: { id: string }) {
   return request.get({
     url: '/bicycle/detail',
     params,
   })
 }
 
+export interface ImportRequest {
+  file: any
+}
+
 /**
  * 批量导入数据列表
  * */
-export function importBicycleList(data: any) {
+export function importBicycleList(data: ImportRequest) {
   return request.post({
     url: '/bicycle/import',
     data,
@@ -66,12 +75,24 @@ export function importBicycleList(data: any) {
   })
 }
 
+export interface exportRequest {}
+
 /**
  * 批量导出数据列表
  * */
-export function exportBicycleList(params: any) {
+export function exportBicycleList(params: exportRequest) {
   return request.post({
     url: '/bicycle/export',
+    params,
+  })
+}
+
+/**
+ * @description 批量导出数据列表
+ * */
+export function queryByQrcode(params: { qrcode: string }) {
+  return request.get({
+    url: '/bicycle/query',
     params,
   })
 }

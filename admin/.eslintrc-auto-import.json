@@ -77,6 +77,7 @@
     "useModel": true,
     "useTemplateRef": true,
     "showToast": true,
-    "showFailToast": true
+    "showFailToast": true,
+    "showLoadingToast": true
   }
 }

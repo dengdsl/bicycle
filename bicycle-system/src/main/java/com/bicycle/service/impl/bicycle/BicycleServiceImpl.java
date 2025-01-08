@@ -183,6 +183,18 @@ public class BicycleServiceImpl implements BicycleService {
     }
 
     /**
+     * 根据二维码查询信息
+     * */
+    @Override
+    public AjaxResult<Object> queryByQrcode(String qrcode) {
+        QueryWrapper<BicycleEntry> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("is_del", 0);
+        queryWrapper.and(wrapper -> wrapper.eq("id", 0).or().eq("title", qrcode));
+        BicycleEntry bicycleEntry = bicycleMapper.selectOne(queryWrapper);
+        return AjaxResult.success(bicycleEntry);
+    }
+
+    /**
      * 判断当前id是否可用
      */
     public String checkId(String id) {

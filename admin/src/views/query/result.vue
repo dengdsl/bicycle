@@ -41,7 +41,7 @@
           />
         </van-swipe-item>
       </van-swipe>
-      <div class="p-2">
+      <div v-if="!pageErr" class="p-2">
         <van-collapse v-model="activeNames">
           <van-collapse-item title="查询结果" name="result">
             <van-row gutter="20">
@@ -74,6 +74,9 @@
           </van-collapse-item>
         </van-collapse>
       </div>
+      <div v-else class="p-2">
+        <van-empty image="error" :description="pageErrMsg" />
+      </div>
 
       <div
         class="flex items-center justify-center fixed left-[50%] bottom-1 -translate-x-[50%]"
@@ -85,6 +88,8 @@
 </template>
 <script lang="ts" setup>
 import { useDark } from '@vueuse/core'
+import { showLoadingToast, closeToast } from 'vant'
+import { queryByQrcode } from '@/api/bicycle'
 
 const isDark = useDark()
 const theme = computed(() => {
@@ -93,8 +98,35 @@ const theme = computed(() => {
 
 const activeNames = ref(['result'])
 const router = useRouter()
+const route = useRoute()
+const qrcode = route.query.qrcode
+const pageErr = ref(false)
+const pageErrMsg = ref('')
 // 返回上一页
 const onClickLeft = () => {
   router.back()
+}
+// 根据当前二维码查询数据
+const queryBicycleInfo = async () => {
+  try {
+    showLoadingToast({
+      message: '加载中...',
+      forbidClick: true,
+      loadingType: 'spinner',
+      duration: 0,
+    })
+    const data = await queryByQrcode({ qrcode })
+    console.log('data ==>', data)
+  } catch (e) {
+    console.log('e ==>', e)
+  } finally {
+    closeToast()
+  }
+}
+if (qrcode) {
+  queryBicycleInfo()
+} else {
+  pageErr.value = true
+  pageErrMsg.value = '无效二维码'
 }
 </script>

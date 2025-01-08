@@ -45,4 +45,9 @@ public interface BicycleService {
       * 批量导出自行车信息
       * */
      AjaxResult<Object> exportBicycle( );
+
+    /**
+     * 扫描二维码进行查询
+     * */
+    AjaxResult<Object> queryByQrcode(String qrcode);
 }
