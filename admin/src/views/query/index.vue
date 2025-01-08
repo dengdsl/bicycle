@@ -72,7 +72,9 @@ const theme = computed(() => {
 const searchValue = ref('')
 
 // 打开手机摄像头扫码
-const onScanClick = () => {}
+const onScanClick = () => {
+  router.push(PageEnum.SCAN_PAGE)
+}
 
 // 发起查询
 const onClickButton = () => {

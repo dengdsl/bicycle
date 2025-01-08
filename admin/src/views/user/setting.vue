@@ -7,15 +7,15 @@
           <upload />
         </el-form-item>
 
-        <el-form-item label="账号：" prop="username">
+        <el-form-item label="账号：" prop="account">
           <div class="w-80">
-            <el-input v-model="formData.username" disabled />
+            <el-input v-model="formData.account" disabled />
           </div>
         </el-form-item>
 
-        <el-form-item label="名称：" prop="nickname">
+        <el-form-item label="名称：" prop="username">
           <div class="w-80">
-            <el-input v-model="formData.nickname" placeholder="请输入名称" />
+            <el-input v-model="formData.username" placeholder="请输入名称" />
           </div>
         </el-form-item>
 
@@ -55,8 +55,8 @@ const userStore = useUserStore()
 // 表单数据
 const formData = reactive({
   avatar: '', // 头像
-  username: '', // 账号
-  nickname: '', // 名称
+  account: '', // 账号
+  username: '', // 名称
   currPassword: '', // 当前密码
   password: '', // 新的密码
   passwordConfirm: '' // 确定密码
@@ -117,6 +117,7 @@ const rules = reactive({
 // 获取个人设置
 const getUser = async () => {
   const userInfo = userStore.userInfo
+  console.log(userInfo)
   for (const key in formData) {
     // @ts-expect-error
     formData[key] = userInfo[key]

@@ -8,7 +8,7 @@ import java.io.Serializable;
 @Data
 public class DepartmentCreateValidate implements Serializable {
 
-    @NotNull(message = "上级部门必填")
+//    @NotNull(message = "上级部门必填")
     private Long parentId;
 
     @NotNull(message = "部门名称必填")

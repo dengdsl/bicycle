@@ -48,9 +48,9 @@ public class SystemUserController {
      * 删除用户信息
      * */
     @PostMapping("/deleteUser")
-    public AjaxResult<Object> deleteUser(){
-        Object loginId = StpUtil.getLoginId();
-        long id = Long.parseLong(loginId.toString());
+    public AjaxResult<Object> deleteUser(@Validated @RequestParam Long id){
+//        Object loginId = StpUtil.getLoginId();
+//        long id = Long.parseLong(loginId.toString());
         return userService.deleteUser(id);
     }
 

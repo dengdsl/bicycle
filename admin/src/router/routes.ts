@@ -62,6 +62,13 @@ export const constantRoutes: Array<RouteRecordRaw> = [
       title: '查询结果',
     },
   },
+  {
+    path: PageEnum.SCAN_PAGE,
+    component: () => import('@/views/query/scanpage.vue'),
+    meta: {
+      title: '扫一扫',
+    },
+  }
 ]
 
 export const INDEX_ROUTE: RouteRecordRaw = {

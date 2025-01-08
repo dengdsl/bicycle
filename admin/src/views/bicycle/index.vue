@@ -6,7 +6,7 @@
           <el-input v-model="queryParams.id" @keyup.enter="getLists" placeholder="请输入编号" />
         </el-form-item>
         <el-form-item label="名称">
-          <el-input v-model="queryParams.title" @keyup.enter="getLists" placeholder="请输入供应商名称" />
+          <el-input v-model="queryParams.title" @keyup.enter="getLists" placeholder="请输入名称" />
         </el-form-item>
         <!-- <el-form-item label="其他">
           <el-select v-model="queryParams.isDel" placeholder="请选择" clearable style="width: 200px">
@@ -22,19 +22,19 @@
     </el-card>
     <el-card class="!border-none mt-4" shadow="never">
       <el-space direction="horizontal" alignment="start" :size="10">
-        <el-button v-perms="['supplier:add']" type="primary" @click="handleAdd">
+        <el-button v-perms="['bicycle:add']" type="primary" @click="handleAdd">
           <template #icon>
             <icon name="el-icon-Plus" />
           </template>
           新增
         </el-button>
-        <el-button v-perms="['supplier:add']" type="primary" @click="handleImport">
+        <el-button v-perms="['bicycle:import']" type="primary" @click="handleImport">
           <template #icon>
             <icon name="el-icon-UploadFilled" />
           </template>
           批量导入
         </el-button>
-        <el-button v-perms="['supplier:add']" type="primary" @click="handleExport">
+        <el-button v-perms="['bicycle:export']" type="primary" @click="handleExport">
           <template #icon>
             <icon name="el-icon-Download" />
           </template>
@@ -50,7 +50,7 @@
           <el-table-column prop="image" label="图片" align="center" min-width="200">
             <template #default="{ row }">
               <el-space :size="10">
-                <template v-for="src in row.image.split(';')" v-key="src">
+                <template v-for="src in row.image.split(';')" :key="src">
                   <el-image style="width: 50px; height: 50px" :src="src" fit="fill" :zoom-rate="2" :max-scale="7" :min-scale="0.2" :preview-src-list="row.image.split(';')" :preview-teleported="true" />
                 </template>
               </el-space>
@@ -61,9 +61,9 @@
           <el-table-column prop="updateTime" label="更新时间" align="center" min-width="180" />
           <el-table-column label="操作" align="center" min-width="200" fixed="right">
             <template #default="{ row }">
-              <el-button v-perms="['supplier:edit']" type="primary" link @click="handleEdit(row)"> 编辑 </el-button>
-              <el-button v-perms="['supplier:detail']" type="primary" link @click="handleDetail(row)"> 详情 </el-button>
-              <el-button v-perms="['supplier:delete']" type="danger" link @click="handleDelete(row)"> 删除 </el-button>
+              <el-button v-perms="['bicycle:edit']" type="primary" link @click="handleEdit(row)"> 编辑 </el-button>
+              <el-button v-perms="['bicycle:detail']" type="primary" link @click="handleDetail(row)"> 详情 </el-button>
+              <el-button v-perms="['bicycle:delete']" type="danger" link @click="handleDelete(row)"> 删除 </el-button>
             </template>
           </el-table-column>
         </el-table>

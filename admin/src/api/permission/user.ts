@@ -43,9 +43,10 @@ export function adminDetail(params: any) {
 /**
  * 删除管理员
  * */
-export function adminDelete() {
+export function adminDelete(params: any) {
   return request.post({
     url: '/system/deleteUser',
+    params,
   })
 }
 

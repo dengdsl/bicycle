@@ -19,7 +19,7 @@ NProgress.configure({ showSpinner: false })
 const loginPath = PageEnum.LOGIN
 const defaultPath = PageEnum.INDEX
 // 免登录白名单
-const whiteList: string[] = [PageEnum.LOGIN, PageEnum.ERROR_403, PageEnum.SEARCH, PageEnum.SEARCH_RESULT]
+const whiteList: string[] = [PageEnum.LOGIN, PageEnum.ERROR_403, PageEnum.SEARCH, PageEnum.SEARCH_RESULT, PageEnum.SCAN_PAGE]
 router.beforeEach(async (to, _, next) => {
   // 开始 Progress Bar
   NProgress.start()

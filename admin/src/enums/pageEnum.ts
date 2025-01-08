@@ -10,4 +10,6 @@ export enum PageEnum {
   SEARCH = '/query',
   // 查询结果界面
   SEARCH_RESULT = '/query/result',
+  // 扫码界面
+  SCAN_PAGE = '/query/scan',
 }

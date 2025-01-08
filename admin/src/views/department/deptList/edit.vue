@@ -110,13 +110,13 @@ const checkMobile = (rule: any, value: any, callback: any) => {
   }
 }
 const formRules = {
-  parentId: [
-    {
-      required: true,
-      message: '请选择上级部门',
-      trigger: ['change'],
-    },
-  ],
+  // parentId: [
+  //   {
+  //     required: true,
+  //     message: '请选择上级部门',
+  //     trigger: ['change'],
+  //   },
+  // ],
   deptName: [
     {
       required: true,

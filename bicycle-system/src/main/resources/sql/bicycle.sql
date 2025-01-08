@@ -82,7 +82,7 @@ INSERT INTO `sys_config` VALUES (4, 'sys', 'webFavicon', 'https://tse2-mm.cn.bin
 DROP TABLE IF EXISTS `sys_dept`;
 CREATE TABLE `sys_dept`  (
   `id` bigint(0) NOT NULL AUTO_INCREMENT COMMENT '部门id',
-  `parent_id` int(0) NOT NULL COMMENT '上级部门id',
+  `parent_id` int(0) DEFAULT NULL COMMENT '上级部门id',
   `dept_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '部门名称',
   `sort` int(0) NOT NULL DEFAULT 0 COMMENT '排序，数值越大，顺序月靠前',
   `duty` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '部门负责人',

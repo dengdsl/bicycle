@@ -62,6 +62,7 @@ declare module 'vue' {
     OverflowTooltip: typeof import('./src/components/overflow-tooltip/index.vue')['default']
     Papination: typeof import('./src/components/papination/index.vue')['default']
     Popup: typeof import('./src/components/popup/index.vue')['default']
+    QrScanner: typeof import('./src/components/qr-scanner/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Upload: typeof import('./src/components/upload/index.vue')['default']

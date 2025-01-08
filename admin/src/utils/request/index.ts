@@ -19,7 +19,6 @@ import { PageEnum } from '@/enums/pageEnum'
 const axiosHooks: AxiosHooks = {
   // 请求拦截器
   requestInterceptorsHook(config) {
-    console.log('config ==>', config)
 
     const params = config.params || {}
     const headers = config.headers || {}
@@ -32,7 +31,6 @@ const axiosHooks: AxiosHooks = {
       config.data = params
     }
     headers['admin-token'] = getToken()
-    console.log(config)
 
     return config
   },

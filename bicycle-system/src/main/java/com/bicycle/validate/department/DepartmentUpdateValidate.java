@@ -11,7 +11,7 @@ public class DepartmentUpdateValidate implements Serializable {
     @NotNull(message = "部门id必填")
     private Long id;
 
-    @NotNull(message = "上级部门必填")
+//    @NotNull(message = "上级部门必填")
     private Long parentId;
 
     @NotNull(message = "部门名称必填")

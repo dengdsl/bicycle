@@ -11,3 +11,5 @@ declare module '*.vue' {
 }
 
 declare module 'nprogress'
+
+declare module 'vue3-qr-reader'
