@@ -2,9 +2,15 @@
 <template>
   <div class="user-setting">
     <el-card class="!border-none" shadow="never">
-      <el-form ref="formRef" class="ls-form" :model="formData" :rules="rules" label-width="100px">
+      <el-form
+        ref="formRef"
+        class="ls-form"
+        :model="formData"
+        :rules="rules"
+        label-width="100px"
+      >
         <el-form-item label="头像：" prop="avatar">
-          <upload />
+          <upload :avatar="formData.avatar" @success="handleSuccess" />
         </el-form-item>
 
         <el-form-item label="账号：" prop="account">
@@ -21,19 +27,34 @@
 
         <el-form-item label="当前密码：" prop="currPassword">
           <div class="w-80">
-            <el-input v-model.trim="formData.currPassword" placeholder="修改密码时必填, 不修改密码时留空" type="password" show-password />
+            <el-input
+              v-model.trim="formData.currPassword"
+              placeholder="修改密码时必填, 不修改密码时留空"
+              type="password"
+              show-password
+            />
           </div>
         </el-form-item>
 
         <el-form-item label="新的密码：" prop="password">
           <div class="w-80">
-            <el-input v-model.trim="formData.password" placeholder="修改密码时必填, 不修改密码时留空" type="password" show-password />
+            <el-input
+              v-model.trim="formData.password"
+              placeholder="修改密码时必填, 不修改密码时留空"
+              type="password"
+              show-password
+            />
           </div>
         </el-form-item>
 
         <el-form-item label="确定密码：" prop="passwordConfirm">
           <div class="w-80">
-            <el-input v-model.trim="formData.passwordConfirm" placeholder="修改密码时必填, 不修改密码时留空" type="password" show-password />
+            <el-input
+              v-model.trim="formData.passwordConfirm"
+              placeholder="修改密码时必填, 不修改密码时留空"
+              type="password"
+              show-password
+            />
           </div>
         </el-form-item>
       </el-form>
@@ -50,6 +71,7 @@ import useUserStore from '@/stores/modules/user'
 import feedback from '@/utils/feedback'
 import type { FormInstance } from 'element-plus'
 import Upload from '@/components/upload/index.vue'
+
 const formRef = ref<FormInstance>()
 const userStore = useUserStore()
 // 表单数据
@@ -59,7 +81,7 @@ const formData = reactive({
   username: '', // 名称
   currPassword: '', // 当前密码
   password: '', // 新的密码
-  passwordConfirm: '' // 确定密码
+  passwordConfirm: '', // 确定密码
 })
 
 // 表单校验规则
@@ -68,15 +90,15 @@ const rules = reactive({
     {
       required: true,
       message: '头像不能为空',
-      trigger: ['change']
-    }
+      trigger: ['change'],
+    },
   ],
   nickname: [
     {
       required: true,
       message: '请输入名称',
-      trigger: ['blur']
-    }
+      trigger: ['blur'],
+    },
   ],
   currPassword: [
     {
@@ -86,8 +108,8 @@ const rules = reactive({
         }
         callback()
       },
-      trigger: 'blur'
-    }
+      trigger: 'blur',
+    },
   ],
   password: [
     {
@@ -97,29 +119,33 @@ const rules = reactive({
         }
         callback()
       },
-      trigger: 'blur'
-    }
+      trigger: 'blur',
+    },
   ],
   passwordConfirm: [
     {
       validator: (rule: object, value: string, callback: any) => {
         if (formData.password) {
           if (!value) callback(new Error('请再次输入密码'))
-          if (value !== formData.password) callback(new Error('两次输入密码不一致!'))
+          if (value !== formData.password)
+            callback(new Error('两次输入密码不一致!'))
         }
         callback()
       },
-      trigger: 'blur'
-    }
-  ]
+      trigger: 'blur',
+    },
+  ],
 })
+
+// 头像上传成功
+const handleSuccess = (url: string) => {
+  formData.avatar = url
+}
 
 // 获取个人设置
 const getUser = async () => {
   const userInfo = userStore.userInfo
-  console.log(userInfo)
   for (const key in formData) {
-    // @ts-expect-error
     formData[key] = userInfo[key]
   }
 }

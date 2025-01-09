@@ -54,6 +54,12 @@ public class BicycleServiceImpl implements BicycleService {
         QueryWrapper<BicycleEntry> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("is_del", 0);
         queryWrapper.orderByDesc("create_time");
+        if (searchValidate.getId() != null && !searchValidate.getId().isEmpty()) {
+            queryWrapper.eq("id", searchValidate.getId());
+        }
+        if (searchValidate.getTitle() != null && !searchValidate.getTitle().isEmpty()) {
+            queryWrapper.like("title", searchValidate.getTitle());
+        }
         Page<BicycleEntry> bicycleEntryPage = bicycleMapper.selectPage(page, queryWrapper);
         long total = bicycleEntryPage.getTotal();
         List<BicycleEntry> records = bicycleEntryPage.getRecords();

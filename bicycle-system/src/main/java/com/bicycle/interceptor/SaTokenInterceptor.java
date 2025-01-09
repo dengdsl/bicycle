@@ -41,7 +41,7 @@ public class SaTokenInterceptor implements HandlerInterceptor {
                              @NotNull Object handler) throws Exception {
         // 判断请求路径前缀是否正确
         String requestURI = request.getRequestURI();
-        if (!(handler instanceof HandlerMethod) || !requestURI.startsWith("/medical/api")) {
+        if (!(handler instanceof HandlerMethod) || !requestURI.startsWith("/bicycle-api/api")) {
             return HandlerInterceptor.super.preHandle(request, response, handler);
         }
         // 登录权限校验
@@ -142,7 +142,7 @@ public class SaTokenInterceptor implements HandlerInterceptor {
                 break;
             }
             // 将路由转换为权限
-            String url = requestUri.replaceFirst("/medical/api/", "");
+            String url = requestUri.replaceFirst("/bicycle-api/api/", "");
             String perms = url.replace("/", ":");
             // 权限校验
             StpUtil.checkPermission(perms);

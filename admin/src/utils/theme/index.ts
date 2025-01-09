@@ -68,7 +68,6 @@ export const setTheme = (options: Record<string, string>, isDark = false) => {
     },
     {},
   )
-  console.log("varsMap ==>", varsMap)
   let theme = Object.keys(varsMap).reduce((prev, key) => {
     const color = colors.convert(varsMap[key])
     return `${prev}${key}:${color};`

@@ -92,10 +92,14 @@ const dialogVisible = ref(false)
 const handleRemove: UploadProps['onRemove'] = (uploadFile, uploadFiles) => {
   console.log(uploadFile, uploadFiles)
 
-  const res = uploadFile.response as unknown as { code: number; data: string }
+  const res = uploadFile.response as unknown as {
+    uid: number
+    url: string
+    status: string
+  }
   formData.image = formData.image
     .split(';')
-    .filter((item) => item !== res.data)
+    .filter((item) => item !== res.url)
     .join(';')
 }
 
@@ -107,7 +111,9 @@ const handlePictureCardPreview: UploadProps['onPreview'] = (uploadFile) => {
 const handleSuccess: UploadProps['onSuccess'] = (response: any) => {
   console.log(response)
   if (response.code === 200) {
-    formData.image += response.data + ';'
+    const urls = formData.image.split(';')
+    urls.push(response.data)
+    formData.image = urls.join(';')
   } else {
     feedback.msgError(response.message)
   }

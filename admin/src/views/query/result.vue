@@ -46,29 +46,25 @@
           <van-collapse-item title="查询结果" name="result">
             <van-row gutter="20">
               <van-col span="4">编号</van-col>
-              <van-col span="20">BY1246546544546565</van-col>
+              <van-col span="20">{{ content.id }}</van-col>
             </van-row>
             <div class="h-2"></div>
             <van-row gutter="20">
               <van-col span="4">名称</van-col>
-              <van-col span="20">山地超级自行车</van-col>
+              <van-col span="20">{{ content.title }}</van-col>
             </van-row>
             <div class="h-2"></div>
             <van-row gutter="20">
               <van-col span="4">备注</van-col>
               <van-col span="20">
-                这是备注信息这是备注信息这是备注信息这是备注信息这是备注信息
+                {{ content.remark }}
               </van-col>
             </van-row>
           </van-collapse-item>
           <van-collapse-item title="图片信息" name="image">
             <div class="flex items-center flex-wrap p-3 gap-2 bg-page">
-              <div class="w-full" v-for="item in 10" :key="item">
-                <van-image
-                  width="100%"
-                  fit="scale-down"
-                  src="https://th.bing.com/th/id/R.637dc1fa4dd61b5a77def88ca9c724e7?rik=2%2bSHCPYt6REKJA&riu=http%3a%2f%2fpic22.nipic.com%2f20120621%2f9793155_093521392138_2.jpg&ehk=MgxNA6jIhF5ztRTxNdLDYEB7%2f%2bNDkWTprveaVW9Izzg%3d&risl=&pid=ImgRaw&r=0"
-                />
+              <div class="w-full" v-for="(src, index) in images" :key="index">
+                <van-image width="100%" fit="scale-down" :src="src" />
               </div>
             </div>
           </van-collapse-item>
@@ -76,12 +72,6 @@
       </div>
       <div v-else class="p-2">
         <van-empty image="error" :description="pageErrMsg" />
-      </div>
-
-      <div
-        class="flex items-center justify-center fixed left-[50%] bottom-1 -translate-x-[50%]"
-      >
-        <a class="text-xs text-primary">备案链接</a>
       </div>
     </div>
   </van-config-provider>
@@ -96,10 +86,17 @@ const theme = computed(() => {
   return isDark.value ? 'dark' : 'light'
 })
 
-const activeNames = ref(['result'])
+const images = ref<string[]>([])
+const content = reactive({
+  id: '',
+  title: '',
+  remark: '',
+})
+
+const activeNames = ref(['result', 'image'])
 const router = useRouter()
 const route = useRoute()
-const qrcode = route.query.qrcode
+const qrcode = route.query.qrcode as string
 const pageErr = ref(false)
 const pageErrMsg = ref('')
 // 返回上一页
@@ -116,7 +113,10 @@ const queryBicycleInfo = async () => {
       duration: 0,
     })
     const data = await queryByQrcode({ qrcode })
-    console.log('data ==>', data)
+    content.id = data.id
+    content.title = data.title
+    content.remark = data.remark
+    images.value = data.image.split(';').filter((item) => !!item)
   } catch (e) {
     console.log('e ==>', e)
   } finally {

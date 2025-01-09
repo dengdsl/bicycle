@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -246,8 +247,34 @@ public class AccountServiceImpl implements IAccountService {
     @Override
     public AjaxResult<Object> updateUserInfo(SettingUserValidate userValidate) {
         String loginId = (String) StpUtil.getLoginId();
-
-        return AjaxResult.success();
+        QueryWrapper<SystemAccountEntry> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id", Long.parseLong(loginId));
+        queryWrapper.eq("account", userValidate.getAccount());
+        SystemAccountEntry userVo = mapper.selectOne(queryWrapper);
+        if (userVo == null) {
+            return AjaxResult.failed(HttpEnum.NO_PERMISSION.getCode(), "账号不存在或无权修改别人的账号");
+        }
+        // 输入了新密码但是没有输入旧密码
+        if ((userValidate.getCurrPassword() == null || userValidate.getCurrPassword().isEmpty()) && (userValidate.getPassword() != null && !userValidate.getPassword().isEmpty())) {
+            return AjaxResult.failed(HttpEnum.FAILED.getCode(), "请先输入原密码");
+        }
+        // 密码不正确
+        if ((userValidate.getPassword() != null && !userValidate.getPassword().isEmpty()) && !userVo.getPassword().equals(userValidate.getCurrPassword())) {
+            return AjaxResult.failed(HttpEnum.FAILED.getCode(), "原密码不正确");
+        }
+        // 验证新密码和再次输入的密码是否相等
+        if (userValidate.getPassword() != null && userValidate.getPasswordConfirm() != null && !userValidate.getPassword().equals(userValidate.getPasswordConfirm())) {
+            return AjaxResult.failed(HttpEnum.FAILED.getCode(), "两次输入的密码不一致");
+        }
+        userVo.setUsername(userValidate.getUsername());
+        userVo.setAvatar(userValidate.getAvatar());
+        if (userValidate.getPassword() != null&& userValidate.getPasswordConfirm() != null) {
+            userVo.setPassword(userValidate.getPasswordConfirm());
+        }
+        userVo.setUpdateTime(new Date());
+        mapper.updateById(userVo);
+        StpUtil.logout();
+        return AjaxResult.success("更新成功");
     }
 
 }

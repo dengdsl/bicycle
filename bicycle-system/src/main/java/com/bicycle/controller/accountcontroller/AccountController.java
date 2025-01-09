@@ -8,6 +8,7 @@ import com.bicycle.utils.AjaxResult;
 import com.bicycle.utils.RSAUtils;
 import com.bicycle.validate.user.SettingUserValidate;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -105,8 +106,9 @@ public class AccountController {
     /**
      * 管理员设置自身信息
      * */
+    @NotPower
     @PostMapping("updateUserInfo")
-    public AjaxResult<Object> updateUserInfo(@RequestBody SettingUserValidate userValidate){
+    public AjaxResult<Object> updateUserInfo(@Validated @RequestBody SettingUserValidate userValidate){
         return accountService.updateUserInfo(userValidate);
     }
 }

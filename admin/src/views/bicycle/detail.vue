@@ -11,10 +11,21 @@ scriptscriptscript
     </el-card>
     <el-card header="图片" shadow="hover" style="margin-top: 20px">
       <el-space :size="20">
-        <template v-for="src in detail.image" :key="src">
-          <el-image style="width: 100px; height: 100px" :src="src" fit="fill" :zoom-rate="2" :max-scale="7" :min-scale="0.2" :preview-src-list="detail.image">
+        <template v-for="(src, index) in detail.image" :key="src">
+          <el-image
+            style="width: 100px; height: 100px"
+            :src="src"
+            fit="fill"
+            :zoom-rate="2"
+            :max-scale="7"
+            :min-scale="0.2"
+            :initial-index="index"
+            :preview-src-list="detail.image"
+          >
             <template #error>
-              <div class="slot-image w-[100px] h-[100px] flex items-center justify-center">
+              <div
+                class="slot-image w-[100px] h-[100px] flex items-center justify-center"
+              >
                 <icon name="el-icon-Picture" size="50" />
               </div>
             </template>
@@ -36,7 +47,7 @@ const detail = reactive({
   isDel: 0,
   remark: '这是备注信息',
   title: '山地自行车',
-  updateTime: '2025-01-05 07:28:30'
+  updateTime: '2025-01-05 07:28:30',
 })
 
 const loadData = async (id: string) => {
@@ -59,7 +70,7 @@ const loadData = async (id: string) => {
 }
 
 defineExpose({
-  loadData
+  loadData,
 })
 </script>
 <style lang="scss" scoped>

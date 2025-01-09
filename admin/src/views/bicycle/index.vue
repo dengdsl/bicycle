@@ -3,10 +3,18 @@
     <el-card class="!border-none" shadow="never">
       <el-form inline :model="queryParams" class="mb-[-16px]">
         <el-form-item label="编号">
-          <el-input v-model="queryParams.id" @keyup.enter="getLists" placeholder="请输入编号" />
+          <el-input
+            v-model="queryParams.id"
+            @keyup.enter="getLists"
+            placeholder="请输入编号"
+          />
         </el-form-item>
         <el-form-item label="名称">
-          <el-input v-model="queryParams.title" @keyup.enter="getLists" placeholder="请输入名称" />
+          <el-input
+            v-model="queryParams.title"
+            @keyup.enter="getLists"
+            placeholder="请输入名称"
+          />
         </el-form-item>
         <!-- <el-form-item label="其他">
           <el-select v-model="queryParams.isDel" placeholder="请选择" clearable style="width: 200px">
@@ -28,13 +36,21 @@
           </template>
           新增
         </el-button>
-        <el-button v-perms="['bicycle:import']" type="primary" @click="handleImport">
+        <el-button
+          v-perms="['bicycle:import']"
+          type="primary"
+          @click="handleImport"
+        >
           <template #icon>
             <icon name="el-icon-UploadFilled" />
           </template>
           批量导入
         </el-button>
-        <el-button v-perms="['bicycle:export']" type="primary" @click="handleExport">
+        <el-button
+          v-perms="['bicycle:export']"
+          type="primary"
+          @click="handleExport"
+        >
           <template #icon>
             <icon name="el-icon-Download" />
           </template>
@@ -43,28 +59,103 @@
       </el-space>
 
       <div class="supplier-list mt-2">
-        <el-table :data="pager.lists" v-loading="pager.loading">
+        <el-table
+          :data="pager.lists"
+          v-loading="pager.loading"
+          @selection-change="handleSelectChange"
+        >
           <el-table-column type="selection" width="55" />
-
-          <el-table-column prop="id" label="编号" align="center" min-width="200" />
-          <el-table-column prop="image" label="图片" align="center" min-width="200">
+          <el-table-column
+            prop="id"
+            label="编号"
+            align="center"
+            min-width="200"
+          />
+          <el-table-column
+            prop="title"
+            label="名称"
+            align="center"
+            min-width="120"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            prop="image"
+            label="图片"
+            align="center"
+            min-width="300"
+            show-overflow-tooltip
+          >
             <template #default="{ row }">
-              <el-space :size="10">
-                <template v-for="src in row.image.split(';')" :key="src">
-                  <el-image style="width: 50px; height: 50px" :src="src" fit="fill" :zoom-rate="2" :max-scale="7" :min-scale="0.2" :preview-src-list="row.image.split(';')" :preview-teleported="true" />
+              <div class="flex items-center gap-2">
+                <template
+                  v-for="(src, index) in row.image.split(';')"
+                  :key="src"
+                >
+                  <el-image
+                    style="width: 50px; height: 50px; flex-shrink: 0"
+                    :src="src"
+                    fit="fill"
+                    :zoom-rate="2"
+                    :max-scale="7"
+                    :min-scale="0.2"
+                    :preview-src-list="row.image.split(';')"
+                    :initial-index="index"
+                    :preview-teleported="true"
+                  />
                 </template>
-              </el-space>
+              </div>
             </template>
           </el-table-column>
-          <el-table-column prop="title" label="名称" align="center" min-width="120" show-overflow-tooltip />
-          <el-table-column prop="remark" label="备注" align="center" min-width="120" show-overflow-tooltip />
-          <el-table-column prop="createTime" label="创建时间" align="center" min-width="180" />
-          <el-table-column prop="updateTime" label="更新时间" align="center" min-width="180" />
-          <el-table-column label="操作" align="center" min-width="200" fixed="right">
+          <el-table-column
+            prop="remark"
+            label="备注"
+            align="center"
+            min-width="120"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            prop="createTime"
+            label="创建时间"
+            align="center"
+            min-width="180"
+          />
+          <el-table-column
+            prop="updateTime"
+            label="更新时间"
+            align="center"
+            min-width="180"
+          />
+          <el-table-column
+            label="操作"
+            align="center"
+            min-width="200"
+            fixed="right"
+          >
             <template #default="{ row }">
-              <el-button v-perms="['bicycle:edit']" type="primary" link @click="handleEdit(row)"> 编辑 </el-button>
-              <el-button v-perms="['bicycle:detail']" type="primary" link @click="handleDetail(row)"> 详情 </el-button>
-              <el-button v-perms="['bicycle:delete']" type="danger" link @click="handleDelete(row)"> 删除 </el-button>
+              <el-button
+                v-perms="['bicycle:edit']"
+                type="primary"
+                link
+                @click="handleEdit(row)"
+              >
+                编辑
+              </el-button>
+              <el-button
+                v-perms="['bicycle:detail']"
+                type="primary"
+                link
+                @click="handleDetail(row)"
+              >
+                详情
+              </el-button>
+              <el-button
+                v-perms="['bicycle:delete']"
+                type="danger"
+                link
+                @click="handleDelete(row)"
+              >
+                删除
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -74,10 +165,23 @@
       </div>
     </el-card>
     <!-- 编辑 -->
-    <edit-popup ref="editRef" v-if="showEdit" @success="getLists" @close="showEdit = false" />
+    <edit-popup
+      ref="editRef"
+      v-if="showEdit"
+      @success="getLists"
+      @close="showEdit = false"
+    />
     <!-- 详情 -->
     <div>
-      <el-drawer v-model="drawer" destroy-on-close :close-on-click-modal="false" title="详情" :direction="direction" size="50%" :before-close="handleClose">
+      <el-drawer
+        v-model="drawer"
+        destroy-on-close
+        :close-on-click-modal="false"
+        title="详情"
+        :direction="direction"
+        size="50%"
+        :before-close="handleClose"
+      >
         <template #default>
           <Detail ref="detailRef"></Detail>
         </template>
@@ -90,7 +194,16 @@
       </template>
       <div class="content">
         <!-- ,.xls -->
-        <el-upload v-model:file-list="fileList" class="upload-demo" ref="uploadRef" :auto-upload="false" drag accept=".xlsx" :limit="1" :on-exceed="handleExceed">
+        <el-upload
+          v-model:file-list="fileList"
+          class="upload-demo"
+          ref="uploadRef"
+          :auto-upload="false"
+          drag
+          accept=".xlsx"
+          :limit="1"
+          :on-exceed="handleExceed"
+        >
           <el-icon class="el-icon--upload">
             <upload-filled />
           </el-icon>
@@ -105,7 +218,12 @@
               文件,
               <b style="color: red">必须满足文件内容的格式</b>
               ，否则会导致导入失败，文件模板可通过点击此处
-              <b style="color: #4a5dff; cursor: pointer" @click="handleDownload"> 下载模板 </b>
+              <b
+                style="color: #4a5dff; cursor: pointer"
+                @click="handleDownload"
+              >
+                下载模板
+              </b>
             </div>
           </template>
         </el-upload>
@@ -114,7 +232,13 @@
       <template #footer>
         <div class="footer-button text-center">
           <el-button @click="showImport = false">取消</el-button>
-          <el-button type="primary" :loading="importLoading" @click="submitUpload"> 上传 </el-button>
+          <el-button
+            type="primary"
+            :loading="importLoading"
+            @click="submitUpload"
+          >
+            上传
+          </el-button>
         </div>
       </template>
     </el-dialog>
@@ -127,7 +251,13 @@ import { usePaging } from '@/hooks/usePaging.ts'
 import feedback from '@/utils/feedback.ts'
 import { getBicycleList, deleteBicycle, importBicycleList } from '@/api/bicycle'
 import Detail from './detail.vue'
-import { genFileId, UploadInstance, UploadProps, UploadRawFile } from 'element-plus'
+import {
+  genFileId,
+  UploadInstance,
+  UploadProps,
+  UploadRawFile,
+  UploadUserFile,
+} from 'element-plus'
 
 const editRef = shallowRef<InstanceType<typeof EditPopup>>()
 const detailRef = shallowRef<InstanceType<typeof Detail>>()
@@ -135,6 +265,7 @@ const uploadRef = ref<UploadInstance>()
 const showImport = ref(false)
 const importLoading = ref(false)
 const fileList = ref<UploadUserFile[]>([])
+const selectRows = ref<any[]>([])
 
 const showEdit = ref(false)
 const drawer = ref(false)
@@ -142,13 +273,20 @@ const direction = ref<'rtl' | 'ltr' | 'ttb' | 'btt'>('rtl')
 const queryParams = reactive({
   id: '',
   title: '',
-  isDel: ''
+  isDel: '',
 })
 
 const { getLists, pager, resetPage, resetParams } = usePaging({
   fetchFn: getBicycleList,
-  params: queryParams
+  params: queryParams,
 })
+
+// 勾选发生变化
+const handleSelectChange = (newSelection: any[]) => {
+  selectRows.value = newSelection
+  console.log('selectRows.value ==>', selectRows.value)
+  // toggleRowSelection
+}
 
 // 上传时覆盖前一个文件
 const handleExceed: UploadProps['onExceed'] = (files) => {
