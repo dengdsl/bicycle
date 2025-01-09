@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.bicycle.validate.user.SettingUserValidate;
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.bicycle.entry.account.SystemAccountEntry;
 import com.bicycle.entry.menus.SystemMenusEntry;
@@ -237,6 +238,16 @@ public class AccountServiceImpl implements IAccountService {
             // 调用工具类将菜单列表转换为树型结构
             JSONArray jsonArrayList = ArrayUtils.listToTree(jsonArray, "id", "pid", "children");
             return AjaxResult.success(jsonArrayList);
+    }
+
+    /**
+     * 管理员设置自身信息
+     * */
+    @Override
+    public AjaxResult<Object> updateUserInfo(SettingUserValidate userValidate) {
+        String loginId = (String) StpUtil.getLoginId();
+
+        return AjaxResult.success();
     }
 
 }

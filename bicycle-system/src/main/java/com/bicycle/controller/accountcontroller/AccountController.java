@@ -6,6 +6,7 @@ import com.bicycle.annotation.NotPower;
 import com.bicycle.service.account.IAccountService;
 import com.bicycle.utils.AjaxResult;
 import com.bicycle.utils.RSAUtils;
+import com.bicycle.validate.user.SettingUserValidate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -101,4 +102,11 @@ public class AccountController {
         return accountService.routes(Long.parseLong(loginId));
     }
 
+    /**
+     * 管理员设置自身信息
+     * */
+    @PostMapping("updateUserInfo")
+    public AjaxResult<Object> updateUserInfo(@RequestBody SettingUserValidate userValidate){
+        return accountService.updateUserInfo(userValidate);
+    }
 }

@@ -2,6 +2,7 @@ package com.bicycle.service.account;
 
 
 import com.bicycle.utils.AjaxResult;
+import com.bicycle.validate.user.SettingUserValidate;
 
 
 /**
@@ -38,4 +39,9 @@ public interface IAccountService {
      * 获取路由菜单
      * */
     AjaxResult<Object> routes(Long adminId);
+
+    /**
+     * 管理员设置自身信息
+     * */
+    AjaxResult<Object> updateUserInfo(SettingUserValidate userValidate);
 }
