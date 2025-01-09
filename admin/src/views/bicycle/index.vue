@@ -56,6 +56,7 @@
               </el-space>
             </template>
           </el-table-column>
+          <el-table-column prop="title" label="名称" align="center" min-width="120" show-overflow-tooltip />
           <el-table-column prop="remark" label="备注" align="center" min-width="120" show-overflow-tooltip />
           <el-table-column prop="createTime" label="创建时间" align="center" min-width="180" />
           <el-table-column prop="updateTime" label="更新时间" align="center" min-width="180" />
