@@ -17,15 +17,13 @@
       <el-form-item label="名称" prop="title">
         <el-input v-model="formData.title" placeholder="请输入名称" clearable />
       </el-form-item>
-      <el-form-item label="图片" prop="image">
+      <el-form-item label="图片" prop="fileList">
         <el-upload
           v-model:file-list="fileList"
           accept="image/**"
           :action="action"
           list-type="picture-card"
           :on-preview="handlePictureCardPreview"
-          :on-remove="handleRemove"
-          :on-success="handleSuccess"
         >
           <icon name="el-icon-Plus"></icon>
         </el-upload>
@@ -78,9 +76,26 @@ const formData = reactive({
   image: '',
 })
 
+const imageValidate = (_: any, __: any, callback: any) => {
+  console.log(fileList.value.length)
+  if (!fileList.value.length) {
+    callback(new Error('请上传图片'))
+  } else if (
+    !fileList.value.filter((item) => item.status === 'success').length
+  ) {
+    callback(new Error('图片未上传成功，请删除重试！'))
+  } else {
+    callback()
+  }
+}
 const formRules = reactive({
   title: [{ required: true, message: '请输入名称', trigger: ['blur'] }],
-  image: [{ required: true, message: '请上传图片', trigger: ['blur'] }],
+  fileList: [
+    {
+      validator: imageValidate,
+      trigger: ['blur'],
+    },
+  ],
 })
 
 // 已上传的文件列表
@@ -89,40 +104,21 @@ const fileList = ref<UploadUserFile[]>([])
 const dialogImageUrl = ref('')
 const dialogVisible = ref(false)
 
-const handleRemove: UploadProps['onRemove'] = (uploadFile, uploadFiles) => {
-  console.log(uploadFile, uploadFiles)
-
-  const res = uploadFile.response as unknown as {
-    uid: number
-    url: string
-    status: string
-  }
-  formData.image = formData.image
-    .split(';')
-    .filter((item) => item !== res.url)
-    .join(';')
-}
-
 const handlePictureCardPreview: UploadProps['onPreview'] = (uploadFile) => {
   dialogImageUrl.value = uploadFile.url!
   dialogVisible.value = true
-}
-
-const handleSuccess: UploadProps['onSuccess'] = (response: any) => {
-  console.log(response)
-  if (response.code === 200) {
-    const urls = formData.image.split(';')
-    urls.push(response.data)
-    formData.image = urls.join(';')
-  } else {
-    feedback.msgError(response.message)
-  }
 }
 
 const handleSubmit = async () => {
   try {
     submitLoading.value = true
     await formRef.value?.validate()
+    console.log(fileList.value)
+    formData.image = fileList.value
+      .filter((item) => item.status === 'success')
+      .map((item) => (item.response ? item.response.data : item.url))
+      .join(';')
+    console.log(formData.image)
     openType.value === 'add'
       ? await addBicycle(formData)
       : await editBicycle(formData)
@@ -130,6 +126,7 @@ const handleSubmit = async () => {
     feedback.msgSuccess('操作成功')
     emits('success')
   } catch (err) {
+    console.log('err ==>', err)
   } finally {
     submitLoading.value = false
   }
@@ -172,4 +169,14 @@ defineExpose({
 })
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped>
+::v-deep(.el-upload--picture-card) {
+  width: 8em !important;
+  height: 8em !important;
+}
+
+::v-deep(.el-upload-list__item) {
+  width: 8em !important;
+  height: 8em !important;
+}
+</style>

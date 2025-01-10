@@ -86,7 +86,7 @@
             show-overflow-tooltip
           >
             <template #default="{ row }">
-              <div class="flex items-center gap-2">
+              <div class="flex items-center justify-center gap-2">
                 <template
                   v-for="(src, index) in row.image.split(';')"
                   :key="src"
