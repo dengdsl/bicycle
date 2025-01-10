@@ -31,7 +31,7 @@ export function config() {
 /**
  * 登录
  * */
-export function login(data: { loginValidate: String }) {
+export function login(data: { loginValidate: string }) {
   return request.post({
     url: '/system/login',
     data,
@@ -60,8 +60,8 @@ export function self() {
 }
 
 // 编辑管理员信息
-export function setUserInfo(params: any) {
-  return request.post({ url: '/system/updateUserInfo', params })
+export function setUserInfo(data: any) {
+  return request.post({ url: '/system/updateUserInfo', data })
 }
 
 /**
