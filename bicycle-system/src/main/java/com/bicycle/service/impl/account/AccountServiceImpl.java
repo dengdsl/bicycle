@@ -254,21 +254,21 @@ public class AccountServiceImpl implements IAccountService {
         if (userVo == null) {
             return AjaxResult.failed(HttpEnum.NO_PERMISSION.getCode(), "账号不存在或无权修改别人的账号");
         }
-        // 输入了新密码但是没有输入旧密码
-        if ((userValidate.getCurrPassword() == null || userValidate.getCurrPassword().isEmpty()) && (userValidate.getPassword() != null && !userValidate.getPassword().isEmpty())) {
-            return AjaxResult.failed(HttpEnum.FAILED.getCode(), "请先输入原密码");
-        }
+
         // 密码不正确
         if ((userValidate.getPassword() != null && !userValidate.getPassword().isEmpty()) && !userVo.getPassword().equals(userValidate.getCurrPassword())) {
             return AjaxResult.failed(HttpEnum.FAILED.getCode(), "原密码不正确");
         }
+
         // 验证新密码和再次输入的密码是否相等
-        if (userValidate.getPassword() != null && userValidate.getPasswordConfirm() != null && !userValidate.getPassword().equals(userValidate.getPasswordConfirm())) {
+        if (userValidate.getPassword() != null && userValidate.getPasswordConfirm() != null && !userValidate.getPassword().isEmpty() && !userValidate.getPasswordConfirm().isEmpty() &&  !userValidate.getPassword().equals(userValidate.getPasswordConfirm())) {
             return AjaxResult.failed(HttpEnum.FAILED.getCode(), "两次输入的密码不一致");
         }
+
+        // 更新用户信息
         userVo.setUsername(userValidate.getUsername());
         userVo.setAvatar(userValidate.getAvatar());
-        if (userValidate.getPassword() != null&& userValidate.getPasswordConfirm() != null) {
+        if (userValidate.getPassword() != null && userValidate.getPasswordConfirm() != null && !userValidate.getPassword().isEmpty() && !userValidate.getPasswordConfirm().isEmpty()) {
             userVo.setPassword(userValidate.getPasswordConfirm());
         }
         userVo.setUpdateTime(new Date());
