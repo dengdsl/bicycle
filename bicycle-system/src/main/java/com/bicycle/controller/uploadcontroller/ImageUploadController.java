@@ -88,8 +88,8 @@ public class ImageUploadController {
         String suffixName = fileName.substring(fileName.lastIndexOf("."));
         log.info("上传的后缀名为：" + suffixName);
         // 文件上传后的路径
-//        String filePath = "D:\\onecent_code\\bicycle\\bicycle-system\\src\\main\\resources\\static\\file\\";
-        String filePath = "/home/server/static/file/";
+        String filePath = "F:\\workspace\\bicycle\\bicycle-system\\src\\main\\resources\\static\\file\\";
+        //String filePath = "/home/server/static/file/";
         File dest = new File(filePath + fileName);
         // 检测是否存在目录
         if (!dest.getParentFile().exists()) {
@@ -97,8 +97,6 @@ public class ImageUploadController {
         }
         // 拼接服务器地址
         String serverName = request.getServerName();
-        int port = request.getServerPort();
-        String contextPath = request.getContextPath(); // 自动获取上下文路径
         String url = "http://" + serverName + "/static/file/" + fileName;
         log.info("头像保存的路径信息：" + url);
         try {

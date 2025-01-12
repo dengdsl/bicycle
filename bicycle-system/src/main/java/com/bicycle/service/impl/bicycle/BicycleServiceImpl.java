@@ -195,7 +195,7 @@ public class BicycleServiceImpl implements BicycleService {
     public AjaxResult<Object> queryByQrcode(String qrcode) {
         QueryWrapper<BicycleEntry> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("is_del", 0);
-        queryWrapper.and(wrapper -> wrapper.eq("id", 0).or().eq("title", qrcode));
+        queryWrapper.and(wrapper -> wrapper.eq("id", qrcode).or().eq("title", qrcode));
         BicycleEntry bicycleEntry = bicycleMapper.selectOne(queryWrapper);
         return AjaxResult.success(bicycleEntry);
     }
