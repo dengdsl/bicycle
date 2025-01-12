@@ -23,7 +23,7 @@ const appStore = useAppStore()
 const copyright = computed(
   () =>
     appStore.config['filings'] || [
-      { link: 'https://www.baidu.com', name: '百度一下' },
+      { link: 'https://winspace-bikes.com/', name: '银斯贝自行车' },
     ],
 )
 </script>

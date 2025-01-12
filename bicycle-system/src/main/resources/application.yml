@@ -8,7 +8,8 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://1.94.143.210:3306/bicycle?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false
+#    url: jdbc:mysql://1.94.143.210:3306/bicycle?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false
+    url: jdbc:mysql://localhost:3306/bicycle?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false
     username: root
     password: mysql
   hikari:
@@ -25,8 +26,9 @@ spring:
   data:
     redis:
       database: 0
-      host: 1.94.143.210
-      password: redis
+#      host: 1.94.143.210
+      host: localhost
+#      password: redis
       timeout: 5000
       port: 6379
       lettuce:

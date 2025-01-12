@@ -203,7 +203,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .login {
-  background-image: url('./images/login_bg.png');
+  background-image: url('https://th.bing.com/th/id/OIP.RtPAiV717BKkCDY5BKnSeQHaEo?w=294&h=183&c=7&r=0&o=5&pid=1.7');
   @apply min-h-screen bg-no-repeat bg-center bg-cover;
   .login-card {
     height: 400px;
