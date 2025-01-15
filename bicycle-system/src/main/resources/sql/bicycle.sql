@@ -52,7 +52,7 @@ CREATE TABLE `sys_config`  (
   `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `name`(`name`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '系统配置表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '系统配置表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_config
@@ -82,12 +82,12 @@ CREATE TABLE `sys_dept`  (
   `create_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
   `update_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '部门信息表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '部门信息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_dept
 -- ----------------------------
-INSERT INTO `sys_dept` VALUES (3, NULL, '超级部门', 0, '超级管理员', '15772725805', 0, '2025-01-09 14:22:34', '2025-01-09 14:22:34');
+INSERT INTO `sys_dept` VALUES (1, NULL, '超级部门', 0, '超级管理员', '15772725805', 0, '2025-01-09 14:22:34', '2025-01-09 14:22:34');
 
 -- ----------------------------
 -- Table structure for sys_dept_role
@@ -117,14 +117,7 @@ CREATE TABLE `sys_dept_user`  (
   INDEX `fk_user_id`(`user_id`) USING BTREE,
   CONSTRAINT `fk_dept_user_dept_id` FOREIGN KEY (`dept_id`) REFERENCES `sys_dept` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `fk_dept_user_user_id` FOREIGN KEY (`user_id`) REFERENCES `sys_user` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 12 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '用户部门关联表' ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of sys_dept_user
--- ----------------------------
-INSERT INTO `sys_dept_user` VALUES (10, 3, 7);
-INSERT INTO `sys_dept_user` VALUES (11, 3, 8);
-INSERT INTO `sys_dept_user` VALUES (12, 3, 9);
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '用户部门关联表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for sys_dict
@@ -255,13 +248,13 @@ CREATE TABLE `sys_role`  (
   `remark` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '备注',
   `create_time` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '用户角色表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '用户角色表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_role
 -- ----------------------------
-INSERT INTO `sys_role` VALUES (3, '管理员', 0, 0, 0, '', '2025-01-09 14:23:00');
-INSERT INTO `sys_role` VALUES (4, 'ces', 0, 0, 0, '', '2025-01-10 13:45:30');
+INSERT INTO `sys_role` VALUES (1, '管理员', 0, 0, 0, '', '2025-01-09 14:23:00');
+INSERT INTO `sys_role` VALUES (2, 'ces', 0, 0, 0, '', '2025-01-10 13:45:30');
 
 -- ----------------------------
 -- Table structure for sys_role_menu
@@ -276,19 +269,7 @@ CREATE TABLE `sys_role_menu`  (
   INDEX `fk_menu_id_role_menu`(`menu_id`) USING BTREE,
   CONSTRAINT `fk_menu_id_role_menu` FOREIGN KEY (`menu_id`) REFERENCES `sys_menu` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `fk_role_id_role_menu` FOREIGN KEY (`role_id`) REFERENCES `sys_role` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 1775 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '角色菜单关联表' ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of sys_role_menu
--- ----------------------------
-INSERT INTO `sys_role_menu` VALUES (1768, 3, 25);
-INSERT INTO `sys_role_menu` VALUES (1769, 3, 138);
-INSERT INTO `sys_role_menu` VALUES (1770, 3, 139);
-INSERT INTO `sys_role_menu` VALUES (1771, 3, 140);
-INSERT INTO `sys_role_menu` VALUES (1772, 3, 141);
-INSERT INTO `sys_role_menu` VALUES (1773, 3, 142);
-INSERT INTO `sys_role_menu` VALUES (1774, 3, 143);
-INSERT INTO `sys_role_menu` VALUES (1775, 3, 144);
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '角色菜单关联表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for sys_user
@@ -308,16 +289,12 @@ CREATE TABLE `sys_user`  (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `username`(`username`) USING BTREE,
   UNIQUE INDEX `account`(`account`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '用户信息表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '用户信息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_user
 -- ----------------------------
 INSERT INTO `sys_user` VALUES (1, 'admin', '123456', 'https://tse2-mm.cn.bing.net/th/id/OIP-C.51RJal6KkFmCkblE6KOfJQAAAA?rs=1&pid=ImgDetMain', '2564888970@qq.com', 'admin', 0, '超级管理员', '2024-02-29 20:38:34', '2025-01-05 00:41:04');
-INSERT INTO `sys_user` VALUES (7, '邓生龙', '123456', 'http://1.94.143.210/static/userAvatar/1736439624A区-1-0.jpg', '', '15772725805', 0, '', '2025-01-09 14:23:32', '2025-01-10 18:20:05');
-INSERT INTO `sys_user` VALUES (8, '测试账号', '123456', 'http://1.94.143.210/static/userAvatar/173650902352298051327593942461646130554254.jpg', '', 'test', 0, '', '2025-01-09 23:37:36', '2025-01-09 23:37:36');
-INSERT INTO `sys_user` VALUES (9, '测试账号001', '123456', 'http://1.94.143.210/static/userAvatar/173648781052298051327593942461646130552819.jpg', '', 'test001', 0, '', '2025-01-09 23:38:26', '2025-01-09 23:38:26');
-
 -- ----------------------------
 -- Table structure for sys_user_role
 -- ----------------------------
@@ -331,13 +308,6 @@ CREATE TABLE `sys_user_role`  (
   INDEX `fk_role_id`(`role_id`) USING BTREE,
   CONSTRAINT `fk_role_id` FOREIGN KEY (`role_id`) REFERENCES `sys_role` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `fk_user_id` FOREIGN KEY (`user_id`) REFERENCES `sys_user` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 22 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '用户角色关联表' ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of sys_user_role
--- ----------------------------
-INSERT INTO `sys_user_role` VALUES (20, 7, 3);
-INSERT INTO `sys_user_role` VALUES (21, 8, 3);
-INSERT INTO `sys_user_role` VALUES (22, 9, 3);
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '用户角色关联表' ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;
