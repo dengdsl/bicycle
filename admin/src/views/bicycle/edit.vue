@@ -11,13 +11,36 @@
     <el-form
       ref="formRef"
       :model="formData"
-      label-width="120px"
+      label-width="100px"
       :rules="formRules"
     >
-      <el-form-item label="名称" prop="title">
-        <el-input v-model="formData.title" placeholder="请输入名称" clearable />
+      <el-form-item label="型号" prop="model">
+        <el-select v-model="formData.model" placeholder="请选择" clearable>
+          <el-option
+            v-for="item in dictData.frameNo"
+            :key="item.id"
+            :label="item.name"
+            :value="item.value"
+          />
+        </el-select>
       </el-form-item>
-      <el-form-item label="图片" prop="fileList">
+      <el-form-item label="车架号" prop="frameNo">
+        <el-input
+          v-model="formData.frameNo"
+          placeholder="请输入车架号"
+          clearable
+        />
+      </el-form-item>
+      <el-form-item label="生产日期" prop="produceTime">
+        <el-date-picker
+          v-model="formData.produceTime"
+          type="date"
+          format="YYYY-MM-DD"
+          value-format="YYYY-MM-DD"
+          placeholder="请选择"
+        />
+      </el-form-item>
+      <el-form-item label="X光图片" prop="fileList">
         <el-upload
           v-model:file-list="fileList"
           accept="image/**"
@@ -28,7 +51,7 @@
           <icon name="el-icon-Plus"></icon>
         </el-upload>
         <el-dialog v-model="dialogVisible">
-          <img w-full :src="dialogImageUrl" alt="Preview Image" />
+          <img class="w-full" :src="dialogImageUrl" alt="Preview Image" />
         </el-dialog>
       </el-form-item>
       <el-form-item label="备注" prop="remark">
@@ -36,10 +59,17 @@
           v-model="formData.remark"
           class="w-full"
           type="textarea"
-          :autosize="{ minRows: 4, maxRows: 4 }"
+          :autosize="{ minRows: 2, maxRows: 4 }"
           maxlength="1024"
           show-word-limit
           clearable
+        />
+      </el-form-item>
+      <el-form-item label="结论" prop="conclusion">
+        <el-switch
+          v-model="formData.conclusion"
+          active-text="通过"
+          inactive-text="不通过"
         />
       </el-form-item>
     </el-form>
@@ -53,12 +83,17 @@ import { ElForm, UploadProps, UploadUserFile } from 'element-plus'
 import feedback from '@/utils/feedback'
 import { addBicycle, editBicycle, getBicycleDetail } from '@/api/bicycle'
 import config from '@/config'
+import { useDictData } from '@/hooks/useDictOptions.ts'
 
 const emits = defineEmits(['close', 'success'])
 const popupRef = shallowRef<InstanceType<typeof Popup>>()
 const formRef = shallowRef<InstanceType<typeof ElForm>>()
 const submitLoading = ref(false)
 const openType = ref('')
+
+const { dictData } = useDictData<{
+  frameNo: string[]
+}>(['frameNo'])
 
 const popupTitle = computed(() => {
   return openType.value === 'add' ? '新增' : '编辑'
@@ -71,7 +106,10 @@ const action = computed(() => {
 
 const formData = reactive({
   id: '' as string | number,
-  title: '',
+  model: '', // 型号
+  frameNo: '', // 车架号
+  conclusion: true, // 结论
+  produceTime: '', // 生产日期
   remark: '',
   image: '',
 })
@@ -89,7 +127,15 @@ const imageValidate = (_: any, __: any, callback: any) => {
   }
 }
 const formRules = reactive({
-  title: [{ required: true, message: '请输入名称', trigger: ['blur'] }],
+  model: [
+    { required: true, message: '请选择型号', trigger: ['blur', 'change'] },
+  ],
+  frameNo: [
+    { required: true, message: '请输入车架号', trigger: ['blur', 'change'] },
+  ],
+  produceTime: [
+    { required: true, message: '请选择生产日期', trigger: ['blur', 'change'] },
+  ],
   fileList: [
     {
       validator: imageValidate,
@@ -120,8 +166,8 @@ const handleSubmit = async () => {
       .join(';')
     console.log(formData.image)
     openType.value === 'add'
-      ? await addBicycle(formData)
-      : await editBicycle(formData)
+      ? await addBicycle({ ...formData, conclusion: formData ? 1 : 0 })
+      : await editBicycle({ ...formData, conclusion: formData ? 1 : 0 })
     popupRef.value?.close()
     feedback.msgSuccess('操作成功')
     emits('success')

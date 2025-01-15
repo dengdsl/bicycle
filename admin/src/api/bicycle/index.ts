@@ -1,11 +1,29 @@
 import { ContentTypeEnum } from '@/enums/httpEnum'
 import request from '@/utils/request'
 
+// 列表请求参数
+interface ListRequest {
+  id: string
+  model: string
+  frameNo: string
+  conclusion: string
+  produceTime: string
+}
+
+// 列表相应结果
+interface ListResponse {
+  id: string
+  model: string
+  frameNo: string
+  conclusion: string
+  produceTime: string
+}
+
 /**
  * 获取数据列表
  * */
-export function getBicycleList(params: any) {
-  return request.get(
+export function getBicycleList(params: ListRequest) {
+  return request.get<ListResponse>(
     {
       url: '/bicycle/list',
       params,

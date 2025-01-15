@@ -9,6 +9,7 @@ import com.bicycle.validate.page.PageValidate;
 import com.bicycle.validate.bicycle.BicycleCreateValidate;
 import com.bicycle.validate.bicycle.BicycleUpdateValidate;
 import com.bicycle.validate.bicycle.BicycleSearchValidate;
+import com.google.zxing.WriterException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class BicycleController  {
     }
 
     /**
-     * 获取供应商列表
+     * 获取自行车列表数据
      * */
     @GetMapping("list")
     public AjaxResult<Object> getBicycleList(@Validated PageValidate pageValidate, @Validated BicycleSearchValidate searchValidate){
@@ -42,7 +43,7 @@ public class BicycleController  {
      * 新增自行车信息
      * */
     @PostMapping("add")
-    public AjaxResult<Object> getAllSupplier(@Validated @RequestBody BicycleCreateValidate create){
+    public AjaxResult<Object> addBicycle(@Validated @RequestBody BicycleCreateValidate create) throws IOException, WriterException {
         return bicycleService.addBicycle(create);
     }
 

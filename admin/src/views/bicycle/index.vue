@@ -2,26 +2,57 @@
   <div class="supplier-list">
     <el-card class="!border-none" shadow="never">
       <el-form inline :model="queryParams" class="mb-[-16px]">
-        <el-form-item label="编号">
+        <el-form-item label="ID">
           <el-input
             v-model="queryParams.id"
             @keyup.enter="getLists"
             placeholder="请输入编号"
           />
         </el-form-item>
-        <el-form-item label="名称">
+        <el-form-item label="型号">
+          <el-select
+            v-model="queryParams.model"
+            placeholder="请选择"
+            clearable
+            style="width: 200px"
+          >
+            <el-option label="全部" value="" />
+            <el-option
+              v-for="item in dictData.frameNo"
+              :key="item.id"
+              :label="item.name"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="车架号">
           <el-input
-            v-model="queryParams.title"
+            v-model="queryParams.frameNo"
             @keyup.enter="getLists"
-            placeholder="请输入名称"
+            placeholder="请输入车架号"
           />
         </el-form-item>
-        <!-- <el-form-item label="其他">
-          <el-select v-model="queryParams.isDel" placeholder="请选择" clearable style="width: 200px">
+        <el-form-item label="结论">
+          <el-select
+            v-model="queryParams.conclusion"
+            placeholder="请选择"
+            clearable
+            style="width: 200px"
+          >
             <el-option label="全部" value="" />
-            <el-option v-for="item in dictData.isDel" :key="item.id" :label="item.name" :value="item.value" />
+            <!--<el-option v-for="item in dictData.isDel" :key="item.id" :label="item.name" :value="item.value" />-->
           </el-select>
-        </el-form-item> -->
+        </el-form-item>
+        <el-form-item label="生产日期">
+          <el-date-picker
+            v-model="queryParams.produceTime"
+            type="date"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+            placeholder="请选择"
+          />
+        </el-form-item>
+
         <el-form-item>
           <el-button type="primary" @click="resetPage">搜索</el-button>
           <el-button @click="resetParams">重置</el-button>
@@ -67,26 +98,19 @@
           <el-table-column type="selection" width="55" />
           <el-table-column
             prop="id"
-            label="编号"
-            align="center"
-            min-width="200"
-          />
-          <el-table-column
-            prop="title"
-            label="名称"
+            label="ID"
             align="center"
             min-width="120"
-            show-overflow-tooltip
           />
           <el-table-column
             prop="image"
-            label="图片"
+            label="X光图片"
             align="center"
-            min-width="300"
+            min-width="120"
             show-overflow-tooltip
           >
             <template #default="{ row }">
-              <div class="flex items-center justify-center gap-2">
+              <div class="flex items-center flex-wrap justify-center gap-2">
                 <template
                   v-for="(src, index) in row.image.split(';')"
                   :key="src"
@@ -106,6 +130,63 @@
               </div>
             </template>
           </el-table-column>
+          <el-table-column
+            prop="model"
+            label="型号"
+            align="center"
+            min-width="120"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            prop="title"
+            label="车架号"
+            align="center"
+            min-width="120"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            prop="produceTime"
+            label="生产日期"
+            align="center"
+            min-width="120"
+          />
+          <el-table-column
+            prop="qrcode"
+            label="二维码编码"
+            align="center"
+            min-width="120"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            prop="qrImg"
+            label="二维码"
+            align="center"
+            min-width="80"
+            show-overflow-tooltip
+          >
+            <template #default="{ row }">
+              <div class="flex items-center justify-center gap-2">
+                <!--<el-image-->
+                <!--    style="width: 50px; height: 50px; flex-shrink: 0"-->
+                <!--    :src="src"-->
+                <!--    fit="fill"-->
+                <!--    :zoom-rate="2"-->
+                <!--    :max-scale="7"-->
+                <!--    :min-scale="0.2"-->
+                <!--    :preview-src-list="row.image.split(';')"-->
+                <!--    :initial-index="index"-->
+                <!--    :preview-teleported="true"-->
+                <!--/>-->
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="conclusion"
+            label="结论"
+            align="center"
+            min-width="120"
+            show-overflow-tooltip
+          />
           <el-table-column
             prop="remark"
             label="备注"
@@ -214,12 +295,13 @@
           <template #tip>
             <div class="el-upload__tip">
               *仅支持
-              <b style="color: red">.xlsx</b>
+              <b class="text-danger">.xlsx</b>
               文件,
-              <b style="color: red">必须满足文件内容的格式</b>
+              <b class="text-danger">必须满足文件内容的格式</b>
               ，否则会导致导入失败，文件模板可通过点击此处
               <b
-                style="color: #4a5dff; cursor: pointer"
+                class="text-primary"
+                style="cursor: pointer"
                 @click="handleDownload"
               >
                 下载模板
@@ -258,6 +340,7 @@ import {
   UploadRawFile,
   UploadUserFile,
 } from 'element-plus'
+import { useDictData } from '@/hooks/useDictOptions.ts'
 
 const editRef = shallowRef<InstanceType<typeof EditPopup>>()
 const detailRef = shallowRef<InstanceType<typeof Detail>>()
@@ -272,9 +355,15 @@ const drawer = ref(false)
 const direction = ref<'rtl' | 'ltr' | 'ttb' | 'btt'>('rtl')
 const queryParams = reactive({
   id: '',
-  title: '',
-  isDel: '',
+  model: '',
+  frameNo: '',
+  conclusion: '',
+  produceTime: '',
 })
+
+const { dictData } = useDictData<{
+  frameNo: string[]
+}>(['frameNo'])
 
 const { getLists, pager, resetPage, resetParams } = usePaging({
   fetchFn: getBicycleList,

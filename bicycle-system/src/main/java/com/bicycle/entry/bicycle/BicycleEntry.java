@@ -21,17 +21,34 @@ public class BicycleEntry implements Serializable {
     @TableId(value = "id")
     private String id; // id
 
-    @TableField("title")
-    private String title; // 标题
+    @TableField("model")
+    private Integer model; // 型号
+
+    @TableField("frame_no")
+    private String frameNo; // 车架号
 
     @TableField("image")
-    private String image; // 图片
+    private String image; // X光图片
+
+    @TableField("qrcode")
+    private String qrcode; // 二维码编码
+
+    @TableField("qr_img")
+    private String qrImg; // 二维码图片
+
+    @TableField("conclusion")
+    private Integer conclusion; // 结论
+
+    @TableField("remark")
+    private String remark; // 备注
 
     @TableField("is_del")
     private Integer isDel; // 是否删除
 
-    @TableField("remark")
-    private String remark; // 备注
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT + 8")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @TableField("produce_time")
+    private Date produceTime; // 创建时间
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT + 8")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")

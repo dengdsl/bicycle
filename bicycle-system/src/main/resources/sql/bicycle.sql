@@ -1,17 +1,17 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : bicycle
+ Source Server         : medical
  Source Server Type    : MySQL
- Source Server Version : 80029
- Source Host           : localhost:3306
+ Source Server Version : 80030
+ Source Host           : 1.94.143.210:3306
  Source Schema         : bicycle
 
  Target Server Type    : MySQL
- Target Server Version : 80029
+ Target Server Version : 80030
  File Encoding         : 65001
 
- Date: 05/01/2025 23:27:31
+ Date: 16/01/2025 00:07:02
 */
 
 SET NAMES utf8mb4;
@@ -22,36 +22,21 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------
 DROP TABLE IF EXISTS `bicycle_info`;
 CREATE TABLE `bicycle_info`  (
-  `id` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'id',
-  `title` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '标题',
-  `image` varchar(10240) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '图片',
+  `id` varchar(16) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT 'id',
+  `model` bigint(0) NOT NULL COMMENT '型号',
+  `image` varchar(10240) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT 'X光图片',
+  `frame_no` varchar(128) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '车架号',
+  `produce_time` datetime(0) NOT NULL COMMENT '生产日期',
+  `qrcode` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '二维码编码',
+  `qr_img` varchar(512) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '二维码',
+  `conclusion` tinyint(1) NULL DEFAULT NULL COMMENT '结论：1-通过；0-不通过',
+  `remark` varchar(1024) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '备注',
   `is_del` tinyint(1) NULL DEFAULT 0 COMMENT '是否删除：0-未删除，1-已删除',
-  `remark` varchar(1024) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '备注',
   `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
   `update_time` datetime(0) NULL DEFAULT NULL COMMENT '更新时间',
   `delete_time` datetime(0) NULL DEFAULT NULL COMMENT '删除时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of bicycle_info
--- ----------------------------
-INSERT INTO `bicycle_info` VALUES ('BY173606162081842613', '山地自行车', 'http://127.0.0.1/static/file/17361190915e61cb2c9e65d3348ff32dc94f7479e5_compress.jpg;', 1, '这是备注信息', '2025-01-05 15:20:21', '2025-01-05 15:20:21', '2025-01-05 15:27:56');
-INSERT INTO `bicycle_info` VALUES ('BY173606199161378185', '老北京二八大纲', 'http://127.0.0.1/static/file/17360981175e61cb2c9e65d3348ff32dc94f7479e5_compress.jpg;', 1, '这是老北京二八大纲备注信息', '2025-01-05 15:26:32', '2025-01-05 15:26:32', '2025-01-05 15:28:10');
-INSERT INTO `bicycle_info` VALUES ('BY173606211059313997', '山地自行车', 'http://127.0.0.1/static/file/17361483045e61cb2c9e65d3348ff32dc94f7479e5_compress.jpg;', 1, '这是备注信息', '2025-01-05 15:28:30', '2025-01-05 15:28:30', '2025-01-05 23:01:45');
-INSERT INTO `bicycle_info` VALUES ('BY173608852697156538', '山地越野自行车', 'https://www.bing.com/images/search?view=detailV2&ccid=bZ5pglUo&id=EC303C02E420CF1CE8B939C35F99FAA037A69D0F&thid=OIP.bZ5pglUotAxb-EdFBwGfUgHaE7&mediaurl=https%3a%2f%2fqnam.smzdm.com%2f202104%2f21%2f607fbc33b755c9195.jpg_e1080.jpg&exph=719&expw=1080&q=%e8%87%aa%e8%a1%8c%e8%bd%a6&simid=608012828576339701&FORM=IRPRST&ck=2187C12C30881B0BAF0AEBFB86877882&selectedIndex=0&itb=0', 1, '测试数据', '2025-01-05 22:48:46', '2025-01-05 22:48:46', '2025-01-05 23:01:43');
-INSERT INTO `bicycle_info` VALUES ('BY173608922518888013', '碳纤维高材质自行车', 'https://www.bing.com/images/search?view=detailV2&ccid=bZ5pglUo&id=EC303C02E420CF1CE8B939C35F99FAA037A69D0F&thid=OIP.bZ5pglUotAxb-EdFBwGfUgHaE7&mediaurl=https%3a%2f%2fqnam.smzdm.com%2f202104%2f21%2f607fbc33b755c9195.jpg_e1080.jpg&exph=719&expw=1080&q=%e8%87%aa%e8%a1%8c%e8%bd%a6&simid=608012828576339701&FORM=IRPRST&ck=2187C12C30881B0BAF0AEBFB86877882&selectedIndex=0&itb=0', 1, '测试数据', '2025-01-05 23:00:25', '2025-01-05 23:00:25', '2025-01-05 23:01:39');
-INSERT INTO `bicycle_info` VALUES ('BY173608922590900252', '山地越野自行车', 'https://www.bing.com/images/search?view=detailV2&ccid=bZ5pglUo&id=EC303C02E420CF1CE8B939C35F99FAA037A69D0F&thid=OIP.bZ5pglUotAxb-EdFBwGfUgHaE7&mediaurl=https%3a%2f%2fqnam.smzdm.com%2f202104%2f21%2f607fbc33b755c9195.jpg_e1080.jpg&exph=719&expw=1080&q=%e8%87%aa%e8%a1%8c%e8%bd%a6&simid=608012828576339701&FORM=IRPRST&ck=2187C12C30881B0BAF0AEBFB86877882&selectedIndex=0&itb=0', 1, '测试数据', '2025-01-05 23:00:25', '2025-01-05 23:00:25', '2025-01-05 23:01:41');
-INSERT INTO `bicycle_info` VALUES ('BY173608922594818706', '可变速山地自行车', 'https://www.bing.com/images/search?view=detailV2&ccid=bZ5pglUo&id=EC303C02E420CF1CE8B939C35F99FAA037A69D0F&thid=OIP.bZ5pglUotAxb-EdFBwGfUgHaE7&mediaurl=https%3a%2f%2fqnam.smzdm.com%2f202104%2f21%2f607fbc33b755c9195.jpg_e1080.jpg&exph=719&expw=1080&q=%e8%87%aa%e8%a1%8c%e8%bd%a6&simid=608012828576339701&FORM=IRPRST&ck=2187C12C30881B0BAF0AEBFB86877882&selectedIndex=0&itb=0', 1, '测试数据', '2025-01-05 23:00:25', '2025-01-05 23:00:25', '2025-01-05 23:01:42');
-INSERT INTO `bicycle_info` VALUES ('BY173608931149041237', '山地越野自行车', 'https://th.bing.com/th/id/OIP.bZ5pglUotAxb-EdFBwGfUgHaE7?rs=1&pid=ImgDetMain', 0, '测试数据', '2025-01-05 23:01:51', '2025-01-05 23:01:51', NULL);
-INSERT INTO `bicycle_info` VALUES ('BY173608931155827764', '碳纤维高材质自行车', 'https://th.bing.com/th/id/OIP.bZ5pglUotAxb-EdFBwGfUgHaE7?rs=1&pid=ImgDetMain', 0, '测试数据', '2025-01-05 23:01:51', '2025-01-05 23:01:51', NULL);
-INSERT INTO `bicycle_info` VALUES ('BY173608931185682439', '可变速山地自行车', 'https://th.bing.com/th/id/OIP.bZ5pglUotAxb-EdFBwGfUgHaE7?rs=1&pid=ImgDetMain', 0, '测试数据', '2025-01-05 23:01:51', '2025-01-05 23:01:51', NULL);
-INSERT INTO `bicycle_info` VALUES ('BY173608932128126605', '碳纤维高材质自行车', 'https://th.bing.com/th/id/OIP.bZ5pglUotAxb-EdFBwGfUgHaE7?rs=1&pid=ImgDetMain', 0, '测试数据', '2025-01-05 23:02:01', '2025-01-05 23:02:01', NULL);
-INSERT INTO `bicycle_info` VALUES ('BY173608932135692979', '可变速山地自行车', 'https://th.bing.com/th/id/OIP.bZ5pglUotAxb-EdFBwGfUgHaE7?rs=1&pid=ImgDetMain', 0, '测试数据', '2025-01-05 23:02:01', '2025-01-05 23:02:01', NULL);
-INSERT INTO `bicycle_info` VALUES ('BY173608932152132472', '山地越野自行车', 'https://th.bing.com/th/id/OIP.bZ5pglUotAxb-EdFBwGfUgHaE7?rs=1&pid=ImgDetMain', 0, '测试数据', '2025-01-05 23:02:01', '2025-01-05 23:02:01', NULL);
-INSERT INTO `bicycle_info` VALUES ('BY173608933306726935', '可变速山地自行车', 'https://th.bing.com/th/id/OIP.bZ5pglUotAxb-EdFBwGfUgHaE7?rs=1&pid=ImgDetMain', 0, '测试数据', '2025-01-05 23:02:13', '2025-01-05 23:02:13', NULL);
-INSERT INTO `bicycle_info` VALUES ('BY173608933321796083', '山地越野自行车', 'https://th.bing.com/th/id/OIP.bZ5pglUotAxb-EdFBwGfUgHaE7?rs=1&pid=ImgDetMain', 0, '测试数据', '2025-01-05 23:02:13', '2025-01-05 23:02:13', NULL);
-INSERT INTO `bicycle_info` VALUES ('BY173608933397589901', '碳纤维高材质自行车', 'https://th.bing.com/th/id/OIP.bZ5pglUotAxb-EdFBwGfUgHaE7?rs=1&pid=ImgDetMain', 0, '测试数据', '2025-01-05 23:02:13', '2025-01-05 23:02:13', NULL);
+) ENGINE = InnoDB CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for sys_config
@@ -64,17 +49,23 @@ CREATE TABLE `sys_config`  (
   `value` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '值',
   `create_time` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
   `update_time` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+  `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `name`(`name`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '系统配置表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '系统配置表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_config
 -- ----------------------------
-INSERT INTO `sys_config` VALUES (1, 'sys', 'filings', '', '2024-01-10 22:44:41', '2024-01-10 22:44:41');
-INSERT INTO `sys_config` VALUES (2, 'sys', 'webLogo', 'https://tse2-mm.cn.bing.net/th/id/OIP-C.51RJal6KkFmCkblE6KOfJQAAAA?rs=1&pid=ImgDetMain', '2024-01-10 22:44:41', '2025-01-05 00:40:40');
-INSERT INTO `sys_config` VALUES (3, 'sys', 'webName', '自行车管理系统', '2024-01-10 22:44:41', '2024-04-14 17:22:47');
-INSERT INTO `sys_config` VALUES (4, 'sys', 'webFavicon', 'https://tse2-mm.cn.bing.net/th/id/OIP-C.51RJal6KkFmCkblE6KOfJQAAAA?rs=1&pid=ImgDetMain', '2024-01-10 22:44:41', '2025-01-05 00:40:44');
+INSERT INTO `sys_config` VALUES (1, 'sys', 'filings', '', '2024-01-10 22:44:41', '2025-01-15 23:30:45', '网站备案链接');
+INSERT INTO `sys_config` VALUES (2, 'sys', 'webLogo', 'https://winspace-bikes.com//images/master/2022/9/131-83EENS.png', '2024-01-10 22:44:41', '2025-01-15 23:29:42', '登录界面LOGO');
+INSERT INTO `sys_config` VALUES (3, 'sys', 'webName', '银斯贝自行车管理系统', '2024-01-10 22:44:41', '2025-01-15 23:29:29', '网站名称');
+INSERT INTO `sys_config` VALUES (4, 'sys', 'webFavicon', 'https://winspace-bikes.com//images/master/2022/9/131-83EENS.png', '2024-01-10 22:44:41', '2025-01-15 23:29:22', '网站logo');
+INSERT INTO `sys_config` VALUES (5, 'sys', 'qrcodeWidth', '42', '2025-01-15 23:26:10', '2025-01-15 23:29:11', '生成的二维码宽度');
+INSERT INTO `sys_config` VALUES (6, 'sys', 'qrcodeHeight', '42', '2025-01-15 23:26:26', '2025-01-15 23:29:01', '生成的二维码高度');
+INSERT INTO `sys_config` VALUES (7, 'sys', 'theme', '#2682FC', '2025-01-15 23:27:13', '2025-01-15 23:28:48', '系统主题颜色');
+INSERT INTO `sys_config` VALUES (8, 'sys', 'queryImages', 'https://winspace-bikes.com//images/master/2022/9/131-83EENS.png', '2025-01-15 23:27:44', '2025-01-15 23:50:06', '公众号查询界面图片列表');
+INSERT INTO `sys_config` VALUES (9, 'sys', 'loginBg', 'https://winspace-bikes.com//images/master/2022/9/131-83EENS.png', '2025-01-15 23:30:10', '2025-01-15 23:50:11', '登录界面背景图');
 
 -- ----------------------------
 -- Table structure for sys_dept
@@ -82,16 +73,21 @@ INSERT INTO `sys_config` VALUES (4, 'sys', 'webFavicon', 'https://tse2-mm.cn.bin
 DROP TABLE IF EXISTS `sys_dept`;
 CREATE TABLE `sys_dept`  (
   `id` bigint(0) NOT NULL AUTO_INCREMENT COMMENT '部门id',
-  `parent_id` int(0) DEFAULT NULL COMMENT '上级部门id',
-  `dept_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '部门名称',
+  `parent_id` int(0) NULL DEFAULT NULL COMMENT '上级部门id',
+  `dept_name` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '部门名称',
   `sort` int(0) NOT NULL DEFAULT 0 COMMENT '排序，数值越大，顺序月靠前',
-  `duty` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '部门负责人',
-  `mobile` char(11) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '部门负责人手机号',
+  `duty` varchar(32) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '部门负责人',
+  `mobile` char(11) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '部门负责人手机号',
   `is_stop` tinyint(0) NOT NULL DEFAULT 0 COMMENT '部门状态，0：未禁用，1：已禁用',
   `create_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
   `update_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '部门信息表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '部门信息表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of sys_dept
+-- ----------------------------
+INSERT INTO `sys_dept` VALUES (3, NULL, '超级部门', 0, '超级管理员', '15772725805', 0, '2025-01-09 14:22:34', '2025-01-09 14:22:34');
 
 -- ----------------------------
 -- Table structure for sys_dept_role
@@ -105,7 +101,7 @@ CREATE TABLE `sys_dept_role`  (
   INDEX `fk_role_id_dept_role`(`role_id`) USING BTREE,
   CONSTRAINT `fk_dept_id_dept_role` FOREIGN KEY (`dept_id`) REFERENCES `sys_dept` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `fk_role_id_dept_role` FOREIGN KEY (`role_id`) REFERENCES `sys_role` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '角色部门关联表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '角色部门关联表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for sys_dept_user
@@ -121,7 +117,14 @@ CREATE TABLE `sys_dept_user`  (
   INDEX `fk_user_id`(`user_id`) USING BTREE,
   CONSTRAINT `fk_dept_user_dept_id` FOREIGN KEY (`dept_id`) REFERENCES `sys_dept` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `fk_dept_user_user_id` FOREIGN KEY (`user_id`) REFERENCES `sys_user` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户部门关联表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 12 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '用户部门关联表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of sys_dept_user
+-- ----------------------------
+INSERT INTO `sys_dept_user` VALUES (10, 3, 7);
+INSERT INTO `sys_dept_user` VALUES (11, 3, 8);
+INSERT INTO `sys_dept_user` VALUES (12, 3, 9);
 
 -- ----------------------------
 -- Table structure for sys_dict
@@ -129,16 +132,16 @@ CREATE TABLE `sys_dept_user`  (
 DROP TABLE IF EXISTS `sys_dict`;
 CREATE TABLE `sys_dict`  (
   `id` bigint(0) NOT NULL AUTO_INCREMENT COMMENT '字典ID',
-  `dict_name` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '字典名称',
-  `dict_type` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '字典类型',
+  `dict_name` varchar(32) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '字典名称',
+  `dict_type` varchar(32) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '字典类型',
   `dict_status` int(0) NOT NULL DEFAULT 1 COMMENT '字典状态：0-禁用, 1-正常',
-  `dict_remark` varchar(512) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '字典备注',
+  `dict_remark` varchar(512) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '字典备注',
   `create_time` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
   `update_time` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `dict_name`(`dict_name`) USING BTREE,
   UNIQUE INDEX `dict_type`(`dict_type`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 20 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '字典类型表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '字典类型表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for sys_dict_data
@@ -146,16 +149,16 @@ CREATE TABLE `sys_dict`  (
 DROP TABLE IF EXISTS `sys_dict_data`;
 CREATE TABLE `sys_dict_data`  (
   `id` bigint(0) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `dict_type` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '字典类型，外键',
-  `name` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '数据名称',
+  `dict_type` varchar(32) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '字典类型，外键',
+  `name` varchar(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '数据名称',
   `value` bigint(0) NOT NULL COMMENT '数据值',
   `state` int(0) NOT NULL DEFAULT 1 COMMENT '数据状态：0-禁用，1-启用',
-  `remark` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '数据备注',
+  `remark` varchar(128) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '数据备注',
   `sort` bigint(0) NOT NULL DEFAULT 0 COMMENT '排序',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `fk_dict_type`(`dict_type`) USING BTREE,
   CONSTRAINT `fk_dict_type` FOREIGN KEY (`dict_type`) REFERENCES `sys_dict` (`dict_type`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 56 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '字典数据表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '字典数据表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for sys_menu
@@ -179,7 +182,7 @@ CREATE TABLE `sys_menu`  (
   `create_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
   `update_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 138 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统菜单管理表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 144 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统菜单管理表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_menu
@@ -205,8 +208,8 @@ INSERT INTO `sys_menu` VALUES (19, 17, 'A', '新增', '', 0, 'dict:addData', '',
 INSERT INTO `sys_menu` VALUES (20, 17, 'A', '编辑', '', 0, 'dict:editData', '', '', '', '', 0, 1, 0, '2024-01-26 21:36:37', '2024-04-14 16:58:42');
 INSERT INTO `sys_menu` VALUES (21, 17, 'A', '删除', '', 0, 'dict:deleteData', '', '', '', '', 0, 1, 0, '2024-01-26 21:36:44', '2024-04-14 16:58:58');
 INSERT INTO `sys_menu` VALUES (25, 0, 'C', '自行车管理', 'local-icon-list-2', 100, 'bicycle:list', 'bicycle', '/index', '', '', 1, 1, 0, '2024-02-20 20:37:21', '2025-01-05 15:39:26');
-INSERT INTO `sys_menu` VALUES (42, 0, 'M', '组织管理', 'el-icon-OfficeBuilding', 93, '', 'department', '', '', '', 0, 1, 0, '2024-02-25 22:44:29', '2024-02-26 23:08:41');
-INSERT INTO `sys_menu` VALUES (43, 42, 'C', '部门管理', 'el-icon-School', 0, 'department:deptList', 'deptList', 'department/deptList/index', '', '', 0, 1, 0, '2024-02-25 22:46:07', '2024-02-25 22:46:33');
+INSERT INTO `sys_menu` VALUES (42, 0, 'M', '组织管理', 'el-icon-OfficeBuilding', 93, '', 'department', '', '', '', 0, 1, 0, '2024-02-25 22:44:29', '2025-01-10 18:27:47');
+INSERT INTO `sys_menu` VALUES (43, 42, 'C', '部门管理', 'el-icon-School', 0, 'department:deptList', 'deptList', 'department/deptList/index', '', '', 0, 1, 0, '2024-02-25 22:46:07', '2025-01-10 18:27:56');
 INSERT INTO `sys_menu` VALUES (114, 43, 'A', '查询', '', 0, 'system:deptList', '', '', '', '', 0, 1, 0, '2024-04-14 16:35:31', '2024-04-14 16:35:31');
 INSERT INTO `sys_menu` VALUES (115, 43, 'A', '新增', '', 0, 'system:deptAdd', '', '', '', '', 0, 1, 0, '2024-04-14 16:35:47', '2024-04-14 16:35:47');
 INSERT INTO `sys_menu` VALUES (116, 43, 'A', '编辑', '', 0, 'system:deptEdit', '', '', '', '', 0, 1, 0, '2024-04-14 16:36:03', '2024-04-14 16:36:03');
@@ -237,6 +240,7 @@ INSERT INTO `sys_menu` VALUES (140, 25, 'A', '编辑', '', 0, 'bicycle:edit', ''
 INSERT INTO `sys_menu` VALUES (141, 25, 'A', '删除', '', 0, 'bicycle:delete', '', '', '', '', 0, 1, 0, '2025-01-05 00:38:11', '2025-01-05 00:38:11');
 INSERT INTO `sys_menu` VALUES (142, 25, 'A', '批量导入', '', 0, 'bicycle:import', '', '', '', '', 0, 1, 0, '2025-01-05 00:38:42', '2025-01-05 00:38:42');
 INSERT INTO `sys_menu` VALUES (143, 25, 'A', '批量导出', '', 0, 'bicycle:export', '', '', '', '', 0, 1, 0, '2025-01-05 00:39:02', '2025-01-05 00:39:02');
+INSERT INTO `sys_menu` VALUES (144, 25, 'A', '详情', '', 0, 'bicycle:detail', '', '', '', '', 0, 1, 0, '2025-01-09 14:25:49', '2025-01-09 14:25:49');
 
 -- ----------------------------
 -- Table structure for sys_role
@@ -244,14 +248,20 @@ INSERT INTO `sys_menu` VALUES (143, 25, 'A', '批量导出', '', 0, 'bicycle:exp
 DROP TABLE IF EXISTS `sys_role`;
 CREATE TABLE `sys_role`  (
   `id` bigint(0) NOT NULL AUTO_INCREMENT COMMENT '角色id',
-  `role_name` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '角色名称',
+  `role_name` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '角色名称',
   `sort` bigint(0) NOT NULL DEFAULT 0 COMMENT '排序',
   `role_count` bigint(0) NOT NULL DEFAULT 0 COMMENT '管理员人数',
   `role_state` tinyint(0) NOT NULL DEFAULT 0 COMMENT '管理员状态：0-正常；1-禁用',
-  `remark` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '备注',
+  `remark` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '备注',
   `create_time` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户角色表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '用户角色表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of sys_role
+-- ----------------------------
+INSERT INTO `sys_role` VALUES (3, '管理员', 0, 0, 0, '', '2025-01-09 14:23:00');
+INSERT INTO `sys_role` VALUES (4, 'ces', 0, 0, 0, '', '2025-01-10 13:45:30');
 
 -- ----------------------------
 -- Table structure for sys_role_menu
@@ -266,7 +276,19 @@ CREATE TABLE `sys_role_menu`  (
   INDEX `fk_menu_id_role_menu`(`menu_id`) USING BTREE,
   CONSTRAINT `fk_menu_id_role_menu` FOREIGN KEY (`menu_id`) REFERENCES `sys_menu` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `fk_role_id_role_menu` FOREIGN KEY (`role_id`) REFERENCES `sys_role` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 1761 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '角色菜单关联表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1775 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '角色菜单关联表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of sys_role_menu
+-- ----------------------------
+INSERT INTO `sys_role_menu` VALUES (1768, 3, 25);
+INSERT INTO `sys_role_menu` VALUES (1769, 3, 138);
+INSERT INTO `sys_role_menu` VALUES (1770, 3, 139);
+INSERT INTO `sys_role_menu` VALUES (1771, 3, 140);
+INSERT INTO `sys_role_menu` VALUES (1772, 3, 141);
+INSERT INTO `sys_role_menu` VALUES (1773, 3, 142);
+INSERT INTO `sys_role_menu` VALUES (1774, 3, 143);
+INSERT INTO `sys_role_menu` VALUES (1775, 3, 144);
 
 -- ----------------------------
 -- Table structure for sys_user
@@ -274,24 +296,27 @@ CREATE TABLE `sys_role_menu`  (
 DROP TABLE IF EXISTS `sys_user`;
 CREATE TABLE `sys_user`  (
   `id` bigint(0) NOT NULL AUTO_INCREMENT COMMENT '用户id',
-  `username` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '用户名称',
-  `password` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '登录密码',
-  `avatar` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `email` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '邮箱',
-  `account` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '登录账号，可使用手机号登录',
+  `username` varchar(32) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '用户名称',
+  `password` varchar(128) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '登录密码',
+  `avatar` varchar(256) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `email` varchar(32) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '邮箱',
+  `account` varchar(32) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '登录账号，可使用手机号登录',
   `user_state` tinyint(0) NULL DEFAULT 0 COMMENT '用户状态，0：正常，1：禁用',
-  `remark` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '用户备注',
+  `remark` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '用户备注',
   `create_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
   `update_time` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0),
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `username`(`username`) USING BTREE,
   UNIQUE INDEX `account`(`account`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户信息表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '用户信息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_user
 -- ----------------------------
 INSERT INTO `sys_user` VALUES (1, 'admin', '123456', 'https://tse2-mm.cn.bing.net/th/id/OIP-C.51RJal6KkFmCkblE6KOfJQAAAA?rs=1&pid=ImgDetMain', '2564888970@qq.com', 'admin', 0, '超级管理员', '2024-02-29 20:38:34', '2025-01-05 00:41:04');
+INSERT INTO `sys_user` VALUES (7, '邓生龙', '123456', 'http://1.94.143.210/static/userAvatar/1736439624A区-1-0.jpg', '', '15772725805', 0, '', '2025-01-09 14:23:32', '2025-01-10 18:20:05');
+INSERT INTO `sys_user` VALUES (8, '测试账号', '123456', 'http://1.94.143.210/static/userAvatar/173650902352298051327593942461646130554254.jpg', '', 'test', 0, '', '2025-01-09 23:37:36', '2025-01-09 23:37:36');
+INSERT INTO `sys_user` VALUES (9, '测试账号001', '123456', 'http://1.94.143.210/static/userAvatar/173648781052298051327593942461646130552819.jpg', '', 'test001', 0, '', '2025-01-09 23:38:26', '2025-01-09 23:38:26');
 
 -- ----------------------------
 -- Table structure for sys_user_role
@@ -306,6 +331,13 @@ CREATE TABLE `sys_user_role`  (
   INDEX `fk_role_id`(`role_id`) USING BTREE,
   CONSTRAINT `fk_role_id` FOREIGN KEY (`role_id`) REFERENCES `sys_role` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `fk_user_id` FOREIGN KEY (`user_id`) REFERENCES `sys_user` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 20 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户角色关联表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 22 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '用户角色关联表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of sys_user_role
+-- ----------------------------
+INSERT INTO `sys_user_role` VALUES (20, 7, 3);
+INSERT INTO `sys_user_role` VALUES (21, 8, 3);
+INSERT INTO `sys_user_role` VALUES (22, 9, 3);
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -2,6 +2,7 @@ package com.bicycle.service.impl.user;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.bicycle.entry.user.SystemUserEntry;
+import com.bicycle.mapper.account.SystemConfigMapper;
 import com.bicycle.mapper.user.SystemUserMapper;
 import com.bicycle.service.user.SystemUserService;
 import com.bicycle.utils.AjaxResult;
@@ -10,6 +11,7 @@ import com.bicycle.validate.user.SystemUserCreateValidate;
 import com.bicycle.validate.user.SystemUserSearchValidate;
 import com.bicycle.validate.user.SystemUserUpdateValidate;
 import com.bicycle.vo.user.SystemUserVo;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

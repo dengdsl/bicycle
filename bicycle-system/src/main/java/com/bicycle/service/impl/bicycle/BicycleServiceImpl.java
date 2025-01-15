@@ -3,15 +3,20 @@ package com.bicycle.service.impl.bicycle;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.bicycle.entry.bicycle.BicycleEntry;
+import com.bicycle.entry.system.SystemConfigEntry;
 import com.bicycle.enums.RandomPrefix;
+import com.bicycle.mapper.account.SystemConfigMapper;
 import com.bicycle.mapper.bicycle.BicycleMapper;
 import com.bicycle.service.random.RandomService;
 import com.bicycle.service.bicycle.BicycleService;
 import com.bicycle.utils.AjaxResult;
+import com.bicycle.utils.QrCodeUtils;
 import com.bicycle.validate.bicycle.BicycleCreateValidate;
 import com.bicycle.validate.bicycle.BicycleSearchValidate;
 import com.bicycle.validate.bicycle.BicycleUpdateValidate;
 import com.bicycle.validate.page.PageValidate;
+import com.google.zxing.WriterException;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -19,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -26,14 +32,18 @@ import java.util.*;
 @Service
 public class BicycleServiceImpl implements BicycleService {
 
+    //private static final String qrcodePath = "/home/server/static/qrcode/";
+    private static final String qrcodePath = "F:\\workspace\\bicycle\\bicycle-system\\src\\main\\resources\\static";
     private static final String XLS = "xls";
     private static final String XLSX = "xlsx";
     private BicycleMapper bicycleMapper;
     private RandomService randomService;
+    private SystemConfigMapper systemConfigMapper;
 
-    public BicycleServiceImpl(BicycleMapper bicycleMapper, RandomService randomService) {
+    public BicycleServiceImpl(BicycleMapper bicycleMapper, RandomService randomService, SystemConfigMapper systemConfigMapper) {
         this.bicycleMapper = bicycleMapper;
         this.randomService = randomService;
+        this.systemConfigMapper = systemConfigMapper;
     }
 
     /**
@@ -57,8 +67,17 @@ public class BicycleServiceImpl implements BicycleService {
         if (searchValidate.getId() != null && !searchValidate.getId().isEmpty()) {
             queryWrapper.eq("id", searchValidate.getId());
         }
-        if (searchValidate.getTitle() != null && !searchValidate.getTitle().isEmpty()) {
-            queryWrapper.like("title", searchValidate.getTitle());
+        if (searchValidate.getModel() != null) {
+            queryWrapper.eq("model", searchValidate.getModel());
+        }
+        if (searchValidate.getFrameNo() != null && !searchValidate.getFrameNo().isEmpty()) {
+            queryWrapper.eq("frame_no", searchValidate.getFrameNo());
+        }
+        if (searchValidate.getConclusion() != null && !searchValidate.getConclusion().isEmpty()) {
+            queryWrapper.eq("conclusion", searchValidate.getConclusion());
+        }
+        if (searchValidate.getProduceTime() != null && !searchValidate.getProduceTime().isEmpty()) {
+            queryWrapper.eq("produce_time", searchValidate.getProduceTime());
         }
         Page<BicycleEntry> bicycleEntryPage = bicycleMapper.selectPage(page, queryWrapper);
         long total = bicycleEntryPage.getTotal();
@@ -85,18 +104,47 @@ public class BicycleServiceImpl implements BicycleService {
      * 新增自行车信息
      */
     @Override
-    public AjaxResult<Object> addBicycle(BicycleCreateValidate createValidate) {
+    public AjaxResult<Object> addBicycle(BicycleCreateValidate createValidate) throws IOException, WriterException {
 
         // 生成编号
         String randomId = randomService.randomId(RandomPrefix.BICYCLE_PREFIX.getDrugPrefix());
-        randomId = checkId(randomId);
+        randomId = checkId(randomId, "id");
         BicycleEntry createEntry = new BicycleEntry();
         createEntry.setId(randomId);
-        createEntry.setTitle(createValidate.getTitle());
+        createEntry.setModel(createValidate.getModel());
+        createEntry.setFrameNo(createValidate.getFrameNo());
+        createEntry.setConclusion(createValidate.getConclusion());
+        createEntry.setProduceTime(createValidate.getProduceTime());
         createEntry.setImage(createValidate.getImage());
         createEntry.setRemark(createValidate.getRemark());
         createEntry.setCreateTime(new Date());
         createEntry.setUpdateTime(new Date());
+
+        String qrCode = randomService.randomQrcode();
+        // 避免生成的二维码编号重复
+        qrCode = checkId(qrCode, "qr_code");
+        SystemConfigEntry qrcodeHeight = systemConfigMapper.getConfigByName("qrcodeHeight");
+        SystemConfigEntry qrcodeWidth = systemConfigMapper.getConfigByName("qrcodeWidth");
+        // 根据日期创建文件夹并创建文件夹
+        Calendar calendar = Calendar.getInstance();
+
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH) + 1; // 月份从0开始，需加1
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        // 补零处理
+        String formattedMonth = (month < 10 ? "0" : "") + month;
+        String formattedDay = (day < 10 ? "0" : "") + day;
+
+        String dirPath = qrcodePath + "/" + year + "/" + formattedMonth + "/" + formattedDay;
+        File dir = new File(dirPath);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        // 生成图片二维码
+        QrCodeUtils.generateQRCode(qrCode, Integer.parseInt(qrcodeWidth.getValue()), Integer.parseInt(qrcodeHeight.getValue()), qrcodePath);
+        createEntry.setQrcode(qrCode);
+        createEntry.setQrImg(dirPath + "/" + qrCode + ".png");
         bicycleMapper.insert(createEntry);
         log.info("新增自行车数据成功：" + createEntry);
         return AjaxResult.success("新增成功");
@@ -107,7 +155,7 @@ public class BicycleServiceImpl implements BicycleService {
      */
     @Override
     public AjaxResult<Object> editBicycle(BicycleUpdateValidate updateValidate) {
-        // 查询要修改的供应商信息是否存在
+        // 查询要修改的自行车信息是否存在
         QueryWrapper<BicycleEntry> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("is_del", 0);
         queryWrapper.eq("id", updateValidate.getId());
@@ -116,8 +164,8 @@ public class BicycleServiceImpl implements BicycleService {
             log.info("要修改的自行车数据不存在：id = " + updateValidate.getId());
             return AjaxResult.failed("数据不存在");
         }
-        // 修改供应商信息
-        bicycleEntry.setTitle(updateValidate.getTitle());
+        // 修改自行车信息
+        //bicycleEntry.setTitle(updateValidate.getTitle());
         bicycleEntry.setImage(updateValidate.getImage());
         bicycleEntry.setRemark(updateValidate.getRemark());
         bicycleEntry.setUpdateTime(new Date());
@@ -165,7 +213,7 @@ public class BicycleServiceImpl implements BicycleService {
             Row row = sheet.getRow(rowNum);//根据索引获取每一个行
             BicycleEntry bicycleEntry = new BicycleEntry();
             bicycleEntry.setId(randomService.randomId(RandomPrefix.BICYCLE_PREFIX.getDrugPrefix()));
-            bicycleEntry.setTitle(getCellValue(row.getCell(1)).toString());
+            //bicycleEntry.setTitle(getCellValue(row.getCell(1)).toString());
             bicycleEntry.setImage(getCellValue(row.getCell(2)).toString());
             bicycleEntry.setRemark(getCellValue(row.getCell(3)).toString());
             bicycleEntry.setCreateTime(new Date());
@@ -190,7 +238,7 @@ public class BicycleServiceImpl implements BicycleService {
 
     /**
      * 根据二维码查询信息
-     * */
+     */
     @Override
     public AjaxResult<Object> queryByQrcode(String qrcode) {
         QueryWrapper<BicycleEntry> queryWrapper = new QueryWrapper<>();
@@ -203,13 +251,13 @@ public class BicycleServiceImpl implements BicycleService {
     /**
      * 判断当前id是否可用
      */
-    public String checkId(String id) {
+    public String checkId(String id, String fieldName) {
         // 根据id查询当前id是否被占用
         QueryWrapper<BicycleEntry> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id", id);
+        queryWrapper.eq(fieldName, id);
         BicycleEntry supplierEntry = bicycleMapper.selectOne(queryWrapper);
         if (supplierEntry != null) {
-            return checkId(randomService.randomId(RandomPrefix.BICYCLE_PREFIX.getDrugPrefix()));
+            return checkId(randomService.randomId(RandomPrefix.BICYCLE_PREFIX.getDrugPrefix()), fieldName);
         }
         return id;
     }
