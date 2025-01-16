@@ -32,9 +32,9 @@ import java.util.*;
 @Service
 public class BicycleServiceImpl implements BicycleService {
 
-    //private static final String qrcodePath = "/home/server/static/qrcode/";
-//    private static final String qrcodePath = "F:\\workspace\\bicycle\\bicycle-system\\src\\main\\resources\\static";
-    private static String qrcodePath = "D:\\onecent_code\\bicycle\\bicycle-system\\src\\main\\resources\\static";
+    private static String qrcodePath = "/home/server/static/qrcode/";
+//    private static String qrcodePath = "F:\\workspace\\bicycle\\bicycle-system\\src\\main\\resources\\static";
+//    private static String qrcodePath = "D:\\onecent_code\\bicycle\\bicycle-system\\src\\main\\resources\\static";
     private static final String XLS = "xls";
     private static final String XLSX = "xlsx";
     private BicycleMapper bicycleMapper;

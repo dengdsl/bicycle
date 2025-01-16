@@ -1,21 +1,15 @@
 <template>
   <div class="login flex flex-col">
-    <div class="flex-1 flex items-center justify-center">
-      <div class="login-card flex rounded-md">
-        <!--        <div class="flex-1 h-full hidden md:inline-block">-->
-        <!--          -->
-        <!--        </div>-->
+    <div class="flex-1 flex justify-center mt-[20vh]">
+      <div class="login-card rounded-md">
         <div
-          class="login-form bg-body flex flex-col justify-center px-10 py-10 md:w-[400px] w-[375px] flex-none mx-auto"
+          class="login-form flex flex-col justify-center px-10 py-10 w-[400px] flex-none mx-auto"
         >
-          <!--          <image-contain :src="config['webLogo']" :width="400" height="100%" />-->
-          <image-contain
-            src="./images/loginbg.jpg"
-            :width="400"
-            height="auto"
-          />
-          <div class="text-center text-3xl font-medium mb-8">
-            {{ config['webName'] || '自行车管理系统' }}
+          <div class="mb-2">
+            <img src="./images/logo.png" class="w-full h-auto" />
+          </div>
+          <div class="text-center text-6xl font-medium mb-8">
+            {{ config['webName'] || '银斯贝自行车管理系统' }}
           </div>
           <el-form ref="formRef" :model="formData" size="large" :rules="rules">
             <el-form-item prop="account">
@@ -209,13 +203,30 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .login {
-  background-image: url('https://th.bing.com/th/id/OIP.RtPAiV717BKkCDY5BKnSeQHaEo?w=294&h=183&c=7&r=0&o=5&pid=1.7');
-  @apply min-h-screen bg-no-repeat bg-center bg-cover;
+  --el-bg-color: #ffffff !important;
+  background-image: url('./images/loginbg.jpg');
+  background-size: 100% 100%;
+  @apply min-h-screen bg-no-repeat bg-center;
   .login-card {
     height: 400px;
+
     :deep(.el-input-group__prepend) {
       padding: 0 15px;
     }
+  }
+
+  :deep(.el-input) {
+    --el-input-bg-color: white;
+    --el-input-text-color: black;
+    --el-text-color-regular: black;
+  }
+
+  :deep(.el-input-group__prepend) {
+    background-color: white;
+  }
+
+  :deep(.el-checkbox) {
+    --el-checkbox-bg-color: white;
   }
 }
 </style>
