@@ -2,12 +2,18 @@
   <div class="login flex flex-col">
     <div class="flex-1 flex items-center justify-center">
       <div class="login-card flex rounded-md">
-        <div class="flex-1 h-full hidden md:inline-block">
-          <image-contain :src="config['webLogo']" :width="400" height="100%" />
-        </div>
+        <!--        <div class="flex-1 h-full hidden md:inline-block">-->
+        <!--          -->
+        <!--        </div>-->
         <div
           class="login-form bg-body flex flex-col justify-center px-10 py-10 md:w-[400px] w-[375px] flex-none mx-auto"
         >
+          <!--          <image-contain :src="config['webLogo']" :width="400" height="100%" />-->
+          <image-contain
+            src="./images/loginbg.jpg"
+            :width="400"
+            height="auto"
+          />
           <div class="text-center text-3xl font-medium mb-8">
             {{ config['webName'] || '自行车管理系统' }}
           </div>
