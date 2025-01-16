@@ -33,7 +33,8 @@ import java.util.*;
 public class BicycleServiceImpl implements BicycleService {
 
     //private static final String qrcodePath = "/home/server/static/qrcode/";
-    private static final String qrcodePath = "F:\\workspace\\bicycle\\bicycle-system\\src\\main\\resources\\static";
+//    private static final String qrcodePath = "F:\\workspace\\bicycle\\bicycle-system\\src\\main\\resources\\static";
+    private static String qrcodePath = "D:\\onecent_code\\bicycle\\bicycle-system\\src\\main\\resources\\static";
     private static final String XLS = "xls";
     private static final String XLSX = "xlsx";
     private BicycleMapper bicycleMapper;
@@ -44,6 +45,11 @@ public class BicycleServiceImpl implements BicycleService {
         this.bicycleMapper = bicycleMapper;
         this.randomService = randomService;
         this.systemConfigMapper = systemConfigMapper;
+        // 初始化二维码图片保存路径
+        SystemConfigEntry qrcodeFilePath = systemConfigMapper.getConfigByName("qrcodeFilePath");
+        if (qrcodeFilePath.getValue() != null && !qrcodeFilePath.getValue().isEmpty()) {
+            qrcodePath = qrcodeFilePath.getValue();
+        }
     }
 
     /**
@@ -104,7 +110,7 @@ public class BicycleServiceImpl implements BicycleService {
      * 新增自行车信息
      */
     @Override
-    public AjaxResult<Object> addBicycle(BicycleCreateValidate createValidate) throws IOException, WriterException {
+    public AjaxResult<Object> addBicycle(BicycleCreateValidate createValidate) {
 
         // 生成编号
         String randomId = randomService.randomId(RandomPrefix.BICYCLE_PREFIX.getDrugPrefix());
@@ -122,9 +128,8 @@ public class BicycleServiceImpl implements BicycleService {
 
         String qrCode = randomService.randomQrcode();
         // 避免生成的二维码编号重复
-        qrCode = checkId(qrCode, "qr_code");
-        SystemConfigEntry qrcodeHeight = systemConfigMapper.getConfigByName("qrcodeHeight");
-        SystemConfigEntry qrcodeWidth = systemConfigMapper.getConfigByName("qrcodeWidth");
+        qrCode = checkId(qrCode, "qrcode");
+
         // 根据日期创建文件夹并创建文件夹
         Calendar calendar = Calendar.getInstance();
 
@@ -136,15 +141,17 @@ public class BicycleServiceImpl implements BicycleService {
         String formattedMonth = (month < 10 ? "0" : "") + month;
         String formattedDay = (day < 10 ? "0" : "") + day;
 
-        String dirPath = qrcodePath + "/" + year + "/" + formattedMonth + "/" + formattedDay;
+        String dirPath = qrcodePath + "\\" + year + "\\" + formattedMonth + "\\" + formattedDay;
         File dir = new File(dirPath);
         if (!dir.exists()) {
             dir.mkdirs();
         }
         // 生成图片二维码
-        QrCodeUtils.generateQRCode(qrCode, Integer.parseInt(qrcodeWidth.getValue()), Integer.parseInt(qrcodeHeight.getValue()), qrcodePath);
+        QrCodeUtils.generateQRCode(qrCode, dirPath+ "\\" + qrCode + ".png");
         createEntry.setQrcode(qrCode);
-        createEntry.setQrImg(dirPath + "/" + qrCode + ".png");
+        // 保存的图片地址根据服务器配置的地址进行动态拼接
+        SystemConfigEntry qrcodeImgServerUrl = systemConfigMapper.getConfigByName("qrcodeImgServerUrl");
+        createEntry.setQrImg(qrcodeImgServerUrl.getValue() + "static/"+ year + "/" + formattedMonth + "/" + formattedDay + "/" + qrCode + ".png");
         bicycleMapper.insert(createEntry);
         log.info("新增自行车数据成功：" + createEntry);
         return AjaxResult.success("新增成功");

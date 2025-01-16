@@ -39,6 +39,8 @@ export const generateVars = (
   for (const key in config) {
     colos[`--el-color-${type}-${key}`] = `color(${color} ${config[key]})`
   }
+  console.log("colos ==>", colos);
+
   return colos
 }
 
@@ -73,6 +75,8 @@ export const setTheme = (options: Record<string, string>, isDark = false) => {
     return `${prev}${key}:${color};`
   }, '')
   theme = `:root:root{${theme}}`
+  console.log("theme ==>", theme);
+
   let style = document.getElementById(themeId)
   if (style) {
     style.innerHTML = theme

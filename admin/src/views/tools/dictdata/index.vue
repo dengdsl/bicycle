@@ -2,17 +2,39 @@
   <div class="dict-data">
     <el-card class="!border-none" shadow="never">
       <el-page-header class="mb-4" content="数据管理" @back="$router.back()" />
-      <el-form ref="formRef" class="mb-[-16px]" v-model="queryParams" :inline="true">
+      <el-form
+        ref="formRef"
+        class="mb-[-16px]"
+        v-model="queryParams"
+        :inline="true"
+      >
         <el-form-item label="字典类型" prop="serviceOrderSn">
-          <el-select class="w-[280px]" v-model="queryParams.dictType">
-            <el-option v-for="dict in dictTypeList" :key="dict.id" :label="dict.dictName" :value="dict.dictType" />
+          <el-select
+            class="w-[280px]"
+            v-model="queryParams.dictType"
+            style="width: 200px"
+          >
+            <el-option
+              v-for="dict in dictTypeList"
+              :key="dict.id"
+              :label="dict.dictName"
+              :value="dict.dictType"
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="字典名称" prop="userName">
-          <el-input class="w-[280px]" v-model="queryParams.name" placeholder="请输入数据名称" />
+          <el-input
+            class="w-[280px]"
+            v-model="queryParams.name"
+            placeholder="请输入数据名称"
+          />
         </el-form-item>
         <el-form-item label="数据状态" prop="serviceType">
-          <el-select class="w-[280px]" v-model="queryParams.state" style="width: 200px">
+          <el-select
+            class="w-[280px]"
+            v-model="queryParams.state"
+            style="width: 200px"
+          >
             <el-option label="全部" value="" />
             <el-option label="正常" value="1" />
             <el-option label="禁用" value="0" />
@@ -32,7 +54,13 @@
         新增
       </el-button>
       <div class="dict-list">
-        <el-table ref="multipleTable" v-loading="pager.loading" :data="pager.lists" tooltip-effect="dark" style="width: 100%">
+        <el-table
+          ref="multipleTable"
+          v-loading="pager.loading"
+          :data="pager.lists"
+          tooltip-effect="dark"
+          style="width: 100%"
+        >
           <el-table-column prop="dictType" label="字典类型" />
           <el-table-column prop="name" label="数据名称" />
           <el-table-column prop="value" label="数据值" />
@@ -45,8 +73,22 @@
           <el-table-column prop="remark" label="数据备注" />
           <el-table-column label="操作" fixed="right">
             <template #default="{ row }">
-              <el-button v-perms="['dict:editData']" type="primary" link @click="handleEdit(row)"> 编辑 </el-button>
-              <el-button v-perms="['dict:deleteData']" type="danger" link @click="handleDelete(row)"> 删除 </el-button>
+              <el-button
+                v-perms="['dict:editData']"
+                type="primary"
+                link
+                @click="handleEdit(row)"
+              >
+                编辑
+              </el-button>
+              <el-button
+                v-perms="['dict:deleteData']"
+                type="danger"
+                link
+                @click="handleDelete(row)"
+              >
+                删除
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -56,7 +98,12 @@
       </div>
     </el-card>
 
-    <edit-popup v-if="showEdit" ref="editRef" @success="getLists" @close="showEdit = false" />
+    <edit-popup
+      v-if="showEdit"
+      ref="editRef"
+      @success="getLists"
+      @close="showEdit = false"
+    />
   </div>
 </template>
 
@@ -81,12 +128,12 @@ const dictTypeList = ref<
 const queryParams = reactive({
   dictType: route.query.type,
   name: '',
-  state: ''
+  state: '',
 })
 
 const { resetPage, resetParams, pager, getLists } = usePaging({
   params: queryParams,
-  fetchFn: dictDataList
+  fetchFn: dictDataList,
 })
 
 // 获取所有的字典类型
@@ -96,7 +143,7 @@ const getAllDictType = async () => {
   dictTypeList.value = data.map((dict) => ({
     id: dict.id,
     dictName: dict.dictName,
-    dictType: dict.dictType
+    dictType: dict.dictType,
   }))
 }
 

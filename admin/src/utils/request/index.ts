@@ -19,7 +19,6 @@ import { PageEnum } from '@/enums/pageEnum'
 const axiosHooks: AxiosHooks = {
   // 请求拦截器
   requestInterceptorsHook(config) {
-
     const params = config.params || {}
     const headers = config.headers || {}
     // POST请求下如果无data，则将params视为data
@@ -127,6 +126,14 @@ const defaultOptions: AxiosRequestConfig = {
     isOpenRetry: true,
   },
 }
+
+/**
+ * Partial方法：将对象中的数据全部转换为非必填
+ * Required方法：将对象中的数据全部转换为必填
+ * Pick方法：从对象中选择部分数据
+ * Omit方法：从对象中排除部分数据
+ * Readonly方法：将对象中的数据全部设置为只读
+ * */
 function createAxios(opt?: Partial<AxiosRequestConfig>) {
   return new Axios(merge(defaultOptions, opt || {}))
 }

@@ -30,6 +30,12 @@ public class SystemConfigEntry implements Serializable {
     @TableField("value")
     private String value;
 
+    @TableField("remark")
+    private String remark;
+
+    @TableField("label")
+    private String label;
+
     //@JsonFormat(pattern = "yyy-MM-dd HH:mm:ss", timezone = "GMT + 8")
     //@DateTimeFormat(pattern = "yyy-MM-dd HH:mm:ss")
     @TableField("create_time")

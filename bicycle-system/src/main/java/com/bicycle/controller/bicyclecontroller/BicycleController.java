@@ -43,7 +43,7 @@ public class BicycleController  {
      * 新增自行车信息
      * */
     @PostMapping("add")
-    public AjaxResult<Object> addBicycle(@Validated @RequestBody BicycleCreateValidate create) throws IOException, WriterException {
+    public AjaxResult<Object> addBicycle(@Validated @RequestBody BicycleCreateValidate create){
         return bicycleService.addBicycle(create);
     }
 

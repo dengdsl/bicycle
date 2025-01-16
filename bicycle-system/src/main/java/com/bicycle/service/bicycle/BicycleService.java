@@ -20,7 +20,7 @@ public interface BicycleService {
     /**
      * 新增自行车信息
      * */
-     AjaxResult<Object> addBicycle(BicycleCreateValidate createValidate) throws IOException, WriterException;
+     AjaxResult<Object> addBicycle(BicycleCreateValidate createValidate);
 
     /**
      * 编辑自行车信息

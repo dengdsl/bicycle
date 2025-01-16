@@ -37,13 +37,15 @@ public class ImageUploadController {
         // 生成随机数
         int randomNum = new Random().nextInt(90000) + 10000;
         // 获取文件名
-        String fileName =  timestamp + randomNum + file.getOriginalFilename();
+        String fileName = timestamp + randomNum + file.getOriginalFilename();
         log.info("上传的文件名为：" + fileName);
         // 获取文件的后缀名
         String suffixName = fileName.substring(fileName.lastIndexOf("."));
         log.info("上传的后缀名为：" + suffixName);
         // 文件上传后的路径
-        String filePath = "F:\\workspace\\bicycle\\bicycle-system\\src\\main\\resources\\static\\userAvatar\\";
+//        String filePath = "F:\\workspace\\bicycle\\bicycle-system\\src\\main\\resources\\static\\userAvatar\\";
+        String filePath = "D:\\onecent_code\\bicycle\\bicycle-system\\src\\main\\resources\\static\\userAvatar\\";
+
         //String filePath = "/home/server/static/userAvatar/";
         // 解决中文问题，liunx下中文路径，图片显示问题
 
@@ -82,13 +84,14 @@ public class ImageUploadController {
         // 生成随机数
         int randomNum = new Random().nextInt(90000) + 10000;
         // 获取文件名
-        String fileName =  timestamp + randomNum + file.getOriginalFilename();
+        String fileName = timestamp + randomNum + file.getOriginalFilename();
         log.info("上传的文件名为：" + fileName);
         // 获取文件的后缀名
         String suffixName = fileName.substring(fileName.lastIndexOf("."));
         log.info("上传的后缀名为：" + suffixName);
         // 文件上传后的路径
-        String filePath = "F:\\workspace\\bicycle\\bicycle-system\\src\\main\\resources\\static\\file\\";
+//        String filePath = "F:\\workspace\\bicycle\\bicycle-system\\src\\main\\resources\\static\\file\\";
+        String filePath = "D:\\onecent_code\\bicycle\\bicycle-system\\src\\main\\resources\\static\\file\\";
         //String filePath = "/home/server/static/file/";
         File dest = new File(filePath + fileName);
         // 检测是否存在目录
