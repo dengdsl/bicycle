@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.bicycle.entry.system.SystemConfigEntry;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.List;
+
 public interface SystemConfigMapper extends BaseMapper<SystemConfigEntry> {
 
     /**
@@ -11,4 +13,10 @@ public interface SystemConfigMapper extends BaseMapper<SystemConfigEntry> {
      * */
     @Select("select * from sys_config where name=#{name}")
     SystemConfigEntry getConfigByName(String name);
+
+    /*
+    * 批量跟新配置信息
+    * */
+
+    int updateBatchById(List<SystemConfigEntry> configList);
 }
