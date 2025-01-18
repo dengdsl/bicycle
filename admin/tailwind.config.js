@@ -13,6 +13,7 @@ export default {
         'light-9': 'var(--el-color-primary-light-9)',
         'dark-2': 'var(--el-color-primary-dark-2)',
       },
+      mobilePrimary: 'var(--van-primary-color)',
       success: 'var(--el-color-success)',
       warning: 'var(--el-color-warning)',
       danger: 'var(--el-color-danger)',

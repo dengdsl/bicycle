@@ -8,7 +8,7 @@
           <div class="mb-2">
             <img src="./images/logo.png" class="w-full h-auto" />
           </div>
-          <div class="text-center text-6xl font-medium mb-8">
+          <div class="text-center text-white text-6xl font-medium mb-8">
             {{ config['webName'] || '银斯贝自行车管理系统' }}
           </div>
           <el-form ref="formRef" :model="formData" size="large" :rules="rules">

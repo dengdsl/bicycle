@@ -160,6 +160,7 @@ public class AccountServiceImpl implements IAccountService {
         SystemConfigEntry filings = systemConfigMapper.getConfigByName("filings");
         SystemConfigEntry loginBg = systemConfigMapper.getConfigByName("loginBg");
         SystemConfigEntry theme = systemConfigMapper.getConfigByName("theme");
+        SystemConfigEntry mobileTheme = systemConfigMapper.getConfigByName("mobileTheme");
 
         Map<String, String> config = new HashMap<>();
         config.put("webName", webName.getValue());
@@ -168,6 +169,7 @@ public class AccountServiceImpl implements IAccountService {
         config.put("filings", filings.getValue());
         config.put("loginBg", loginBg.getValue());
         config.put("theme", theme.getValue());
+        config.put("mobileTheme", mobileTheme.getValue());
         return AjaxResult.success(config);
     }
 

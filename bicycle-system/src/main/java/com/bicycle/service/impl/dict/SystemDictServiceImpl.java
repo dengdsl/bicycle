@@ -85,7 +85,7 @@ public class SystemDictServiceImpl implements SystemDictService {
     @Override
     public AjaxResult<Object> editDict(SystemDictUpdateValidate updateValidate) {
         // 查询字典类型是否存在
-        SystemDictEntry dictEntry = dictMapper.selectOne(new QueryWrapper<SystemDictEntry>().eq("dict_type", updateValidate.getDictType()).eq("dict_name", updateValidate.getDictName()));
+        SystemDictEntry dictEntry = dictMapper.selectOne(new QueryWrapper<SystemDictEntry>().eq("id", updateValidate.getId()));
         if (dictEntry == null) {
             return AjaxResult.failed("字典类型不存在");
         }

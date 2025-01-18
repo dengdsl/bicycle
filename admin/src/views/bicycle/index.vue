@@ -18,7 +18,7 @@
           >
             <el-option label="全部" value="" />
             <el-option
-              v-for="item in dictData.frameNo"
+              v-for="item in dictData.model"
               :key="item.id"
               :label="item.name"
               :value="item.value"
@@ -40,7 +40,12 @@
             style="width: 200px"
           >
             <el-option label="全部" value="" />
-            <!--<el-option v-for="item in dictData.isDel" :key="item.id" :label="item.name" :value="item.value" />-->
+            <el-option
+              v-for="item in dictData.conclusion"
+              :key="item.id"
+              :label="item.name"
+              :value="item.value"
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="生产日期">
@@ -100,8 +105,37 @@
             prop="id"
             label="ID"
             align="center"
-            min-width="120"
+            min-width="180"
           />
+          <el-table-column
+            prop="qrcode"
+            label="二维码编码"
+            align="center"
+            min-width="200"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            prop="qrImg"
+            label="二维码"
+            align="center"
+            min-width="80"
+            show-overflow-tooltip
+          >
+            <template #default="{ row }">
+              <div class="flex items-center justify-center gap-2">
+                <el-image
+                  style="width: 50px; height: 50px; flex-shrink: 0"
+                  :src="row.qrImg"
+                  fit="fill"
+                  :zoom-rate="2"
+                  :max-scale="7"
+                  :min-scale="0.2"
+                  :preview-src-list="row.qrImg"
+                  :preview-teleported="true"
+                />
+              </div>
+            </template>
+          </el-table-column>
           <el-table-column
             prop="image"
             label="X光图片"
@@ -136,9 +170,16 @@
             align="center"
             min-width="120"
             show-overflow-tooltip
-          />
+          >
+            <template #default="{ row }">
+              <dict-value
+                :options="dictData.model"
+                :value="row.model"
+              ></dict-value>
+            </template>
+          </el-table-column>
           <el-table-column
-            prop="title"
+            prop="frameNo"
             label="车架号"
             align="center"
             min-width="120"
@@ -150,36 +191,7 @@
             align="center"
             min-width="120"
           />
-          <el-table-column
-            prop="qrcode"
-            label="二维码编码"
-            align="center"
-            min-width="120"
-            show-overflow-tooltip
-          />
-          <el-table-column
-            prop="qrImg"
-            label="二维码"
-            align="center"
-            min-width="80"
-            show-overflow-tooltip
-          >
-            <template #default="{ row }">
-              <div class="flex items-center justify-center gap-2">
-                <!--<el-image-->
-                <!--    style="width: 50px; height: 50px; flex-shrink: 0"-->
-                <!--    :src="src"-->
-                <!--    fit="fill"-->
-                <!--    :zoom-rate="2"-->
-                <!--    :max-scale="7"-->
-                <!--    :min-scale="0.2"-->
-                <!--    :preview-src-list="row.image.split(';')"-->
-                <!--    :initial-index="index"-->
-                <!--    :preview-teleported="true"-->
-                <!--/>-->
-              </div>
-            </template>
-          </el-table-column>
+
           <el-table-column
             prop="conclusion"
             label="结论"
@@ -362,8 +374,9 @@ const queryParams = reactive({
 })
 
 const { dictData } = useDictData<{
-  frameNo: string[]
-}>(['frameNo'])
+  model: any[]
+  conclusion: any[]
+}>(['model', 'conclusion'])
 
 const { getLists, pager, resetPage, resetParams } = usePaging({
   fetchFn: getBicycleList,

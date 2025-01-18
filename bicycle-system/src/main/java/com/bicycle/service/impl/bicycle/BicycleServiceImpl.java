@@ -10,6 +10,7 @@ import com.bicycle.mapper.bicycle.BicycleMapper;
 import com.bicycle.service.random.RandomService;
 import com.bicycle.service.bicycle.BicycleService;
 import com.bicycle.utils.AjaxResult;
+import com.bicycle.utils.ConfigUtils;
 import com.bicycle.utils.QrCodeUtils;
 import com.bicycle.validate.bicycle.BicycleCreateValidate;
 import com.bicycle.validate.bicycle.BicycleSearchValidate;
@@ -32,24 +33,14 @@ import java.util.*;
 @Service
 public class BicycleServiceImpl implements BicycleService {
 
-    private static String qrcodePath = "/home/server/static/qrcode/";
-//    private static String qrcodePath = "F:\\workspace\\bicycle\\bicycle-system\\src\\main\\resources\\static";
-//    private static String qrcodePath = "D:\\onecent_code\\bicycle\\bicycle-system\\src\\main\\resources\\static";
     private static final String XLS = "xls";
     private static final String XLSX = "xlsx";
     private BicycleMapper bicycleMapper;
     private RandomService randomService;
-    private SystemConfigMapper systemConfigMapper;
 
-    public BicycleServiceImpl(BicycleMapper bicycleMapper, RandomService randomService, SystemConfigMapper systemConfigMapper) {
+    public BicycleServiceImpl(BicycleMapper bicycleMapper, RandomService randomService) {
         this.bicycleMapper = bicycleMapper;
         this.randomService = randomService;
-        this.systemConfigMapper = systemConfigMapper;
-        // 初始化二维码图片保存路径
-        SystemConfigEntry qrcodeFilePath = systemConfigMapper.getConfigByName("qrcodeFilePath");
-        if (qrcodeFilePath.getValue() != null && !qrcodeFilePath.getValue().isEmpty()) {
-            qrcodePath = qrcodeFilePath.getValue();
-        }
     }
 
     /**
@@ -111,7 +102,6 @@ public class BicycleServiceImpl implements BicycleService {
      */
     @Override
     public AjaxResult<Object> addBicycle(BicycleCreateValidate createValidate) {
-
         // 生成编号
         String randomId = randomService.randomId(RandomPrefix.BICYCLE_PREFIX.getDrugPrefix());
         randomId = checkId(randomId, "id");
@@ -126,32 +116,10 @@ public class BicycleServiceImpl implements BicycleService {
         createEntry.setCreateTime(new Date());
         createEntry.setUpdateTime(new Date());
 
-        String qrCode = randomService.randomQrcode();
-        // 避免生成的二维码编号重复
-        qrCode = checkId(qrCode, "qrcode");
-
-        // 根据日期创建文件夹并创建文件夹
-        Calendar calendar = Calendar.getInstance();
-
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH) + 1; // 月份从0开始，需加1
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-        // 补零处理
-        String formattedMonth = (month < 10 ? "0" : "") + month;
-        String formattedDay = (day < 10 ? "0" : "") + day;
-
-        String dirPath = qrcodePath + "\\" + year + "\\" + formattedMonth + "\\" + formattedDay;
-        File dir = new File(dirPath);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-        // 生成图片二维码
-        QrCodeUtils.generateQRCode(qrCode, dirPath+ "\\" + qrCode + ".png");
-        createEntry.setQrcode(qrCode);
-        // 保存的图片地址根据服务器配置的地址进行动态拼接
-        SystemConfigEntry qrcodeImgServerUrl = systemConfigMapper.getConfigByName("qrcodeImgServerUrl");
-        createEntry.setQrImg(qrcodeImgServerUrl.getValue() + "static/"+ year + "/" + formattedMonth + "/" + formattedDay + "/" + qrCode + ".png");
+        // 生成二维码
+        Map<String, String> qrcodeInfo = generateQrcode();
+        createEntry.setQrcode(qrcodeInfo.get("qrcode"));
+        createEntry.setQrImg(qrcodeInfo.get("qrUrl"));
         bicycleMapper.insert(createEntry);
         log.info("新增自行车数据成功：" + createEntry);
         return AjaxResult.success("新增成功");
@@ -172,7 +140,10 @@ public class BicycleServiceImpl implements BicycleService {
             return AjaxResult.failed("数据不存在");
         }
         // 修改自行车信息
-        //bicycleEntry.setTitle(updateValidate.getTitle());
+        bicycleEntry.setModel(updateValidate.getModel());
+        bicycleEntry.setFrameNo(updateValidate.getFrameNo());
+        bicycleEntry.setConclusion(updateValidate.getConclusion());
+        bicycleEntry.setProduceTime(updateValidate.getProduceTime());
         bicycleEntry.setImage(updateValidate.getImage());
         bicycleEntry.setRemark(updateValidate.getRemark());
         bicycleEntry.setUpdateTime(new Date());
@@ -220,7 +191,6 @@ public class BicycleServiceImpl implements BicycleService {
             Row row = sheet.getRow(rowNum);//根据索引获取每一个行
             BicycleEntry bicycleEntry = new BicycleEntry();
             bicycleEntry.setId(randomService.randomId(RandomPrefix.BICYCLE_PREFIX.getDrugPrefix()));
-            //bicycleEntry.setTitle(getCellValue(row.getCell(1)).toString());
             bicycleEntry.setImage(getCellValue(row.getCell(2)).toString());
             bicycleEntry.setRemark(getCellValue(row.getCell(3)).toString());
             bicycleEntry.setCreateTime(new Date());
@@ -267,6 +237,38 @@ public class BicycleServiceImpl implements BicycleService {
             return checkId(randomService.randomId(RandomPrefix.BICYCLE_PREFIX.getDrugPrefix()), fieldName);
         }
         return id;
+    }
+
+    /**
+     * 生成二维码
+     * */
+    public Map<String, String> generateQrcode(){
+        String qrCode = randomService.randomQrcode();
+        // 避免生成的二维码编号重复
+        qrCode = checkId(qrCode, "qrcode");
+
+        // 根据日期创建文件夹并创建文件夹
+        Calendar calendar = Calendar.getInstance();
+
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH) + 1; // 月份从0开始，需加1
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        // 补零处理
+        String formattedMonth = (month < 10 ? "0" : "") + month;
+        String formattedDay = (day < 10 ? "0" : "") + day;
+
+        String dirPath = String.format("%s/qrcode/%d/%s/%s", ConfigUtils.getFilePath(), year,formattedMonth, formattedDay);
+        File dir = new File(dirPath);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        // 生成图片二维码
+        QrCodeUtils.generateQRCode(qrCode, String.format("%s/%s.png", dirPath, qrCode));
+        Map<String,String> qrcodeMap = new HashMap<String,String>();
+        qrcodeMap.put("qrcode", qrCode);
+        qrcodeMap.put("qrUrl", String.format("%s/qrcode/%d%s%s%s.png", ConfigUtils.getServerUrl(), year, formattedMonth,formattedDay, qrCode));
+        return qrcodeMap;
     }
 
     //格式装换

@@ -1,5 +1,6 @@
 import { config } from '@/api/user'
 import { defineStore } from 'pinia'
+import defaultSetting from '@/config/setting.ts'
 
 interface AppState {
   config: Record<string, any> // 系统配置信息
@@ -26,6 +27,15 @@ const useAppStore = defineStore({
           .then((data) => {
             // 将配置信息赋值为应用配置信息
             this.config = data
+            // pc端主题颜色
+            if (data.theme) {
+              defaultSetting.theme = data.theme
+            }
+            // 公众号主题颜色
+            console.log(data.mobileTheme)
+            if (data.mobileTheme) {
+              defaultSetting.mobileTheme = data.mobileTheme
+            }
             resolve(data)
           })
           .catch((err) => {

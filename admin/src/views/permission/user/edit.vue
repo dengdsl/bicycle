@@ -26,7 +26,8 @@
           <div>
             <div>
               <upload
-                :avatar="formData.avatar"
+                file-path="avatar"
+                :url="formData.avatar"
                 @success="uploadSuccess"
                 @error="formData.avatar = ''"
               />

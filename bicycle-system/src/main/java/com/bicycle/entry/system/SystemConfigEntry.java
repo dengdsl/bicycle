@@ -21,6 +21,9 @@ public class SystemConfigEntry implements Serializable {
     @TableId(type = IdType.AUTO)
     public Integer id;
 
+    @TableField("sort")
+    private Integer sort;
+
     @TableField("type")
     private String type;
 

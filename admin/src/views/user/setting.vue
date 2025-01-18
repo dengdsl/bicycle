@@ -10,9 +10,12 @@
         label-width="100px"
       >
         <el-form-item label="头像：" prop="avatar">
-          <upload :avatar="formData.avatar" @success="handleSuccess" />
+          <upload
+            file-path="avatar"
+            :src="formData.avatar"
+            @success="handleSuccess"
+          />
         </el-form-item>
-
         <el-form-item label="账号：" prop="account">
           <div class="w-80">
             <el-input v-model="formData.account" disabled />

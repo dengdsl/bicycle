@@ -1,4 +1,5 @@
 import colors from 'css-color-function'
+import defaultSetting from '@/config/setting.ts'
 
 const lightConfig = {
   'dark-2': 'shade(20%)',
@@ -33,13 +34,13 @@ export const generateVars = (
 ) => {
   const colos = {
     [`--el-color-${type}`]: color,
-    [`--van-${type}-color`]: color,
+    [`--van-${type}-color`]:
+      type === 'primary' ? defaultSetting.mobileTheme : color,
   }
   const config: Record<string, string> = isDark ? darkConfig : lightConfig
   for (const key in config) {
     colos[`--el-color-${type}-${key}`] = `color(${color} ${config[key]})`
   }
-  console.log("colos ==>", colos);
 
   return colos
 }
@@ -75,7 +76,6 @@ export const setTheme = (options: Record<string, string>, isDark = false) => {
     return `${prev}${key}:${color};`
   }, '')
   theme = `:root:root{${theme}}`
-  console.log("theme ==>", theme);
 
   let style = document.getElementById(themeId)
   if (style) {

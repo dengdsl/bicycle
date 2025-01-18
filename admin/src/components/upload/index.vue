@@ -1,8 +1,23 @@
 <template>
-  <el-upload class="avatar-uploader" :accept="accept" :action="action" :show-file-list="true" :on-success="handleAvatarSuccess" :on-error="handleError">
-    <img v-if="imageUrl || avatar" :src="imageUrl || avatar" class="avatar" />
-    <icon v-else name="el-icon-Plus" size="28" class="avatar-uploader-icon" />
-  </el-upload>
+  <div :style="{ '--w': `${width}px`, '--h': `${width / aspectRatio}px` }">
+    <el-upload
+      class="avatar-uploader"
+      :accept="accept"
+      :action="action"
+      :data="{ path: filePath }"
+      :show-file-list="showFileList"
+      :on-success="handleAvatarSuccess"
+      :on-error="handleError"
+    >
+      <img
+        v-if="imageUrl || src"
+        :src="imageUrl || src"
+        class="avatar"
+        :style="{ width: `${width}px`, 'aspect-ratio': aspectRatio }"
+      />
+      <icon v-else name="el-icon-Plus" size="28" class="avatar-uploader-icon" />
+    </el-upload>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -14,17 +29,33 @@ import feedback from '@/utils/feedback'
 const emits = defineEmits(['success', 'error'])
 
 const props = defineProps({
-  avatar: {
+  src: {
     type: String,
-    default: ''
+    default: '',
+  },
+  width: {
+    type: Number,
+    default: 100,
+  },
+  aspectRatio: {
+    type: Number,
+    default: 1,
   },
   accept: {
     type: String,
-    default: 'image/*'
+    default: 'image/*',
   },
   server: {
     type: String,
-    default: 'api/upload/image'
+    default: 'api/upload/image',
+  },
+  filePath: {
+    type: String,
+    default: '',
+  },
+  showFileList: {
+    type: Boolean,
+    default: true,
   }
 })
 
@@ -36,7 +67,10 @@ const action = computed(() => {
 })
 
 // 头像上传成功
-const handleAvatarSuccess: UploadProps['onSuccess'] = (response, uploadFile) => {
+const handleAvatarSuccess: UploadProps['onSuccess'] = (
+  response,
+  uploadFile,
+) => {
   if (response.code === 200) {
     imageUrl.value = URL.createObjectURL(uploadFile.raw!)
     emits('success', response.data)
@@ -59,8 +93,6 @@ const handleError: UploadProps['onRemove'] = (uploadFile, uploadFiles) => {
 
 <style scoped>
 .avatar-uploader .avatar {
-  width: 100px;
-  height: 100px;
   display: block;
 }
 </style>
@@ -82,8 +114,8 @@ const handleError: UploadProps['onRemove'] = (uploadFile, uploadFiles) => {
 .el-icon.avatar-uploader-icon {
   font-size: 28px;
   color: #8c939d;
-  width: 100px;
-  height: 100px;
+  width: var(--w);
+  height: var(--h);
   text-align: center;
 }
 </style>

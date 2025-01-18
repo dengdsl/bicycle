@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-config-provider :locale="elConfig.locale" :z-index="elConfig.zIndex">
-        <router-view />
+      <router-view />
     </el-config-provider>
   </div>
 </template>
@@ -26,10 +26,10 @@ const { width } = useWindowSize()
 
 const isDark = useDark()
 onMounted(async () => {
-  // 设置当前主题色
-  settingStore.setTheme(isDark.value)
   // 获取引用配置信息
   const data: any = await appStore.getConfig()
+  // 设置当前主题色
+  settingStore.setTheme(isDark.value)
   // 设置网站logo
   let favicon: HTMLLinkElement = document.querySelector("link[rel='icon']")
   // 如果已经存在该标签直接修改地址即可

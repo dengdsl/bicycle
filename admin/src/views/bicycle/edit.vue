@@ -17,7 +17,7 @@
       <el-form-item label="型号" prop="model">
         <el-select v-model="formData.model" placeholder="请选择" clearable>
           <el-option
-            v-for="item in dictData.frameNo"
+            v-for="item in dictData.model"
             :key="item.id"
             :label="item.name"
             :value="item.value"
@@ -44,9 +44,11 @@
         <el-upload
           v-model:file-list="fileList"
           accept="image/**"
+          :data="{ path: 'images' }"
           :action="action"
           list-type="picture-card"
           :on-preview="handlePictureCardPreview"
+          :on-success="handleSuccess"
         >
           <icon name="el-icon-Plus"></icon>
         </el-upload>
@@ -92,8 +94,8 @@ const submitLoading = ref(false)
 const openType = ref('')
 
 const { dictData } = useDictData<{
-  frameNo: string[]
-}>(['frameNo'])
+  model: string[]
+}>(['model'])
 
 const popupTitle = computed(() => {
   return openType.value === 'add' ? '新增' : '编辑'
@@ -150,6 +152,20 @@ const fileList = ref<UploadUserFile[]>([])
 const dialogImageUrl = ref('')
 const dialogVisible = ref(false)
 
+const handleSuccess: UploadProps['onSuccess'] = (response, uploadFile) => {
+  console.log(uploadFile)
+  if (response.code === 200) {
+    feedback.msgSuccess('上传成功')
+  } else {
+    feedback.msgError('上传失败')
+    fileList.value.some((item) => {
+      if (item.uid === uploadFile.uid) {
+        item.status = 'fail'
+        return true
+      }
+    })
+  }
+}
 const handlePictureCardPreview: UploadProps['onPreview'] = (uploadFile) => {
   dialogImageUrl.value = uploadFile.url!
   dialogVisible.value = true
@@ -201,6 +217,10 @@ const loadData = async (id: string) => {
             .map((item) => ({
               url: item,
             }))
+        } else if (key === 'conclusion') {
+          formData[key] = data[key] == 1
+        } else if (key === 'model') {
+          formData[key] = `${data[key]}`
         }
       }
     }
