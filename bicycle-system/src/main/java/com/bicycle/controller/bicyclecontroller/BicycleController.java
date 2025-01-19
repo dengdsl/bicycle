@@ -9,7 +9,6 @@ import com.bicycle.validate.page.PageValidate;
 import com.bicycle.validate.bicycle.BicycleCreateValidate;
 import com.bicycle.validate.bicycle.BicycleUpdateValidate;
 import com.bicycle.validate.bicycle.BicycleSearchValidate;
-import com.google.zxing.WriterException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -79,6 +78,12 @@ public class BicycleController  {
         if (file.isEmpty()) {
             return AjaxResult.failed("上传文件不能为空");
         }
+        String originalFilename = file.getOriginalFilename();
+        // 判断上传的文件是不是xlsx后缀
+        if (!originalFilename.endsWith(".xlsx")) {
+            return AjaxResult.failed("请上传xlsx格式的文件");
+        }
+
         return bicycleService.importBicycle(file);
     }
 

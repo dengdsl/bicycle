@@ -50,11 +50,13 @@
         </el-form-item>
         <el-form-item label="生产日期">
           <el-date-picker
-            v-model="queryParams.produceTime"
-            type="date"
+            v-model="produceTime"
+            type="daterange"
             format="YYYY-MM-DD"
             value-format="YYYY-MM-DD"
-            placeholder="请选择"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间"
+            @change="handleChange"
           />
         </el-form-item>
 
@@ -144,9 +146,11 @@
             show-overflow-tooltip
           >
             <template #default="{ row }">
-              <div class="flex items-center flex-wrap justify-center gap-2">
+              <div
+                class="image-box flex items-center justify-center gap-2 overflow-x-auto"
+              >
                 <template
-                  v-for="(src, index) in row.image.split(';')"
+                  v-for="(src, index) in row.image?.split(';')"
                   :key="src"
                 >
                   <el-image
@@ -365,12 +369,14 @@ const selectRows = ref<any[]>([])
 const showEdit = ref(false)
 const drawer = ref(false)
 const direction = ref<'rtl' | 'ltr' | 'ttb' | 'btt'>('rtl')
+const produceTime = ref<string[]>([])
 const queryParams = reactive({
   id: '',
   model: '',
   frameNo: '',
   conclusion: '',
-  produceTime: '',
+  produceTimeStart: '',
+  produceTimeEnd: '',
 })
 
 const { dictData } = useDictData<{
@@ -382,6 +388,17 @@ const { getLists, pager, resetPage, resetParams } = usePaging({
   fetchFn: getBicycleList,
   params: queryParams,
 })
+
+// 筛选时间发生变化
+const handleChange = (dates: string[] | null) => {
+  if (dates) {
+    queryParams.produceTimeStart = `${dates[0]} 00:00:00`
+    queryParams.produceTimeEnd = `${dates[1]} 23:59:59`
+  } else {
+    queryParams.produceTimeStart = ''
+    queryParams.produceTimeEnd = ''
+  }
+}
 
 // 勾选发生变化
 const handleSelectChange = (newSelection: any[]) => {
@@ -485,4 +502,8 @@ const handleExport = () => {}
 getLists()
 </script>
 
-<style scoped></style>
+<style scoped>
+.image-box::-webkit-scrollbar {
+  display: none;
+}
+</style>

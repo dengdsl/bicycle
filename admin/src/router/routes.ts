@@ -49,20 +49,6 @@ export const constantRoutes: Array<RouteRecordRaw> = [
     ],
   },
   {
-    path: '/system',
-    component: LAYOUT,
-    children: [
-      {
-        path: 'setting',
-        name: Symbol(),
-        component: () => import('@/views/system/setting.vue'),
-        meta: {
-          title: '系统设置',
-        },
-      },
-    ],
-  },
-  {
     path: PageEnum.SEARCH,
     component: () => import('@/views/query/index.vue'),
     meta: {

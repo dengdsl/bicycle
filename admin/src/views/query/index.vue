@@ -1,6 +1,6 @@
 <template>
   <van-config-provider :theme="theme">
-    <div class="bg-page min-h-[100vh] pb-5">
+    <div class="bg-page min-h-[100vh]">
       <div style="width: 100vw" :style="{ height: `${100 / (4 / 3)}vw` }">
         <van-swipe indicator-color="white" :autoplay="autoPlay">
           <van-swipe-item v-for="(item, index) in bannerImages" :key="index">
@@ -26,7 +26,7 @@
         <van-field
           v-model="searchValue"
           input-align="center"
-          placeholder="请输入条形码"
+          placeholder="二维码编码/车架号"
         />
       </div>
       <div class="flex items-center justify-center px-4 mt-5">
@@ -34,11 +34,11 @@
           <span class="text-nowrap px-4">查询</span>
         </van-button>
       </div>
-      <div
-        class="flex items-center justify-center fixed left-[50%] bottom-1 -translate-x-[50%]"
-      >
-        <a class="text-xs text-mobilePrimary">备案链接</a>
-      </div>
+      <!--<div-->
+      <!--  class="flex items-center justify-center fixed left-[50%] bottom-1 -translate-x-[50%]"-->
+      <!--&gt;-->
+      <!--  <a class="text-xs text-mobilePrimary">备案链接</a>-->
+      <!--</div>-->
     </div>
   </van-config-provider>
 </template>
@@ -87,6 +87,7 @@ const getBannerConfig = async () => {
     }
     if (config.bannerImgs) {
       bannerImages.value = JSON.parse(config.bannerImgs)
+      bannerImages.value.sort((a, b) => a.sort - b.sort)
     }
   } catch (err) {
     showFailToast({

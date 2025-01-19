@@ -1,50 +1,70 @@
 <template>
   <van-config-provider :theme="theme">
-    <div class="bg-page min-h-[100vh] pb-5">
+    <div class="bg-page min-h-[100vh]">
       <van-nav-bar
         title="查询结果"
         left-text="返回"
         left-arrow
         @click-left="onClickLeft"
       />
-      <van-swipe indicator-color="white">
-        <van-swipe-item>
-          <van-image
-            width="100vw"
-            height="16em"
-            fit="cover"
-            src="https://winspace-bikes.com//images/master/2022/9/131-83EENS.png"
-          />
-        </van-swipe-item>
-      </van-swipe>
       <div v-if="!pageErr" class="p-2">
-        <van-collapse v-model="activeNames">
-          <van-collapse-item title="查询结果" name="result">
-            <van-row gutter="20">
-              <van-col span="4">编号</van-col>
-              <van-col span="20">{{ content.id }}</van-col>
-            </van-row>
-            <div class="h-2"></div>
-            <van-row gutter="20">
-              <van-col span="4">名称</van-col>
-              <van-col span="20">{{ content.title }}</van-col>
-            </van-row>
-            <div class="h-2"></div>
-            <van-row gutter="20">
-              <van-col span="4">备注</van-col>
-              <van-col span="20">
-                {{ content.remark }}
-              </van-col>
-            </van-row>
-          </van-collapse-item>
-          <van-collapse-item title="图片信息" name="image">
-            <div class="flex items-center flex-wrap p-3 gap-2 bg-page">
-              <div class="w-full" v-for="(src, index) in images" :key="index">
-                <van-image width="100%" fit="scale-down" :src="src" />
-              </div>
-            </div>
-          </van-collapse-item>
-        </van-collapse>
+        <van-cell-group class="p-4" title="X光图片">
+          <van-row gutter="20">
+            <van-col
+              :class="index > 0 && 'mb-2'"
+              span="24"
+              v-for="(src, index) in detail.image"
+              :key="index"
+            >
+              <van-image
+                width="100%"
+                class="min-h-20"
+                fit="scale-down"
+                :src="src"
+                @click="onClickImage(index)"
+              />
+            </van-col>
+          </van-row>
+        </van-cell-group>
+        <van-cell-group class="p-4" title="详细描述">
+          <van-row class="pb-4" gutter="20">
+            <van-col span="8">编号</van-col>
+            <van-col span="16">{{ detail.id }}</van-col>
+          </van-row>
+          <van-row class="pb-4" gutter="20">
+            <van-col span="8">型号</van-col>
+            <van-col span="16">
+              <dict-value
+                :options="dictData.model"
+                :value="detail.model"
+              ></dict-value>
+            </van-col>
+          </van-row>
+          <van-row class="pb-4" gutter="20">
+            <van-col span="8">车架号</van-col>
+            <van-col span="16">
+              {{ detail.frameNo }}
+            </van-col>
+          </van-row>
+          <van-row gutter="20">
+            <van-col span="8">生产日期</van-col>
+            <van-col span="16">
+              {{ detail.produceTime }}
+            </van-col>
+          </van-row>
+          <!--<van-row class="pb-4" gutter="20">-->
+          <!--  <van-col span="8">二维码编码</van-col>-->
+          <!--  <van-col span="16">-->
+          <!--    {{ detail.qrcode }}-->
+          <!--  </van-col>-->
+          <!--</van-row>-->
+          <!--<van-row class="pb-4" gutter="20">-->
+          <!--  <van-col span="8">二维码</van-col>-->
+          <!--  <van-col span="16">-->
+          <!--    <van-image width="100" fit="scale-down" :src="detail.qrImg" />-->
+          <!--  </van-col>-->
+          <!--</van-row>-->
+        </van-cell-group>
       </div>
       <div v-else class="p-2">
         <van-empty image="error" :description="pageErrMsg" />
@@ -54,22 +74,32 @@
 </template>
 <script lang="ts" setup>
 import { useDark } from '@vueuse/core'
-import { showLoadingToast, closeToast } from 'vant'
+import { showLoadingToast, closeToast, showImagePreview } from 'vant'
 import { queryByQrcode } from '@/api/bicycle'
+import { useDictData } from '@/hooks/useDictOptions.ts'
 
 const isDark = useDark()
 const theme = computed(() => {
   return isDark.value ? 'dark' : 'light'
 })
 
-const images = ref<string[]>([])
-const content = reactive({
+const detail = reactive({
   id: '',
-  title: '',
+  model: '', // 型号
+  frameNo: '', // 车架号
+  conclusion: '',
+  createTime: '',
+  image: [] as string[], // 图片
+  qrcode: '', // 二维码编码
+  qrImg: '',
   remark: '',
+  produceTime: '', // 生产日期
 })
+const { dictData } = useDictData<{
+  model: any[]
+  conclusion: any[]
+}>(['model', 'conclusion'])
 
-const activeNames = ref(['result', 'image'])
 const router = useRouter()
 const route = useRoute()
 const qrcode = route.query.qrcode as string
@@ -78,6 +108,13 @@ const pageErrMsg = ref('')
 // 返回上一页
 const onClickLeft = () => {
   router.back()
+}
+// 图片预览
+const onClickImage = (index: number) => {
+  showImagePreview({
+    images: detail.image,
+    startPosition: index,
+  })
 }
 // 根据当前二维码查询数据
 const queryBicycleInfo = async () => {
@@ -89,12 +126,18 @@ const queryBicycleInfo = async () => {
       duration: 0,
     })
     const data = await queryByQrcode({ qrcode })
-    content.id = data.id
-    content.title = data.title
-    content.remark = data.remark
-    images.value = data.image.split(';').filter((item) => !!item)
+    for (let key in detail) {
+      if (data.hasOwnProperty(key)) {
+        detail[key] = data[key]
+      }
+      if (key === 'image') {
+        detail.image = data[key].split(';').filter((src) => !!src)
+      }
+    }
   } catch (e) {
     console.log('e ==>', e)
+    pageErr.value = true
+    pageErrMsg.value = '查询失败，请重试'
   } finally {
     closeToast()
   }

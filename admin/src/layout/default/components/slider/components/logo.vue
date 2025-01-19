@@ -1,6 +1,6 @@
 <template>
   <div class="logo">
-    <image-contain :width="size" :height="size" :src="config.webLogo" />
+    <image-contain :width="size" :height="size" :src="config.webFavicon" />
     <transition name="title-width">
       <div
         v-show="showTitle"

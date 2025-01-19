@@ -4,29 +4,34 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.bicycle.entry.bicycle.BicycleEntry;
 import com.bicycle.entry.system.SystemConfigEntry;
+import com.bicycle.enums.HttpEnum;
 import com.bicycle.enums.RandomPrefix;
+import com.bicycle.exception.CustomException;
 import com.bicycle.mapper.account.SystemConfigMapper;
 import com.bicycle.mapper.bicycle.BicycleMapper;
 import com.bicycle.service.random.RandomService;
 import com.bicycle.service.bicycle.BicycleService;
-import com.bicycle.utils.AjaxResult;
-import com.bicycle.utils.ConfigUtils;
-import com.bicycle.utils.QrCodeUtils;
+import com.bicycle.utils.*;
 import com.bicycle.validate.bicycle.BicycleCreateValidate;
 import com.bicycle.validate.bicycle.BicycleSearchValidate;
 import com.bicycle.validate.bicycle.BicycleUpdateValidate;
 import com.bicycle.validate.page.PageValidate;
+import com.bicycle.vo.bicycle.ExcelRowDetailVo;
 import com.google.zxing.WriterException;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ooxml.POIXMLDocumentPart;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.*;
 
 @Slf4j
@@ -73,8 +78,8 @@ public class BicycleServiceImpl implements BicycleService {
         if (searchValidate.getConclusion() != null && !searchValidate.getConclusion().isEmpty()) {
             queryWrapper.eq("conclusion", searchValidate.getConclusion());
         }
-        if (searchValidate.getProduceTime() != null && !searchValidate.getProduceTime().isEmpty()) {
-            queryWrapper.eq("produce_time", searchValidate.getProduceTime());
+        if ((searchValidate.getProduceTimeStart() != null && !searchValidate.getProduceTimeStart().isEmpty()) && !(searchValidate.getProduceTimeEnd() != null && !searchValidate.getProduceTimeEnd().isEmpty())) {
+            queryWrapper.between("produce_time", searchValidate.getProduceTimeStart(), searchValidate.getProduceTimeEnd());
         }
         Page<BicycleEntry> bicycleEntryPage = bicycleMapper.selectPage(page, queryWrapper);
         long total = bicycleEntryPage.getTotal();
@@ -102,6 +107,15 @@ public class BicycleServiceImpl implements BicycleService {
      */
     @Override
     public AjaxResult<Object> addBicycle(BicycleCreateValidate createValidate) {
+        // 查询当前车架号是否已经存在
+        QueryWrapper<BicycleEntry> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("is_del", 0);
+        queryWrapper.eq("frame_no", createValidate.getFrameNo());
+        BicycleEntry bicycleEntry = bicycleMapper.selectOne(queryWrapper);
+        if (bicycleEntry != null) {
+            return AjaxResult.failed("该车架号已存在");
+        }
+        // 查询当前商家名称是否已经存在
         // 生成编号
         String randomId = randomService.randomId(RandomPrefix.BICYCLE_PREFIX.getDrugPrefix());
         randomId = checkId(randomId, "id");
@@ -138,6 +152,14 @@ public class BicycleServiceImpl implements BicycleService {
         if (bicycleEntry == null) {
             log.info("要修改的自行车数据不存在：id = " + updateValidate.getId());
             return AjaxResult.failed("数据不存在");
+        }
+        // 查找车架号是否存在
+        queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("is_del", 0);
+        queryWrapper.eq("frame_no", updateValidate.getFrameNo());
+        BicycleEntry bicycleEntry2 = bicycleMapper.selectOne(queryWrapper);
+        if (bicycleEntry2 != null && !bicycleEntry2.getId().equals(updateValidate.getId())) {
+            return AjaxResult.failed("该车架号已存在");
         }
         // 修改自行车信息
         bicycleEntry.setModel(updateValidate.getModel());
@@ -179,28 +201,42 @@ public class BicycleServiceImpl implements BicycleService {
      * 批量导入自行车信息
      */
     @Override
-    public AjaxResult<Object> importBicycle(MultipartFile file) throws IOException {
-        XSSFWorkbook workbook = new XSSFWorkbook(file.getInputStream());
-        //1.2.获取Sheet
-        Sheet sheet = workbook.getSheetAt(0);//参数：索引
-        //1.3.获取Sheet中的每一行，和每一个单元格
+    public AjaxResult<Object> importBicycle(MultipartFile file) {
+        ExcelImportByPictureUtil<ExcelRowDetailVo> importByPicture = new ExcelImportByPictureUtil(ExcelRowDetailVo.class);
 
-        List<BicycleEntry> list = new ArrayList<>();
-        System.out.println(sheet.getLastRowNum());
-        for (int rowNum = 1; rowNum <= sheet.getLastRowNum(); rowNum++) {
-            Row row = sheet.getRow(rowNum);//根据索引获取每一个行
-            BicycleEntry bicycleEntry = new BicycleEntry();
-            bicycleEntry.setId(randomService.randomId(RandomPrefix.BICYCLE_PREFIX.getDrugPrefix()));
-            bicycleEntry.setImage(getCellValue(row.getCell(2)).toString());
-            bicycleEntry.setRemark(getCellValue(row.getCell(3)).toString());
-            bicycleEntry.setCreateTime(new Date());
-            bicycleEntry.setUpdateTime(new Date());
-            bicycleEntry.setIsDel(0);
-            list.add(bicycleEntry);
-        }
-        int insertCount = bicycleMapper.insertList(list);
-        if (insertCount == 0) {
-            return AjaxResult.failed("导入失败，请检查数据是否正确");
+        try {
+            List<ExcelRowDetailVo> rowDetails = importByPicture.readExcelImageAndData(file, 1);
+            log.info("文件转换成功：" + rowDetails.toString());
+            List<BicycleEntry> bicycleEntries = new ArrayList<>();
+            for (ExcelRowDetailVo vo : rowDetails) {
+                BicycleEntry bicycleEntry = new BicycleEntry();
+                bicycleEntry.setId(randomService.randomId(RandomPrefix.BICYCLE_PREFIX.getDrugPrefix()));
+                int model = (int)Double.parseDouble(vo.getModel());
+                bicycleEntry.setModel(model);
+                bicycleEntry.setFrameNo(vo.getFrameNo());
+                bicycleEntry.setConclusion(vo.getConclusion().equals("通过") ? 1 : 0);
+                bicycleEntry.setProduceTime(vo.getProduceTime());
+                // 处理X光图片
+                //bicycleEntry.setImage(vo.getImage());
+
+                bicycleEntry.setRemark(vo.getRemark());
+                bicycleEntry.setCreateTime(new Date());
+                bicycleEntry.setUpdateTime(new Date());
+                bicycleEntry.setIsDel(0);
+
+                //生成二维码信息
+                Map<String, String> qrcodeMap = generateQrcode();
+                bicycleEntry.setQrcode(qrcodeMap.get("qrcode"));
+                bicycleEntry.setQrImg(qrcodeMap.get("qrUrl"));
+                bicycleEntries.add(bicycleEntry);
+            }
+            int insertCount = bicycleMapper.insertList(bicycleEntries);
+            if (insertCount == 0) {
+                return AjaxResult.failed("导入失败，请检查数据是否正确");
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new CustomException(HttpEnum.FAILED.getCode(), "导入数据文件解析失败！");
         }
         return AjaxResult.success("导入成功");
     }
@@ -220,7 +256,7 @@ public class BicycleServiceImpl implements BicycleService {
     public AjaxResult<Object> queryByQrcode(String qrcode) {
         QueryWrapper<BicycleEntry> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("is_del", 0);
-        queryWrapper.and(wrapper -> wrapper.eq("id", qrcode).or().eq("title", qrcode));
+        queryWrapper.and(wrapper -> wrapper.eq("qrcode", qrcode).or().eq("frame_no", qrcode));
         BicycleEntry bicycleEntry = bicycleMapper.selectOne(queryWrapper);
         return AjaxResult.success(bicycleEntry);
     }
@@ -241,8 +277,8 @@ public class BicycleServiceImpl implements BicycleService {
 
     /**
      * 生成二维码
-     * */
-    public Map<String, String> generateQrcode(){
+     */
+    public Map<String, String> generateQrcode() {
         String qrCode = randomService.randomQrcode();
         // 避免生成的二维码编号重复
         qrCode = checkId(qrCode, "qrcode");
@@ -258,20 +294,22 @@ public class BicycleServiceImpl implements BicycleService {
         String formattedMonth = (month < 10 ? "0" : "") + month;
         String formattedDay = (day < 10 ? "0" : "") + day;
 
-        String dirPath = String.format("%s/qrcode/%d/%s/%s", ConfigUtils.getFilePath(), year,formattedMonth, formattedDay);
+        String dirPath = String.format("%s/qrcode/%d/%s/%s", ConfigUtils.getFilePath(), year, formattedMonth, formattedDay);
         File dir = new File(dirPath);
         if (!dir.exists()) {
             dir.mkdirs();
         }
         // 生成图片二维码
         QrCodeUtils.generateQRCode(qrCode, String.format("%s/%s.png", dirPath, qrCode));
-        Map<String,String> qrcodeMap = new HashMap<String,String>();
+        Map<String, String> qrcodeMap = new HashMap<String, String>();
         qrcodeMap.put("qrcode", qrCode);
-        qrcodeMap.put("qrUrl", String.format("%s/qrcode/%d%s%s%s.png", ConfigUtils.getServerUrl(), year, formattedMonth,formattedDay, qrCode));
+        qrcodeMap.put("qrUrl", String.format("%s/qrcode/%d/%s/%s/%s.png", ConfigUtils.getServerUrl(), year, formattedMonth, formattedDay, qrCode));
         return qrcodeMap;
     }
 
-    //格式装换
+    /**
+     * excel表格列格式转换
+     */
     public static Object getCellValue(Cell cell) {
         //1.获取到单元格的属性类型
         CellType cellType = cell.getCellType();
@@ -301,4 +339,34 @@ public class BicycleServiceImpl implements BicycleService {
         }
         return value;
     }
+
+    private String extractImageFileName(String formula) {
+        if (formula.startsWith("_xlfn.DISPIMG")) {
+            int startIndex = formula.indexOf("\"") + 1;
+            int endIndex = formula.indexOf("\"", startIndex);
+            if (startIndex > 0 && endIndex > startIndex) {
+                return formula.substring(startIndex, endIndex); // 提取图片文件名
+            }
+        }
+        return null;
+    }
+
+
+    private String saveImageWithOriginalName(String imageUrl) throws IOException {
+        // 保存路径
+        String savePath = "F:\\workspace\\bicycle\\bicycle-system\\src\\main\\resources\\static\\image.png";
+
+        // 下载图片并保存
+        try (InputStream in = new URL(imageUrl).openStream();
+             FileOutputStream fos = new FileOutputStream(savePath)) {
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = in.read(buffer)) != -1) {
+                fos.write(buffer, 0, bytesRead);
+            }
+        }
+        return savePath; // 返回保存路径
+    }
+
+
 }

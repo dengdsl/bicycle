@@ -1,54 +1,126 @@
-scriptscriptscript
 <template>
   <div v-loading="loading">
-    <el-card header="基础信息" shadow="hover">
-      <el-row :gutter="20">
-        <el-col :span="24">编号：{{ detail.id }}</el-col>
-        <el-col :span="24">标题：{{ detail.title }}</el-col>
-        <el-col :span="24">备注：{{ detail.remark }}</el-col>
-        <el-col :span="24">创建时间：{{ detail.createTime }}</el-col>
+    <el-card shadow="never" class="!border-none">
+      <el-row
+        class="mb-4 border-[1px] border-solid border-info py-2"
+        :gutter="20"
+      >
+        <el-col :span="12">编号：{{ detail.id }}</el-col>
+        <el-col :span="12">
+          <div class="flex items-center">
+            <span>型号：</span>
+            <dict-value :options="dictData.model" :value="detail.model" />
+          </div>
+        </el-col>
       </el-row>
-    </el-card>
-    <el-card header="图片" shadow="hover" style="margin-top: 20px">
-      <el-space :size="20">
-        <template v-for="(src, index) in detail.image" :key="src">
-          <el-image
-            style="width: 100px; height: 100px"
-            :src="src"
-            fit="fill"
-            :zoom-rate="2"
-            :max-scale="7"
-            :min-scale="0.2"
-            :initial-index="index"
-            :preview-src-list="detail.image"
-          >
-            <template #error>
-              <div
-                class="slot-image w-[100px] h-[100px] flex items-center justify-center"
-              >
-                <icon name="el-icon-Picture" size="50" />
-              </div>
-            </template>
-          </el-image>
-        </template>
-      </el-space>
+      <el-row
+        class="mb-4 border-[1px] border-solid border-info py-2"
+        :gutter="20"
+      >
+        <el-col :span="12">车架号：{{ detail.frameNo }}</el-col>
+        <el-col :span="12">生产日期：{{ detail.produceTime }}</el-col>
+      </el-row>
+      <el-row
+        class="mb-4 border-[1px] border-solid border-info py-2"
+        :gutter="20"
+      >
+        <el-col :span="12">
+          <span>结论：</span>
+          <el-tag :type="detail.conclusion == '1' ? 'success' : 'danger'">
+            <dict-value
+              :options="dictData.conclusion"
+              :value="detail.conclusion"
+            ></dict-value>
+          </el-tag>
+        </el-col>
+        <el-col :span="12">备注：{{ detail.remark }}</el-col>
+      </el-row>
+      <el-row
+        class="mb-4 border-[1px] border-solid border-info py-2"
+        :gutter="20"
+      >
+        <el-col :span="24">二维码编码：{{ detail.qrcode }}</el-col>
+      </el-row>
+      <el-row
+        class="mb-4 border-[1px] border-solid border-info py-2"
+        :gutter="20"
+      >
+        <el-col :span="24">
+          <div class="flex items-center">
+            <span>二维码：</span>
+            <el-image
+              style="width: 100px; height: 100px"
+              :src="detail.qrImg"
+              fit="fill"
+              :zoom-rate="2"
+              :max-scale="7"
+              :min-scale="0.2"
+              :preview-src-list="[detail.qrImg]"
+            >
+              <template #error>
+                <div
+                  class="slot-image w-[100px] h-[100px] flex items-center justify-center"
+                >
+                  <icon name="el-icon-Picture" size="50" />
+                </div>
+              </template>
+            </el-image>
+          </div>
+        </el-col>
+      </el-row>
+      <el-row class="border-[1px] border-solid border-info py-2" :gutter="20">
+        <el-col :span="24">
+          <div class="flex items-center">
+            <span>X光图片：</span>
+            <el-space :size="20">
+              <template v-for="(src, index) in detail.image" :key="src">
+                <el-image
+                  style="width: 100px; height: 100px"
+                  :src="src"
+                  fit="fill"
+                  :zoom-rate="2"
+                  :max-scale="7"
+                  :min-scale="0.2"
+                  :initial-index="index"
+                  :preview-src-list="detail.image"
+                >
+                  <template #error>
+                    <div
+                      class="slot-image w-[100px] h-[100px] flex items-center justify-center"
+                    >
+                      <icon name="el-icon-Picture" size="50" />
+                    </div>
+                  </template>
+                </el-image>
+              </template>
+            </el-space>
+          </div>
+        </el-col>
+      </el-row>
     </el-card>
   </div>
 </template>
 <script lang="ts" setup>
 import { getBicycleDetail } from '@/api/bicycle'
+import { useDictData } from '@/hooks/useDictOptions.ts'
 
 const loading = ref(false)
 const detail = reactive({
-  createTime: '',
-  deleteTime: '',
   id: '',
-  image: '',
-  isDel: 0,
-  remark: '这是备注信息',
-  title: '山地自行车',
-  updateTime: '2025-01-05 07:28:30',
+  model: '', // 型号
+  frameNo: '', // 车架号
+  conclusion: '',
+  createTime: '',
+  image: [] as string[], // 图片
+  qrcode: '', // 二维码编码
+  qrImg: '',
+  remark: '',
+  produceTime: '', // 生产日期
 })
+const { dictData } = useDictData<{
+  model: any[]
+  conclusion: any[]
+}>(['model', 'conclusion'])
 
 const loadData = async (id: string) => {
   try {

@@ -8,10 +8,9 @@
 
     <!-- 在对应的 Mapper XML 文件中 -->
     <insert id="insertList">
-        INSERT INTO bicycle_info (id, title, image, is_del, remark, create_time, update_time) VALUES
+        INSERT INTO bicycle_info (id, model, frame_no, image, produce_time, qrcode, qr_img, conclusion, remark, is_del, create_time, update_time) VALUES
         <foreach collection="list" item="item" separator=",">
-            (#{item.id}, #{item.title}, #{item.image}, #{item.isDel}, #{item.remark}, #{item.createTime},
-            #{item.updateTime})
+            (#{item.id}, #{item.model}, #{item.frameNo}, #{item.image}, #{item.produceTime}, #{item.qrcode},#{item.qrImg},#{item.conclusion},#{item.remark},#{item.isDel},#{item.createTime},#{item.updateTime})
         </foreach>
     </insert>
 

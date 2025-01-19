@@ -18,7 +18,7 @@
           :src="configFormData.webFavicon.value as string"
           file-path="config"
           :show-file-list="false"
-          @success="(files: any[]) => handleSuccess(files, 'webFavicon')"
+          @success="(files: string) => handleSuccess(files, 'webFavicon')"
         />
         <div>
           {{ configFormData.webFavicon.label }}
@@ -29,7 +29,7 @@
           :src="configFormData.webLogo.value as string"
           file-path="config"
           :show-file-list="false"
-          @success="(files: any[]) => handleSuccess(files, 'webLogo')"
+          @success="(files: string) => handleSuccess(files, 'webLogo')"
         />
         <div class="mb-2 ml-1">
           {{ configFormData.webLogo.label }}
@@ -40,7 +40,9 @@
           :src="configFormData.loginBg.value as string"
           file-path="config"
           :show-file-list="false"
-          @success="(files: any[]) => handleSuccess(files, 'loginBg')"
+          :width="1920 / 100 / 1080"
+          :aspect-ratio="1920 / 1080"
+          @success="(files: string) => handleSuccess(files, 'loginBg')"
         />
         <div class="mb-2 ml-1">
           {{ configFormData.loginBg.label }}
@@ -68,12 +70,24 @@
       <el-col :span="12">
         <div class="flex flex-col mx-auto">
           <div class="mb-4 ml-1">
-            {{ configFormData.filings.label }}
-            <span class="text-info text-xs">
-              （{{ configFormData.filings.remark }}）
-            </span>
+            {{ configFormData.filings.label }}和{{
+              configFormData.filingsName.label
+            }}
           </div>
-          <el-input v-model="configFormData.filings.value" size="large" />
+          <div class="flex items-center gap-2">
+            <el-input
+              class="flex-1"
+              v-model="configFormData.filings.value"
+              size="large"
+              :placeholder="configFormData.filings.remark"
+            />
+            <el-input
+              class="flex-1"
+              v-model="configFormData.filingsName.value"
+              size="large"
+              :placeholder="configFormData.filingsName.remark"
+            />
+          </div>
         </div>
       </el-col>
     </el-row>
@@ -288,7 +302,7 @@
                           :show-file-list="false"
                           :aspect-ratio="4 / 3"
                           @success="
-                            (files: any[]) =>
+                            (files: string) =>
                               handleSuccess(files, 'bannerImgs', index)
                           "
                         />
@@ -337,6 +351,7 @@ interface BannerImgs extends Partial<SystemConfigMo> {
 
 interface ConfigFormData {
   filings: Partial<SystemConfigMo>
+  filingsName: Partial<SystemConfigMo>
   webName: Partial<SystemConfigMo>
   theme: Partial<SystemConfigMo>
   mobileTheme: Partial<SystemConfigMo>
@@ -358,6 +373,7 @@ interface ConfigFormData {
 
 const configFormData = reactive<ConfigFormData>({
   filings: {}, // 网站备案链接
+  filingsName: {}, // 网站备案公安部名称
   webName: {}, // 网站名称
   theme: {}, // pc端主题颜色
   mobileTheme: {}, // 公众号查询主题颜色

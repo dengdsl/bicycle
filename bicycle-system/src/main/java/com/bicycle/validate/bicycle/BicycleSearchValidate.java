@@ -24,5 +24,10 @@ public class BicycleSearchValidate implements Serializable {
     // 生产日期
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT + 8")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private String produceTime;
+    private String produceTimeStart;
+
+    // 生产日期
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT + 8")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private String produceTimeEnd;
 }

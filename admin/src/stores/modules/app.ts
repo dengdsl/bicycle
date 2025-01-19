@@ -26,13 +26,15 @@ const useAppStore = defineStore({
         config()
           .then((data) => {
             // 将配置信息赋值为应用配置信息
+            for (const key in data) {
+              this.config[key] = data[key]
+            }
             this.config = data
             // pc端主题颜色
             if (data.theme) {
               defaultSetting.theme = data.theme
             }
             // 公众号主题颜色
-            console.log(data.mobileTheme)
             if (data.mobileTheme) {
               defaultSetting.mobileTheme = data.mobileTheme
             }

@@ -11,7 +11,7 @@
  Target Server Version : 80030
  File Encoding         : 65001
 
- Date: 19/01/2025 02:48:49
+ Date: 19/01/2025 16:50:08
 */
 
 SET NAMES utf8mb4;
@@ -41,17 +41,8 @@ CREATE TABLE `bicycle_info`  (
 -- ----------------------------
 -- Records of bicycle_info
 -- ----------------------------
-INSERT INTO `bicycle_info` VALUES ('BY20250116068657', 1, 'http://127.0.0.1/static/file/1737037463A区-1-0.jpg', '123534534', '2025-01-16 00:00:00', 'OAOKHXZO1JP8A0ZOYQYTH1BTOVFFXY1G', 'D:\\onecent_code\\bicycle\\bicycle-system\\src\\main\\resources\\static\\2025\\01\\16\\OAOKHXZO1JP8A0ZOYQYTH1BTOVFFXY1G.png', 1, '测试', 1, '2025-01-16 14:54:58', '2025-01-16 14:54:58', '2025-01-19 01:39:18');
-INSERT INTO `bicycle_info` VALUES ('BY20250116083280', 1, 'http://127.0.0.1/static/file/1737049911A区-1-0.jpg', '1312312321', '2025-01-15 00:00:00', 'DZDJGEWR76FL8KW7PFN8EPMU9Z226LNH', 'D:\\onecent_code\\bicycle\\bicycle-system\\src\\main\\resources\\static\\2025\\01\\16\\DZDJGEWR76FL8KW7PFN8EPMU9Z226LNH.png', 1, '测试数据', 1, '2025-01-16 15:02:54', '2025-01-16 15:02:54', '2025-01-19 01:39:24');
-INSERT INTO `bicycle_info` VALUES ('BY20250116181465', 1, 'http://127.0.0.1/static/file/1737048855A区-1-0.jpg', '123213123', '2025-01-08 00:00:00', '25JZPSNKY6MAM4OCGDEK9MHU7CAT3CDC', 'D:\\onecent_code\\bicycle\\bicycle-system\\src\\main\\resources\\static\\2025\\01\\16\\25JZPSNKY6MAM4OCGDEK9MHU7CAT3CDC.png', 1, '测试', 1, '2025-01-16 14:41:01', '2025-01-16 14:41:01', '2025-01-19 01:39:13');
-INSERT INTO `bicycle_info` VALUES ('BY20250116351954', 1, 'http://127.0.0.1/static/file/1737021853A区-1-0.jpg', '123456', '2025-01-16 00:00:00', 'H1RVBFO96W5OMBI1EK57LB3PNVG3O4AG', 'D:\\onecent_code\\bicycle\\bicycle-system\\src\\main\\resources\\static\\2025\\01\\16\\H1RVBFO96W5OMBI1EK57LB3PNVG3O4AG.png', 1, '测试数据', 1, '2025-01-16 14:25:06', '2025-01-16 14:25:06', '2025-01-19 01:39:10');
-INSERT INTO `bicycle_info` VALUES ('BY20250116403771', 1, 'http://127.0.0.1/static/file/1737084641A区-1-0.jpg', '12345', '2025-01-16 00:00:00', 'UL3HJDHE9ZRPEAHJL18OSRYZ0D74Q5WV', 'D:\\onecent_code\\bicycle\\bicycle-system\\src\\main\\resources\\static\\2025\\01\\16\\UL3HJDHE9ZRPEAHJL18OSRYZ0D74Q5WV.png', 1, '测试数据', 1, '2025-01-16 14:38:47', '2025-01-16 14:38:47', '2025-01-19 01:39:16');
-INSERT INTO `bicycle_info` VALUES ('BY20250116737457', 1, 'http://127.0.0.1/static/file/1737076550A区-1-0.jpg', '3232423423424', '2025-01-16 00:00:00', '7O6PXT7SF0SC4FQENINAQXXMV5BMI64G', 'D:\\onecent_code\\bicycle\\bicycle-system\\src\\main\\resources\\static\\2025\\01\\16\\7O6PXT7SF0SC4FQENINAQXXMV5BMI64G.png', 1, '测试数据', 1, '2025-01-16 15:07:38', '2025-01-16 15:07:38', '2025-01-19 01:39:26');
-INSERT INTO `bicycle_info` VALUES ('BY20250116749962', 1, 'http://127.0.0.1/static/file/1737060745A区-1-0.jpg', '213123213213213', '2025-01-16 00:00:00', 'QBN02NR237MRMZ32V8IP2XV5C9LL0VNB', 'https://127.0.0.1/static/2025/01/16/QBN02NR237MRMZ32V8IP2XV5C9LL0VNB.png', 1, '这是测试数据', 1, '2025-01-16 15:25:29', '2025-01-16 15:25:29', '2025-01-19 01:39:29');
-INSERT INTO `bicycle_info` VALUES ('BY20250116778377', 1, 'http://127.0.0.1/static/file/1737079088A区-1-0.jpg', '1212332323243242', '2025-01-16 00:00:00', '20XBWTHKRBRGH96JQP1FSFR6DY7587ZI', 'D:\\onecent_code\\bicycle\\bicycle-system\\src\\main\\resources\\static\\2025\\01\\16\\20XBWTHKRBRGH96JQP1FSFR6DY7587ZI.png', 1, '测试数据', 1, '2025-01-16 14:59:13', '2025-01-16 14:59:13', '2025-01-19 01:39:21');
-INSERT INTO `bicycle_info` VALUES ('BY20250117034463', 1, 'http://127.0.0.1/static/file/173709770452298051327593942461646130553181.jpg', '123456789', '2025-01-17 00:00:00', '0IWM7YF85QXDUCQLKS2TJ5Q98IEDB3GK', 'http://1.94.143.210/static/2025/01/17/0IWM7YF85QXDUCQLKS2TJ5Q98IEDB3GK.png', 1, '', 1, '2025-01-17 00:03:28', '2025-01-17 00:03:28', '2025-01-19 01:39:31');
-INSERT INTO `bicycle_info` VALUES ('BY20250119560263', 1, 'http://1.94.143.210/static/images/2025/01/19/173727752852298051327593942461646130553015.jpg', '123456789', '2025-01-05 00:00:00', 'M751FZB5Y7KE4510LTMF96SKWKWMLWOZ', 'http://1.94.143.210/static/qrcode/20250119M751FZB5Y7KE4510LTMF96SKWKWMLWOZ.png', 1, '测试数据库', 0, '2025-01-19 02:32:50', '2025-01-19 02:32:50', NULL);
-INSERT INTO `bicycle_info` VALUES ('BY20250119869508', 1, 'http://1.94.143.210/static/images/2025/01/19/173732165752298051327593942461646130552819.jpg', '123456789', '2025-01-19 00:00:00', 'P44OHWQVKCGPCI65WME84XH99L3T2KSO', 'http://1.94.143.210/static/qrcode/20250119P44OHWQVKCGPCI65WME84XH99L3T2KSO.png', 1, '测试数据', 0, '2025-01-19 02:15:41', '2025-01-19 02:15:41', NULL);
+INSERT INTO `bicycle_info` VALUES ('BY20250119219201', 1, 'http://1.94.143.210/static/images/2025/01/19/173732062452298051327593942461646130552895.jpg', '123456', '2025-01-19 00:00:00', 'O9KN4UX87DE8IJ9VW90N1STYCUTB7CJ2', 'http://1.94.143.210/static/qrcode/20250119O9KN4UX87DE8IJ9VW90N1STYCUTB7CJ2.png', 1, '测试数据', 0, '2025-01-19 14:52:51', '2025-01-19 14:52:51', NULL);
+INSERT INTO `bicycle_info` VALUES ('BY20250119628649', 1, 'http://1.94.143.210/static/images/2025/01/19/173734728152298051327593942461646130553015.jpg', '123456789', '2025-01-19 00:00:00', 'BIGH3QYAZ84EIFTOTMYN4JW7CVT0P7N7', 'http://1.94.143.210/static/qrcode/20250119BIGH3QYAZ84EIFTOTMYN4JW7CVT0P7N7.png', 1, '', 0, '2025-01-19 14:38:19', '2025-01-19 14:38:19', NULL);
 
 -- ----------------------------
 -- Table structure for sys_config
@@ -74,7 +65,7 @@ CREATE TABLE `sys_config`  (
 -- ----------------------------
 -- Records of sys_config
 -- ----------------------------
-INSERT INTO `sys_config` VALUES (1, 2, 'sys', 'filings', '网站备案链接', '123456789', '网站备案链接', '2024-01-10 22:44:41', '2025-01-18 23:37:58');
+INSERT INTO `sys_config` VALUES (1, 2, 'sys', 'filings', '网站备案链接', '', '网站备案链接', '2024-01-10 22:44:41', '2025-01-19 16:41:55');
 INSERT INTO `sys_config` VALUES (2, 5, 'sys', 'webLogo', '登录页LOGO', 'http://1.94.143.210/static//config/2025/01/18/173722945652298051327593942461646130551847.jpg', '登录界面LOGO', '2024-01-10 22:44:41', '2025-01-18 23:37:58');
 INSERT INTO `sys_config` VALUES (3, 1, 'sys', 'webName', '登录页系统名称', '银斯贝自行车管理系统', '网站名称', '2024-01-10 22:44:41', '2025-01-17 22:49:45');
 INSERT INTO `sys_config` VALUES (4, 6, 'sys', 'webFavicon', '网站LOGO', 'http://1.94.143.210/static/config/favicon.png', '网站logo', '2024-01-10 22:44:41', '2025-01-17 22:50:36');
@@ -87,7 +78,7 @@ INSERT INTO `sys_config` VALUES (10, 5, 'qrcode', 'qrcodeFontSize', '二维码�
 INSERT INTO `sys_config` VALUES (11, 6, 'qrcode', 'qrcodeMargin', '二维码距离边框的距离', '0', '二维码和文字的间距', '2025-01-16 14:44:59', '2025-01-18 23:37:58');
 INSERT INTO `sys_config` VALUES (12, 1, 'sys', 'serverUrl', '二维码上传服务器地址', 'http://1.94.143.210/', '文件上传时保存的服务器地址', '2025-01-16 15:15:41', '2025-01-18 23:00:02');
 INSERT INTO `sys_config` VALUES (13, 1, 'official', 'mobileTheme', '公众号主题色', '#2682FC ', '公众号查询界面的主题色，必须为十六进制颜色，例如#2682FC', '2025-01-16 15:22:53', '2025-01-19 00:54:34');
-INSERT INTO `sys_config` VALUES (14, 2, 'sys', 'filePath', '二维码上传路径', 'D:/static', '文件上传时保存的文件夹路径', '2025-01-16 15:26:58', '2025-01-19 02:14:32');
+INSERT INTO `sys_config` VALUES (14, 2, 'sys', 'filePath', '二维码上传路径', '/home/server/static', '文件上传时保存的文件夹路径', '2025-01-16 15:26:58', '2025-01-19 16:41:55');
 INSERT INTO `sys_config` VALUES (15, 1, 'banner', 'autoplay', '轮播图播放速度', '0', '单位为毫秒，当设置为0时不自动轮播', '2025-01-18 13:52:07', '2025-01-19 00:49:05');
 
 -- ----------------------------
@@ -270,6 +261,9 @@ INSERT INTO `sys_menu` VALUES (141, 25, 'A', '删除', '', 0, 'bicycle:delete', 
 INSERT INTO `sys_menu` VALUES (142, 25, 'A', '批量导入', '', 0, 'bicycle:import', '', '', '', '', 0, 1, 0, '2025-01-05 00:38:42', '2025-01-05 00:38:42');
 INSERT INTO `sys_menu` VALUES (143, 25, 'A', '批量导出', '', 0, 'bicycle:export', '', '', '', '', 0, 1, 0, '2025-01-05 00:39:02', '2025-01-05 00:39:02');
 INSERT INTO `sys_menu` VALUES (144, 25, 'A', '详情', '', 0, 'bicycle:detail', '', '', '', '', 0, 1, 0, '2025-01-09 14:25:49', '2025-01-09 14:25:49');
+INSERT INTO `sys_menu` VALUES (145, 0, 'C', '系统设置', 'el-icon-Setting', 0, 'system:settings', '/system/settings', 'system/setting', '', '', 0, 0, 0, '2025-01-19 15:41:25', '2025-01-19 15:49:25');
+INSERT INTO `sys_menu` VALUES (146, 145, 'A', '查询', '', 0, 'config:list', '', '', '', '', 0, 1, 0, '2025-01-19 15:42:10', '2025-01-19 15:42:10');
+INSERT INTO `sys_menu` VALUES (147, 145, 'A', '保存', '', 0, 'config:save', '', '', '', '', 0, 1, 0, '2025-01-19 15:42:40', '2025-01-19 15:42:40');
 
 -- ----------------------------
 -- Table structure for sys_role

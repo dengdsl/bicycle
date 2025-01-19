@@ -161,12 +161,15 @@ public class AccountServiceImpl implements IAccountService {
         SystemConfigEntry loginBg = systemConfigMapper.getConfigByName("loginBg");
         SystemConfigEntry theme = systemConfigMapper.getConfigByName("theme");
         SystemConfigEntry mobileTheme = systemConfigMapper.getConfigByName("mobileTheme");
+        SystemConfigEntry filingsName = systemConfigMapper.getConfigByName("filingsName");
+
 
         Map<String, String> config = new HashMap<>();
         config.put("webName", webName.getValue());
         config.put("webLogo", webLogo.getValue());
         config.put("webFavicon", webFavicon.getValue());
         config.put("filings", filings.getValue());
+        config.put("filingsName", filingsName.getValue());
         config.put("loginBg", loginBg.getValue());
         config.put("theme", theme.getValue());
         config.put("mobileTheme", mobileTheme.getValue());

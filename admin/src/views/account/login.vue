@@ -1,15 +1,20 @@
 <template>
-  <div class="login flex flex-col">
+  <div
+    class="login flex flex-col"
+    :style="{
+      backgroundImage: `url(${config.loginBg})`,
+    }"
+  >
     <div class="flex-1 flex justify-center mt-[20vh]">
       <div class="login-card rounded-md">
         <div
           class="login-form flex flex-col justify-center px-10 py-10 w-[400px] flex-none mx-auto"
         >
           <div class="mb-2">
-            <img src="./images/logo.png" class="w-full h-auto" />
+            <img :src="config.webLogo" class="w-full h-auto" />
           </div>
           <div class="text-center text-white text-6xl font-medium mb-8">
-            {{ config['webName'] || '银斯贝自行车管理系统' }}
+            {{ config.webName }}
           </div>
           <el-form ref="formRef" :model="formData" size="large" :rules="rules">
             <el-form-item prop="account">
@@ -204,7 +209,6 @@ onMounted(() => {
 <style lang="scss" scoped>
 .login {
   --el-bg-color: #ffffff !important;
-  background-image: url('./images/loginbg.jpg');
   background-size: 100% 100%;
   @apply min-h-screen bg-no-repeat bg-center;
   .login-card {

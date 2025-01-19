@@ -1,8 +1,10 @@
 package com.bicycle.validate.bicycle;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -15,7 +17,6 @@ public class BicycleUpdateValidate implements Serializable {
     private String id;
 
     @NotNull(message = "请选择型号")
-    @NotBlank(message = "请选择型号")
     private Integer model;
 
     @NotNull(message = "请输入车架号")
@@ -23,7 +24,7 @@ public class BicycleUpdateValidate implements Serializable {
     private String frameNo;
 
     @NotNull(message = "请选择生产日期")
-    @NotBlank(message = "请选择生产日期")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date produceTime;
 
     @NotNull(message = "图片参数必填")

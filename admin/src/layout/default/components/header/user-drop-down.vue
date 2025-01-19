@@ -11,7 +11,7 @@
         <router-link to="/user/setting">
           <el-dropdown-item>个人设置</el-dropdown-item>
         </router-link>
-        <router-link to="/system/setting">
+        <router-link v-perms="['system:settings']" to="/system/settings">
           <el-dropdown-item>系统设置</el-dropdown-item>
         </router-link>
         <el-dropdown-item command="logout">退出登录</el-dropdown-item>
