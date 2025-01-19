@@ -5,6 +5,7 @@ import org.apache.poi.xssf.usermodel.XSSFPictureData;
 
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 @Slf4j
 public class ReflectionUtils {
@@ -88,8 +89,13 @@ public class ReflectionUtils {
             // 根据需要调整日期格式解析
             try {
                 String date = value.toString();
+                String regex = "^\\d{1,2}-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-\\d{4}$";
                 if (date.matches("\\d{1,2}-\\d{1,2}月-\\d{4}")) {
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy", java.util.Locale.CHINA);
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy", Locale.CHINA);
+                    return sdf.parse(date);
+                }else if (date.matches(regex)) {
+
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy",  Locale.ENGLISH);
                     return sdf.parse(date);
                 }
                 return new java.text.SimpleDateFormat("yyyy-MM-dd").parse(value.toString());
