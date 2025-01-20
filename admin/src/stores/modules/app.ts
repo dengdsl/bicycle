@@ -29,7 +29,6 @@ const useAppStore = defineStore({
             for (const key in data) {
               this.config[key] = data[key]
             }
-            this.config = data
             // pc端主题颜色
             if (data.theme) {
               defaultSetting.theme = data.theme

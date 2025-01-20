@@ -59,7 +59,7 @@ public class ExcelImportByPicture<T> {
         // 获取总页数：wb.getNumberOfSheets(),获取某一个：wb.getSheet(sheetName)
         Sheet sheet = wb.getSheetAt(0);
         //1：获取图片集合。行-列为key
-        Map<String, PictureData> pictureDataMap = readExcelPicture(sheet);
+        Map<String, List<PictureData>> pictureDataMap = readExcelPicture(sheet);
         //2:获取excel中的数据（这里的数据不含图片信息）
         // 将图片信息传入,再通过实体字段属性将每个数据映射到字段上，包括获取到的图片信息
         return readExcelInfoAndPutClass(sheet, titleNum, pictureDataMap);
@@ -73,7 +73,7 @@ public class ExcelImportByPicture<T> {
      * @date: 2023/11/9 16:42
      * @version: 1.0
      **/
-    private List<T> readExcelInfoAndPutClass(Sheet sheet, int titleNum, Map<String, PictureData> pictureDataMap) throws InstantiationException, IllegalAccessException {
+    private List<T> readExcelInfoAndPutClass(Sheet sheet, int titleNum, Map<String, List<PictureData>> pictureDataMap) throws InstantiationException, IllegalAccessException {
         //存储实体list
         List<T> list = new ArrayList<>();
         //获取每个抬头及对应的实体字段进行映射到相应的下标上
@@ -114,7 +114,7 @@ public class ExcelImportByPicture<T> {
      */
     private void putValByCustomAttribute(Class<?> fieldType, Field field, Excel attr,
                                          int rowNum, Object val, Map.Entry<Integer, Object[]> entry,
-                                         Map<String, PictureData> pictureDataMap, T entity, Row row) {
+                                         Map<String, List<PictureData>> pictureDataMap, T entity, Row row) {
         //判断字段的类型来设置正确的值
         if (String.class == fieldType) {
             String s = Convert.toStr(val);
@@ -151,9 +151,9 @@ public class ExcelImportByPicture<T> {
             String propertyName = field.getName();
             if (attr.getPicture()) {
                 String rowAndCell = rowNum + "-" + entry.getKey();
-                PictureData pictureData = pictureDataMap.get(rowAndCell);
-                if (Objects.nonNull(pictureData)) {
-                    val = pictureData;
+                List<PictureData> pictureDatas = pictureDataMap.get(rowAndCell);
+                if (Objects.nonNull(pictureDatas)) {
+                    val = pictureDatas;
                 } else {
                     val = null;
                 }
@@ -205,9 +205,9 @@ public class ExcelImportByPicture<T> {
      * @date: 2023/11/7 17:30
      * @version: 1.0
      **/
-    private Map<String, PictureData> readExcelPicture(Sheet sheet) {
+    private Map<String, List<PictureData>> readExcelPicture(Sheet sheet) {
         // 声明当前页图片的集合
-        Map<String, PictureData> sheetImageMap;
+        Map<String, List<PictureData>> sheetImageMap;
         // 获取图片
         try {
             //2003版本的excel，用.xls结尾
@@ -231,17 +231,19 @@ public class ExcelImportByPicture<T> {
      * @return
      * @throws IOException
      */
-    private Map<String, PictureData> getPicturesHSS(HSSFSheet sheet) {
-        Map<String, PictureData> map = new HashMap<String, PictureData>();
+    private Map<String, List<PictureData>> getPicturesHSS(HSSFSheet sheet) {
+        Map<String, List<PictureData>> map = new HashMap<String, List<PictureData>>();
         List<HSSFShape> list = sheet.getDrawingPatriarch().getChildren();
         for (HSSFShape shape : list) {
             if (shape instanceof HSSFPicture) {
                 HSSFPicture picture = (HSSFPicture) shape;
                 HSSFClientAnchor cAnchor = (HSSFClientAnchor) picture.getAnchor();
                 PictureData pdata = picture.getPictureData();
-                // 行号-列号
-                String key = cAnchor.getRow1() + "-" + cAnchor.getCol2();
-                map.put(key, pdata);
+                if (pdata != null && cAnchor != null) {
+                    // 使用 "row-col" 作为图片的唯一标识
+                    String key = cAnchor.getRow1() + "-" + cAnchor.getCol2();
+                    map.computeIfAbsent(key, k -> new ArrayList<>()).add(pdata);
+                }
             }
         }
         return map;
@@ -255,8 +257,8 @@ public class ExcelImportByPicture<T> {
      * @return
      * @throws IOException
      */
-    private Map<String, PictureData> getPicturesXSS(XSSFSheet sheet) {
-        Map<String, PictureData> sheetIndexPicMap = new HashMap<String, PictureData>();
+    private Map<String, List<PictureData>> getPicturesXSS(XSSFSheet sheet) {
+        Map<String, List<PictureData>> sheetIndexPicMap = new HashMap<String, List<PictureData>>();
         for (POIXMLDocumentPart dr : sheet.getRelations()) {
             if (dr instanceof XSSFDrawing) {
                 XSSFDrawing drawing = (XSSFDrawing) dr;
@@ -272,7 +274,10 @@ public class ExcelImportByPicture<T> {
                     //String key = marker.getRow() + "-" + marker.getCol();
                     //行号-列号
                     String key = anchor.getRow1() + "-" + (anchor.getCol2());
-                    sheetIndexPicMap.put(key, pic.getPictureData());
+                    XSSFPictureData pictureData = pic.getPictureData();
+                    if (pictureData != null) {
+                        sheetIndexPicMap.computeIfAbsent(key, k -> new ArrayList<>()).add(pictureData);
+                    }
                 }
             }
         }

@@ -9,6 +9,7 @@ import com.bicycle.validate.page.PageValidate;
 import com.bicycle.validate.bicycle.BicycleCreateValidate;
 import com.bicycle.validate.bicycle.BicycleUpdateValidate;
 import com.bicycle.validate.bicycle.BicycleSearchValidate;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -42,8 +43,8 @@ public class BicycleController  {
      * 新增自行车信息
      * */
     @PostMapping("add")
-    public AjaxResult<Object> addBicycle(@Validated @RequestBody BicycleCreateValidate create){
-        return bicycleService.addBicycle(create);
+    public AjaxResult<Object> addBicycle(HttpServletRequest request,  @Validated @RequestBody BicycleCreateValidate create){
+        return bicycleService.addBicycle(create, request);
     }
 
     /**
@@ -74,7 +75,7 @@ public class BicycleController  {
      * 批量导入
      * */
     @PostMapping("import")
-    public AjaxResult<Object> importBicycle(MultipartFile file) throws IOException {
+    public AjaxResult<Object> importBicycle(HttpServletRequest request, @Validated @RequestParam MultipartFile file) throws IOException {
         if (file.isEmpty()) {
             return AjaxResult.failed("上传文件不能为空");
         }
@@ -84,7 +85,7 @@ public class BicycleController  {
             return AjaxResult.failed("请上传xlsx格式的文件");
         }
 
-        return bicycleService.importBicycle(file);
+        return bicycleService.importBicycle(file, request);
     }
 
     /**

@@ -5,6 +5,7 @@ import lombok.Data;
 import org.apache.poi.xssf.usermodel.XSSFPictureData;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class ExcelRowDetailVo {
@@ -16,7 +17,7 @@ public class ExcelRowDetailVo {
     private String frameNo;
 
     @Excel(name = "X光图片", getPicture = true)
-    private XSSFPictureData images;
+    private List<XSSFPictureData> images;
 
     @Excel(name = "生产日期")
     private Date produceTime;

@@ -15,31 +15,50 @@ import com.bicycle.validate.bicycle.BicycleSearchValidate;
 import com.bicycle.validate.bicycle.BicycleUpdateValidate;
 import com.bicycle.validate.page.PageValidate;
 import com.bicycle.vo.bicycle.ExcelRowDetailVo;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFPictureData;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
+import java.io.*;
 import java.util.*;
 
 @Slf4j
 @Service
 public class BicycleServiceImpl implements BicycleService {
 
-    private static final String XLS = "xls";
-    private static final String XLSX = "xlsx";
     private BicycleMapper bicycleMapper;
     private RandomService randomService;
 
     public BicycleServiceImpl(BicycleMapper bicycleMapper, RandomService randomService) {
         this.bicycleMapper = bicycleMapper;
         this.randomService = randomService;
+    }
+
+    /**
+     * 创建数据列表查询对象
+     * */
+    private static QueryWrapper<BicycleEntry> getBicycleEntryQueryWrapper(BicycleSearchValidate searchValidate) {
+        QueryWrapper<BicycleEntry> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("is_del", 0);
+        queryWrapper.orderByDesc("create_time");
+        if (searchValidate.getId() != null && !searchValidate.getId().isEmpty()) {
+            queryWrapper.eq("id", searchValidate.getId());
+        }
+        if (searchValidate.getModel() != null) {
+            queryWrapper.eq("model", searchValidate.getModel());
+        }
+        if (searchValidate.getFrameNo() != null && !searchValidate.getFrameNo().isEmpty()) {
+            queryWrapper.eq("frame_no", searchValidate.getFrameNo());
+        }
+        if (searchValidate.getConclusion() != null && !searchValidate.getConclusion().isEmpty()) {
+            queryWrapper.eq("conclusion", searchValidate.getConclusion());
+        }
+        return queryWrapper;
     }
 
     /**
@@ -57,21 +76,7 @@ public class BicycleServiceImpl implements BicycleService {
         }
         // 创建查询对象
         Page<BicycleEntry> page = new Page<>(pageNo, pageSize);
-        QueryWrapper<BicycleEntry> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("is_del", 0);
-        queryWrapper.orderByDesc("create_time");
-        if (searchValidate.getId() != null && !searchValidate.getId().isEmpty()) {
-            queryWrapper.eq("id", searchValidate.getId());
-        }
-        if (searchValidate.getModel() != null) {
-            queryWrapper.eq("model", searchValidate.getModel());
-        }
-        if (searchValidate.getFrameNo() != null && !searchValidate.getFrameNo().isEmpty()) {
-            queryWrapper.eq("frame_no", searchValidate.getFrameNo());
-        }
-        if (searchValidate.getConclusion() != null && !searchValidate.getConclusion().isEmpty()) {
-            queryWrapper.eq("conclusion", searchValidate.getConclusion());
-        }
+        QueryWrapper<BicycleEntry> queryWrapper = getBicycleEntryQueryWrapper(searchValidate);
         if ((searchValidate.getProduceTimeStart() != null && !searchValidate.getProduceTimeStart().isEmpty()) && !(searchValidate.getProduceTimeEnd() != null && !searchValidate.getProduceTimeEnd().isEmpty())) {
             queryWrapper.between("produce_time", searchValidate.getProduceTimeStart(), searchValidate.getProduceTimeEnd());
         }
@@ -100,7 +105,7 @@ public class BicycleServiceImpl implements BicycleService {
      * 新增自行车信息
      */
     @Override
-    public AjaxResult<Object> addBicycle(BicycleCreateValidate createValidate) {
+    public AjaxResult<Object> addBicycle(BicycleCreateValidate createValidate, HttpServletRequest request) {
         // 查询当前车架号是否已经存在
         QueryWrapper<BicycleEntry> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("is_del", 0);
@@ -125,7 +130,7 @@ public class BicycleServiceImpl implements BicycleService {
         createEntry.setUpdateTime(new Date());
 
         // 生成二维码
-        Map<String, String> qrcodeInfo = generateQrcode();
+        Map<String, String> qrcodeInfo = generateQrcode(new ArrayList<>());
         createEntry.setQrcode(qrcodeInfo.get("qrcode"));
         createEntry.setQrImg(qrcodeInfo.get("qrUrl"));
         bicycleMapper.insert(createEntry);
@@ -195,38 +200,61 @@ public class BicycleServiceImpl implements BicycleService {
      * 批量导入自行车信息
      */
     @Override
-    public AjaxResult<Object> importBicycle(MultipartFile file) {
+    public AjaxResult<Object> importBicycle(MultipartFile file, HttpServletRequest request) {
         ExcelImportByPicture<ExcelRowDetailVo> importByPicture = new ExcelImportByPicture(ExcelRowDetailVo.class);
 
         try {
             List<ExcelRowDetailVo> rowDetails = importByPicture.readExcelImageAndData(file, 1);
             log.info("文件转换成功：" + rowDetails.toString());
             List<BicycleEntry> bicycleEntries = new ArrayList<>();
+            // 查询数据库中已经存在的ID和车架号
+            QueryWrapper<BicycleEntry> queryWrapper = new QueryWrapper<>();
+            queryWrapper.select("id", "qrcode");
+            // 执行查询
+            List<BicycleEntry> bicycleList = bicycleMapper.selectList(queryWrapper);
+            List<String> ids = bicycleList.stream().map(BicycleEntry::getId).toList();
+            List<String> qrcodeList = bicycleList.stream().map(BicycleEntry::getQrcode).toList();
+            queryWrapper = new QueryWrapper<>();
+            queryWrapper.select("frame_no");
+            queryWrapper.eq("is_del", 0);
+            List<String> frameNos = bicycleMapper.selectList(queryWrapper).stream().map(BicycleEntry::getFrameNo).toList();
+            // 判断上传的车架号是否已经存在
+            List<String> list = rowDetails.stream().map(ExcelRowDetailVo::getFrameNo).filter(frameNos::contains).toList();
+            if (!list.isEmpty()) {
+                // 将list用换行符进行拼接
+                return AjaxResult.failed(HttpEnum.CONFIRM_FAILED.getCode(), "车架号已存在：" + String.join("\n\r", list));
+            }
             for (ExcelRowDetailVo vo : rowDetails) {
                 BicycleEntry bicycleEntry = new BicycleEntry();
-                bicycleEntry.setId(randomService.randomId(RandomPrefix.BICYCLE_PREFIX.getDrugPrefix()));
+                String id = randomService.randomId(RandomPrefix.BICYCLE_PREFIX.getDrugPrefix());
+
+                bicycleEntry.setId(checkId(id, "id", ids));
                 int model = (int)Double.parseDouble(vo.getModel());
                 bicycleEntry.setModel(model);
                 bicycleEntry.setFrameNo(vo.getFrameNo());
                 bicycleEntry.setConclusion(vo.getConclusion().equals("通过") ? 1 : 0);
                 bicycleEntry.setProduceTime(vo.getProduceTime());
                 // 处理X光图片
-                //bicycleEntry.setImage(vo.getImage());
-
+                String imageUrls = saveImage(vo.getImages(), request);
+                bicycleEntry.setImage(imageUrls);
                 bicycleEntry.setRemark(vo.getRemark());
                 bicycleEntry.setCreateTime(new Date());
                 bicycleEntry.setUpdateTime(new Date());
                 bicycleEntry.setIsDel(0);
 
                 //生成二维码信息
-                Map<String, String> qrcodeMap = generateQrcode();
+                Map<String, String> qrcodeMap = generateQrcode(qrcodeList);
                 bicycleEntry.setQrcode(qrcodeMap.get("qrcode"));
-                bicycleEntry.setQrImg(qrcodeMap.get("qrUrl"));
+                String serverUrl = ConfigUtils.getServerUrl();
+                if (serverUrl != null) {
+                    serverUrl = request.getScheme() + "://" + request.getServerName();
+                }
+                bicycleEntry.setQrImg(serverUrl + qrcodeMap.get("qrUrl"));
                 bicycleEntries.add(bicycleEntry);
             }
             int insertCount = bicycleMapper.insertList(bicycleEntries);
             if (insertCount == 0) {
-                return AjaxResult.failed("导入失败，请检查数据是否正确");
+                return AjaxResult.failed("数据解析成功，保存失败！");
             }
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -249,7 +277,7 @@ public class BicycleServiceImpl implements BicycleService {
     @Override
     public AjaxResult<Object> queryByQrcode(String qrcode) {
         QueryWrapper<BicycleEntry> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("is_del", 0);
+        //queryWrapper.eq("is_del", 0);
         queryWrapper.and(wrapper -> wrapper.eq("qrcode", qrcode).or().eq("frame_no", qrcode));
         BicycleEntry bicycleEntry = bicycleMapper.selectOne(queryWrapper);
         return AjaxResult.success(bicycleEntry);
@@ -270,35 +298,100 @@ public class BicycleServiceImpl implements BicycleService {
     }
 
     /**
+     * 判断当前id是否可用
+     */
+    public String checkId(String id, String fieldName, List<String> ids) {
+        if (ids.isEmpty()) {
+           return checkId(id, fieldName);
+        }
+         // 判断id在ids中是否存在
+        if (ids.contains(id)) {
+            return checkId(randomService.randomId(RandomPrefix.BICYCLE_PREFIX.getDrugPrefix()), fieldName, ids);
+        }
+        return id;
+    }
+
+    /**
      * 生成二维码
      */
-    public Map<String, String> generateQrcode() {
+    public Map<String, String> generateQrcode(List<String> qrcodeList) {
         String qrCode = randomService.randomQrcode();
         // 避免生成的二维码编号重复
-        qrCode = checkId(qrCode, "qrcode");
+        qrCode = checkId(qrCode, "qrcode", qrcodeList);
 
-        // 根据日期创建文件夹并创建文件夹
-        Calendar calendar = Calendar.getInstance();
+        String basePath = FilePathUtil.generateBasePath("qrcode");
 
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH) + 1; // 月份从0开始，需加1
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-        // 补零处理
-        String formattedMonth = (month < 10 ? "0" : "") + month;
-        String formattedDay = (day < 10 ? "0" : "") + day;
-
-        String dirPath = String.format("%s/qrcode/%d/%s/%s", ConfigUtils.getFilePath(), year, formattedMonth, formattedDay);
+        String dirPath = String.format("%s/%s", ConfigUtils.getFilePath(), basePath);
         File dir = new File(dirPath);
         if (!dir.exists()) {
             dir.mkdirs();
         }
         // 生成图片二维码
         QrCodeUtils.generateQRCode(qrCode, String.format("%s/%s.png", dirPath, qrCode));
-        Map<String, String> qrcodeMap = new HashMap<String, String>();
+        Map<String, String> qrcodeMap = new HashMap<>();
         qrcodeMap.put("qrcode", qrCode);
-        qrcodeMap.put("qrUrl", String.format("%s/qrcode/%d/%s/%s/%s.png", ConfigUtils.getServerUrl(), year, formattedMonth, formattedDay, qrCode));
+        qrcodeMap.put("qrUrl", String.format("/static/%s/%s.png", basePath, qrCode));
         return qrcodeMap;
+    }
+
+    /**
+     * 将解析出来的图片保存到本地
+     * */
+    private String saveImage(List<XSSFPictureData> pictureDataList, HttpServletRequest request) {
+            List<String> imageUrls = new ArrayList<>();
+            for (PictureData picData : pictureDataList) {
+                byte[] pictureBytes = picData.getData();
+                String ext = getPictureExtension(picData.getPictureType());
+                // 生成时间戳
+                long timestamp = System.currentTimeMillis() / 1000;
+                // 生成随机数
+                int randomNum = new Random().nextInt(90000) + 10000;
+                String fileName = String.format("%d%d%s", timestamp , randomNum , ext);
+                String basePath = FilePathUtil.generateBasePath("images");
+                // 创建图片路径
+                String filePath = String.format("%s/%s/%s", ConfigUtils.getFilePath(), basePath, fileName);
+                try {
+                    // 判断路径是否存在
+                    File file = new File(filePath);
+                    if (!file.getParentFile().exists()) {
+                        file.getParentFile().mkdirs();
+                    }
+                    // 保存图片
+                    OutputStream fos = new FileOutputStream(file);
+                    fos.write(pictureBytes);
+                    fos.close();
+                    String serverUrl = ConfigUtils.getServerUrl();
+                    if (serverUrl!= null) {
+                        serverUrl = request.getScheme() + "://" + request.getServerName();
+                    }
+                    imageUrls.add(serverUrl + "/static/" + basePath + "/" + fileName);
+                } catch (IOException e) {
+                    log.error("保存文件失败：" + e.getMessage());
+                }
+            }
+        return StringUtils.join(imageUrls, ";");
+    }
+
+    /**
+     * 获取图片扩展名
+     * */
+    private static String getPictureExtension(int pictureType) {
+        switch (pictureType) {
+            case Workbook.PICTURE_TYPE_EMF:
+                return ".emf";  // 增强型图元文件 (Enhanced Metafile)
+            case Workbook.PICTURE_TYPE_WMF:
+                return ".wmf";  // Windows 图元文件 (Windows Metafile)
+            case Workbook.PICTURE_TYPE_PICT:
+                return ".pict"; // Apple Macintosh 图元文件
+            case Workbook.PICTURE_TYPE_JPEG:
+                return ".jpg";  // 常见的有损压缩图像 (JPEG)
+            case Workbook.PICTURE_TYPE_PNG:
+                return ".png";  // 无损压缩图像 (PNG)
+            case Workbook.PICTURE_TYPE_DIB:
+                return ".dib";  // 设备无关位图 (Device Independent Bitmap)
+            default:
+                return ".bin";  // 未知格式，使用 .bin 作为默认扩展名
+        }
     }
 
 }

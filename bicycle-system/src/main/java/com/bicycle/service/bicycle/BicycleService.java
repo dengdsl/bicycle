@@ -6,6 +6,7 @@ import com.bicycle.validate.bicycle.BicycleUpdateValidate;
 import com.bicycle.validate.page.PageValidate;
 import com.bicycle.validate.bicycle.BicycleSearchValidate;
 import com.google.zxing.WriterException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -20,7 +21,7 @@ public interface BicycleService {
     /**
      * 新增自行车信息
      * */
-     AjaxResult<Object> addBicycle(BicycleCreateValidate createValidate);
+     AjaxResult<Object> addBicycle(BicycleCreateValidate createValidate, HttpServletRequest request);
 
     /**
      * 编辑自行车信息
@@ -40,7 +41,7 @@ public interface BicycleService {
     /**
      * 批量导入自行车信息
      * */
-     AjaxResult<Object> importBicycle(MultipartFile file) throws IOException;
+     AjaxResult<Object> importBicycle(MultipartFile file, HttpServletRequest request) throws IOException;
 
      /**
       * 批量导出自行车信息

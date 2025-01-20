@@ -149,7 +149,11 @@ const handleSuccess = (url: string) => {
 const getUser = async () => {
   const userInfo = userStore.userInfo
   for (const key in formData) {
-    formData[key] = userInfo[key]
+    if (key === 'avatar') {
+      formData[key] = userInfo[key]
+    } else {
+      formData[key] = userInfo[key]
+    }
   }
 }
 

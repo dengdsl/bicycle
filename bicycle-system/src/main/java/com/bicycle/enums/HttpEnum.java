@@ -9,6 +9,8 @@ public enum HttpEnum {
     SUCCESS(200, "成功"),
     /**失败结果**/
     FAILED(300, "失败"),
+    /**失败结果并且前端会弹出询问框**/
+    CONFIRM_FAILED(315, "确认失败"),
     /**token参数无效**/
     TOKEN_INVALID(301, "token参数无效"),
     /**表单参数验证异常**/

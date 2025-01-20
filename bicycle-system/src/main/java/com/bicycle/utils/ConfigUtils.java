@@ -40,7 +40,7 @@ public class ConfigUtils {
     public static void updateConfig() {
         // 初始化文件保存文件夹路径
         SystemConfigEntry qrcodeFilePath = configMapper.getConfigByName("filePath");
-        if (qrcodeFilePath.getValue() != null && !qrcodeFilePath.getValue().isEmpty()) {
+        if (qrcodeFilePath != null && !qrcodeFilePath.getValue().isEmpty()) {
             filePath = qrcodeFilePath.getValue();
         }
         // 初始化文件保存服务器路径

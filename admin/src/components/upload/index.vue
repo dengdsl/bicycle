@@ -88,9 +88,7 @@ const handleAvatarSuccess: UploadProps['onSuccess'] = (
 }
 
 // 移除已经上传的文件
-const handleError: UploadProps['onRemove'] = (uploadFile, uploadFiles) => {
-  console.log(uploadFile.response)
-  console.log(uploadFile, uploadFiles)
+const handleError: UploadProps['onRemove'] = () => {
   imageUrl.value = ''
   emits('error')
   feedback.msgError('上传失败')
