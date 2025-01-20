@@ -132,7 +132,7 @@
                   :zoom-rate="2"
                   :max-scale="7"
                   :min-scale="0.2"
-                  :preview-src-list="row.qrImg"
+                  :preview-src-list="[row.qrImg]"
                   :preview-teleported="true"
                 />
               </div>

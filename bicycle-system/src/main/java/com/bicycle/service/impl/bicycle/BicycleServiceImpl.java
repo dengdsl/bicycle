@@ -3,11 +3,9 @@ package com.bicycle.service.impl.bicycle;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.bicycle.entry.bicycle.BicycleEntry;
-import com.bicycle.entry.system.SystemConfigEntry;
 import com.bicycle.enums.HttpEnum;
 import com.bicycle.enums.RandomPrefix;
 import com.bicycle.exception.CustomException;
-import com.bicycle.mapper.account.SystemConfigMapper;
 import com.bicycle.mapper.bicycle.BicycleMapper;
 import com.bicycle.service.random.RandomService;
 import com.bicycle.service.bicycle.BicycleService;
@@ -17,12 +15,8 @@ import com.bicycle.validate.bicycle.BicycleSearchValidate;
 import com.bicycle.validate.bicycle.BicycleUpdateValidate;
 import com.bicycle.validate.page.PageValidate;
 import com.bicycle.vo.bicycle.ExcelRowDetailVo;
-import com.google.zxing.WriterException;
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ooxml.POIXMLDocumentPart;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -202,7 +196,7 @@ public class BicycleServiceImpl implements BicycleService {
      */
     @Override
     public AjaxResult<Object> importBicycle(MultipartFile file) {
-        ExcelImportByPictureUtil<ExcelRowDetailVo> importByPicture = new ExcelImportByPictureUtil(ExcelRowDetailVo.class);
+        ExcelImportByPicture<ExcelRowDetailVo> importByPicture = new ExcelImportByPicture(ExcelRowDetailVo.class);
 
         try {
             List<ExcelRowDetailVo> rowDetails = importByPicture.readExcelImageAndData(file, 1);

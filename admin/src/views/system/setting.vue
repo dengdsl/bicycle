@@ -12,12 +12,14 @@
     <el-menu-item index="official">轮播图配置</el-menu-item>
   </el-menu>
   <el-card class="!border-none" shadow="never" v-if="activeIndex === 'logo'">
-    <div class="flex gap-32">
+    <div class="flex flex-wrap gap-32">
       <div class="flex flex-col items-center gap-4">
         <upload
           :src="configFormData.webFavicon.value as string"
           file-path="config"
           :show-file-list="false"
+          width="200"
+          height="200"
           @success="(files: string) => handleSuccess(files, 'webFavicon')"
         />
         <div>
@@ -29,6 +31,8 @@
           :src="configFormData.webLogo.value as string"
           file-path="config"
           :show-file-list="false"
+          width="200"
+          height="200"
           @success="(files: string) => handleSuccess(files, 'webLogo')"
         />
         <div class="mb-2 ml-1">
@@ -40,12 +44,25 @@
           :src="configFormData.loginBg.value as string"
           file-path="config"
           :show-file-list="false"
-          :width="1920 / 100 / 1080"
-          :aspect-ratio="1920 / 1080"
+          :width="200"
+          height="200"
           @success="(files: string) => handleSuccess(files, 'loginBg')"
         />
         <div class="mb-2 ml-1">
           {{ configFormData.loginBg.label }}
+        </div>
+      </div>
+      <div class="flex flex-col items-center gap-4">
+        <upload
+          :src="configFormData.loginFooterBg.value as string"
+          file-path="config"
+          :show-file-list="false"
+          :width="200"
+          height="200"
+          @success="(files: string) => handleSuccess(files, 'loginFooterBg')"
+        />
+        <div class="mb-2 ml-1">
+          {{ configFormData.loginFooterBg.label }}
         </div>
       </div>
     </div>
@@ -55,7 +72,7 @@
     shadow="never"
     v-else-if="activeIndex === 'web'"
   >
-    <el-row :gutter="40" class="mb-4">
+    <el-row :gutter="10" class="mb-4">
       <el-col :span="12">
         <div class="flex flex-col">
           <div class="mb-4 ml-1">
@@ -358,6 +375,7 @@ interface ConfigFormData {
   webFavicon: Partial<SystemConfigMo>
   webLogo: Partial<SystemConfigMo>
   loginBg: Partial<SystemConfigMo>
+  loginFooterBg: Partial<SystemConfigMo>
   // 二维码配置
   qrcodeFontSize: Partial<SystemConfigMo>
   qrcodeMargin: Partial<SystemConfigMo>
@@ -380,6 +398,7 @@ const configFormData = reactive<ConfigFormData>({
   webFavicon: {}, // 网站logo
   webLogo: {}, // 登录界面logo
   loginBg: {}, // 登录界面背景图
+  loginFooterBg: {}, // 登录界面底部背景图
   // 二维码配置
   qrcodeFontSize: {},
   qrcodeMargin: {},

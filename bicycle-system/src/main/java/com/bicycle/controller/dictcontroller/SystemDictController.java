@@ -1,5 +1,6 @@
 package com.bicycle.controller.dictcontroller;
 
+import com.bicycle.annotation.NotLogin;
 import com.bicycle.annotation.NotPower;
 import com.bicycle.service.dict.SystemDictService;
 import com.bicycle.utils.AjaxResult;
@@ -79,6 +80,7 @@ public class SystemDictController {
      * */
     @GetMapping("allDictData")
     @NotPower
+    @NotLogin
     public AjaxResult<Object> all(@Validated String dictType) {
         return systemDictService.all(dictType);
     }

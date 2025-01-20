@@ -1,5 +1,5 @@
 <template>
-  <div :style="{ '--w': `${width}px`, '--h': `${width / aspectRatio}px` }">
+  <div :style="{ '--w': `${width}px`, '--h': `${height}px` }">
     <el-upload
       class="avatar-uploader"
       :accept="accept"
@@ -9,13 +9,18 @@
       :on-success="handleAvatarSuccess"
       :on-error="handleError"
     >
-      <img
-        v-if="imageUrl || src"
-        :src="imageUrl || src"
-        class="avatar"
-        :style="{ width: `${width}px`, 'aspect-ratio': aspectRatio }"
-      />
-      <icon v-else name="el-icon-Plus" size="28" class="avatar-uploader-icon" />
+      <div
+        class="flex items-center justify-center"
+        :style="{ width: `${width}px`, height: `${height}px` }"
+      >
+        <img v-if="imageUrl || src" :src="imageUrl || src" class="avatar" />
+        <icon
+          v-else
+          name="el-icon-Plus"
+          size="28"
+          class="avatar-uploader-icon"
+        />
+      </div>
     </el-upload>
   </div>
 </template>
@@ -37,9 +42,9 @@ const props = defineProps({
     type: Number,
     default: 100,
   },
-  aspectRatio: {
+  height: {
     type: Number,
-    default: 1,
+    default: 100,
   },
   accept: {
     type: String,
@@ -56,7 +61,7 @@ const props = defineProps({
   showFileList: {
     type: Boolean,
     default: true,
-  }
+  },
 })
 
 const imageUrl = ref('')
@@ -84,6 +89,7 @@ const handleAvatarSuccess: UploadProps['onSuccess'] = (
 
 // 移除已经上传的文件
 const handleError: UploadProps['onRemove'] = (uploadFile, uploadFiles) => {
+  console.log(uploadFile.response)
   console.log(uploadFile, uploadFiles)
   imageUrl.value = ''
   emits('error')
@@ -94,6 +100,8 @@ const handleError: UploadProps['onRemove'] = (uploadFile, uploadFiles) => {
 <style scoped>
 .avatar-uploader .avatar {
   display: block;
+  width: 100%;
+  height: auto;
 }
 </style>
 

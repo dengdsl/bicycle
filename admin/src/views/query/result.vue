@@ -8,15 +8,15 @@
         @click-left="onClickLeft"
       />
       <div v-if="!pageErr" class="p-2">
-        <van-cell-group class="p-4" title="X光图片">
-          <van-row gutter="20">
+        <van-cell-group>
+          <van-row>
             <van-col
-              :class="index > 0 && 'mb-2'"
               span="24"
               v-for="(src, index) in detail.image"
               :key="index"
             >
               <van-image
+                style="display: block"
                 width="100%"
                 class="min-h-20"
                 fit="scale-down"
@@ -70,6 +70,11 @@
         <van-empty image="error" :description="pageErrMsg" />
       </div>
     </div>
+    <van-image-preview
+      v-model:show="showPreview"
+      :images="detail.image"
+      :start-position="startPosition"
+    ></van-image-preview>
   </van-config-provider>
 </template>
 <script lang="ts" setup>
@@ -105,16 +110,16 @@ const route = useRoute()
 const qrcode = route.query.qrcode as string
 const pageErr = ref(false)
 const pageErrMsg = ref('')
+const showPreview = ref(false)
+const startPosition = ref(0)
 // 返回上一页
 const onClickLeft = () => {
   router.back()
 }
 // 图片预览
 const onClickImage = (index: number) => {
-  showImagePreview({
-    images: detail.image,
-    startPosition: index,
-  })
+  showPreview.value = true
+  startPosition.value = index
 }
 // 根据当前二维码查询数据
 const queryBicycleInfo = async () => {
