@@ -17,7 +17,7 @@ public class BicycleUpdateValidate implements Serializable {
     private String id;
 
     @NotNull(message = "请选择型号")
-    private Integer model;
+    private String model;
 
     @NotNull(message = "请输入车架号")
     @NotBlank(message = "请输入车架号")
@@ -33,5 +33,5 @@ public class BicycleUpdateValidate implements Serializable {
 
     private String remark;
 
-    private Integer conclusion;
+    private String conclusion;
 }

@@ -208,7 +208,7 @@
     v-else-if="activeIndex === 'excel'"
   >
     <el-row :gutter="10" class="mb-4">
-      <el-col :span="12" :xs="24" :sm="24" :md="24" :lg="12">
+      <el-col :span="12" :xs="24" :sm="24" :md="24" :lg="8">
         <div class="flex flex-col">
           <div class="mb-4 ml-1">
             {{ configFormData.headerBgColor.label }}
@@ -219,7 +219,23 @@
           <el-input v-model="configFormData.headerBgColor.value" size="large" />
         </div>
       </el-col>
-      <el-col :span="12" :xs="24" :sm="24" :md="24" :lg="12">
+      <el-col :span="12" :xs="24" :sm="24" :md="24" :lg="8">
+        <div class="flex flex-col mx-auto">
+          <div class="mb-4 ml-1">
+            {{ configFormData.headerTextColor.label }}
+            <span class="text-info text-xs">
+              （{{ configFormData.headerTextColor.remark }}）
+            </span>
+          </div>
+          <el-input
+            class="flex-1"
+            v-model="configFormData.headerTextColor.value"
+            size="large"
+            :placeholder="configFormData.headerTextColor.remark"
+          />
+        </div>
+      </el-col>
+      <el-col :span="12" :xs="24" :sm="24" :md="24" :lg="8">
         <div class="flex flex-col mx-auto">
           <div class="mb-4 ml-1">
             {{ configFormData.headerTextColor.label }}
@@ -417,7 +433,7 @@ import useSettingStore from '@/stores/modules/setting.ts'
 import { useDark } from '@vueuse/core'
 import useAppStore from '@/stores/modules/app.ts'
 
-const activeIndex = ref<'web' | 'logo' | 'qrcode' | 'official'>('web')
+const activeIndex = ref<'web' | 'logo' | 'qrcode' | 'official' | 'excel'>('web')
 const loading = ref(false)
 const isDark = useDark()
 const appStore = useAppStore()
@@ -452,6 +468,7 @@ interface ConfigFormData {
   headerBgColor: Partial<SystemConfigMo>
   headerTextColor: Partial<SystemConfigMo>
   templateDescription: Partial<SystemConfigMo>
+  headerRowHeight: Partial<SystemConfigMo>
 }
 
 const configFormData = reactive<ConfigFormData>({
@@ -481,6 +498,7 @@ const configFormData = reactive<ConfigFormData>({
   headerBgColor: {},
   headerTextColor: {},
   templateDescription: {},
+  headerRowHeight: {},
 })
 
 const handleSelect = (index: 'web' | 'logo' | 'qrcode' | 'official') => {

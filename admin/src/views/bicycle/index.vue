@@ -202,7 +202,16 @@
             align="center"
             min-width="120"
             show-overflow-tooltip
-          />
+          >
+            <template #default="{ row }">
+              <el-tag :type="row.conclusion == 1 ? 'success' : 'primary'">
+                <dict-value
+                  :options="dictData.conclusion"
+                  :value="row.conclusion"
+                ></dict-value>
+              </el-tag>
+            </template>
+          </el-table-column>
           <el-table-column
             prop="remark"
             label="备注"

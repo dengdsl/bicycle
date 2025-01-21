@@ -43,6 +43,8 @@ import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -269,7 +271,7 @@ public class BicycleServiceImpl implements BicycleService {
         headerFont.setColor(IndexedColors.WHITE.getIndex());  // 白色字体
         headerFont.setBold(true);  // 加粗
         headerStyle.setFont(headerFont);
-//        表头信息
+        // 表头信息
         String[] headers = {"型号", "车架号", "X光图片", "生产日期", "结论", "备注"};
 
         // 第一行：导入模板说明
@@ -371,6 +373,7 @@ public class BicycleServiceImpl implements BicycleService {
 
         try {
             List<ExcelRowDetailVo> rowDetails = importByPicture.readExcelImageAndData(file, 1);
+            if (rowDetails.isEmpty()) return AjaxResult.failed("文件数据为空，请检查上传之前文件是否保存！");
             log.info("文件转换成功：" + rowDetails.toString());
             List<BicycleEntry> bicycleEntries = new ArrayList<>();
             // 查询数据库中已经存在的ID和车架号
@@ -390,15 +393,50 @@ public class BicycleServiceImpl implements BicycleService {
                 // 将list用换行符进行拼接
                 return AjaxResult.failed(HttpEnum.CONFIRM_FAILED.getCode(), "车架号已存在：" + String.join("\n\r", list));
             }
+            // 获取数据库中存在型号和结论
+            QueryWrapper<SystemDictDataEntry> dictQueryWrapper = new QueryWrapper<>();
+            queryWrapper.in("dict_type", "model", "conclusion");
+            List<SystemDictDataEntry> systemDictDataEntries = dictDataMapper.selectList(dictQueryWrapper);
+            // 型号列表
+            List<SystemDictDataEntry> modelList = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("model")).toList();
+            // 结论列表
+            List<SystemDictDataEntry> conclusionList = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("conclusion")).toList();
+
+            // 判断型号是否存在
+            List<String> modelNames = modelList.stream().map(SystemDictDataEntry::getName).toList();
+
+            List<String> models = rowDetails.stream()
+                    .map(ExcelRowDetailVo::getModel)
+                    .filter(model -> !modelNames.contains(model))
+                    .toList();
+            if (!models.isEmpty()) {
+                return AjaxResult.failed(HttpEnum.FAILED.getCode(), "型号数据不合法：" + String.join("\n\r", models));
+            }
+
+            // 判断结论值是否合法
+            List<String> conclusionNames =  conclusionList.stream().map(SystemDictDataEntry::getName).toList();
+            List<String> conclusions = rowDetails.stream()
+                    .map(ExcelRowDetailVo::getConclusion)
+                    .filter(model -> !conclusionNames.contains(model))
+                    .toList();
+            if (!conclusions.isEmpty()) {
+                return AjaxResult.failed(HttpEnum.FAILED.getCode(), "结论数据不合法：" + String.join("\n\r", conclusions));
+            }
+
+            // 提取出所有的型号和法值
+            Map<String, String> modelMap = modelList.stream().collect(Collectors.toMap(SystemDictDataEntry::getName, SystemDictDataEntry::getValue));
+
+            Map<String, String> conclusionMap = conclusionList.stream().collect(Collectors.toMap(SystemDictDataEntry::getName, SystemDictDataEntry::getValue));
+
+            // 验证通过，开始插入数据库
             for (ExcelRowDetailVo vo : rowDetails) {
                 BicycleEntry bicycleEntry = new BicycleEntry();
                 String id = randomService.randomId(RandomPrefix.BICYCLE_PREFIX.getDrugPrefix());
 
                 bicycleEntry.setId(checkId(id, "id", ids));
-                int model = (int) Double.parseDouble(vo.getModel());
-                bicycleEntry.setModel(model);
+                bicycleEntry.setModel(modelMap.get(vo.getModel()));
                 bicycleEntry.setFrameNo(vo.getFrameNo());
-                bicycleEntry.setConclusion(vo.getConclusion().equals("通过") ? 1 : 0);
+                bicycleEntry.setConclusion(conclusionMap.get(vo.getConclusion()));
                 bicycleEntry.setProduceTime(vo.getProduceTime());
                 // 处理X光图片
                 String imageUrls = saveImage(vo.getImages(), request);
@@ -424,7 +462,7 @@ public class BicycleServiceImpl implements BicycleService {
             }
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new CustomException(HttpEnum.FAILED.getCode(), "导入数据文件解析失败！");
+            throw new CustomException(HttpEnum.FAILED.getCode(), "导入数据文件解析失败：" + e.getMessage());
         }
         return AjaxResult.success("导入成功");
     }

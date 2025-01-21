@@ -93,13 +93,17 @@ export function downloadTemplate() {
  * 批量导入数据列表
  * */
 export function importBicycleList(data: any) {
-  return request.post({
-    url: '/bicycle/import',
-    data,
-    headers: {
-      'Content-Type': ContentTypeEnum.FORM_DATA,
+  return request.post(
+    {
+      url: '/bicycle/import',
+      data,
+      headers: {
+        'Content-Type': ContentTypeEnum.FORM_DATA,
+        timeout: 30 * 60 * 1000,
+      },
     },
-  })
+    { isDownloadFile: false },
+  )
 }
 
 export interface exportRequest {}

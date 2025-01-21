@@ -22,7 +22,7 @@ public class BicycleEntry implements Serializable {
     private String id; // id
 
     @TableField("model")
-    private Integer model; // 型号
+    private String model; // 型号
 
     @TableField("frame_no")
     private String frameNo; // 车架号
@@ -37,7 +37,7 @@ public class BicycleEntry implements Serializable {
     private String qrImg; // 二维码图片
 
     @TableField("conclusion")
-    private Integer conclusion; // 结论
+    private String conclusion; // 结论
 
     @TableField("remark")
     private String remark; // 备注
