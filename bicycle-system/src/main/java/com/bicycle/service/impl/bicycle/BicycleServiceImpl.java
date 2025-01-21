@@ -3,10 +3,14 @@ package com.bicycle.service.impl.bicycle;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.bicycle.entry.bicycle.BicycleEntry;
+import com.bicycle.entry.dict.SystemDictDataEntry;
+import com.bicycle.entry.system.SystemConfigEntry;
 import com.bicycle.enums.HttpEnum;
 import com.bicycle.enums.RandomPrefix;
 import com.bicycle.exception.CustomException;
+import com.bicycle.mapper.account.SystemConfigMapper;
 import com.bicycle.mapper.bicycle.BicycleMapper;
+import com.bicycle.mapper.dict.SystemDictDataMapper;
 import com.bicycle.service.random.RandomService;
 import com.bicycle.service.bicycle.BicycleService;
 import com.bicycle.utils.*;
@@ -17,31 +21,48 @@ import com.bicycle.validate.page.PageValidate;
 import com.bicycle.vo.bicycle.ExcelRowDetailVo;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFPictureData;
+import org.apache.poi.xssf.usermodel.XSSFRichTextString;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.apache.poi.ss.util.CellRangeAddressList;
 
+
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.*;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Slf4j
 @Service
 public class BicycleServiceImpl implements BicycleService {
 
+    private final SystemConfigMapper systemConfigMapper;
     private BicycleMapper bicycleMapper;
     private RandomService randomService;
+    private SystemDictDataMapper dictDataMapper;
 
-    public BicycleServiceImpl(BicycleMapper bicycleMapper, RandomService randomService) {
+    public BicycleServiceImpl(BicycleMapper bicycleMapper, RandomService randomService, SystemConfigMapper systemConfigMapper, SystemDictDataMapper dictDataMapper) {
         this.bicycleMapper = bicycleMapper;
         this.randomService = randomService;
+        this.systemConfigMapper = systemConfigMapper;
+        this.dictDataMapper = dictDataMapper;
     }
 
     /**
      * 创建数据列表查询对象
-     * */
+     */
     private static QueryWrapper<BicycleEntry> getBicycleEntryQueryWrapper(BicycleSearchValidate searchValidate) {
         QueryWrapper<BicycleEntry> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("is_del", 0);
@@ -195,6 +216,151 @@ public class BicycleServiceImpl implements BicycleService {
         return AjaxResult.success("删除成功");
     }
 
+    /**
+     * 下载批量导入模版
+     */
+    @Override
+    public void downloadImportTemplate(HttpServletResponse response) throws IOException, DecoderException {
+        // 创建一个新的 Excel 工作簿
+        Workbook workbook = new XSSFWorkbook();
+        // 根据当前年月日和时间戳创建动态文件名
+        Calendar instance = Calendar.getInstance();
+        String year = String.valueOf(instance.get(Calendar.YEAR));
+        String month = String.format("%02d", instance.get(Calendar.MONTH) + 1);
+        String day = String.format("%02d", instance.get(Calendar.DAY_OF_MONTH));
+
+        String fileName = String.format("%s%s%s%d", year, month, day, System.currentTimeMillis());
+        Sheet sheet = workbook.createSheet(fileName);
+
+        // 创建单元格样式
+        CellStyle defaultStyle = workbook.createCellStyle();
+        Font defaultFont = workbook.createFont();
+        defaultFont.setFontHeightInPoints((short) 18);  // 设置18号字
+        defaultStyle.setFont(defaultFont);
+        defaultStyle.setWrapText(true);
+
+        // 创建红色字体样式
+        CellStyle redStyle = workbook.createCellStyle();
+        Font redFont = workbook.createFont();
+        redFont.setFontHeightInPoints((short) 12);  // 设置12号字
+        redFont.setColor(IndexedColors.RED.getIndex());  // 红色字体
+        redStyle.setFont(redFont);
+        redStyle.setWrapText(true);
+
+        // 创建蓝色字体样式
+        CellStyle blueStyle = workbook.createCellStyle();
+        Font blueFont = workbook.createFont();
+        blueFont.setFontHeightInPoints((short) 12);  // 设置12号字
+        blueFont.setColor(IndexedColors.BLUE.getIndex());  // 蓝色字体
+        blueStyle.setFont(blueFont);
+        blueStyle.setWrapText(true);
+
+        // 获取数据库模版配置信息
+        SystemConfigEntry headerRowHeight = systemConfigMapper.getConfigByName("headerRowHeight");
+        SystemConfigEntry templateDescription = systemConfigMapper.getConfigByName("templateDescription");
+
+        // 创建表头背景颜色样式
+        CellStyle headerStyle = workbook.createCellStyle();
+        headerStyle.setFillForegroundColor(IndexedColors.CORNFLOWER_BLUE.getIndex());  // 设置背景色为 #2682FC
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        headerStyle.setWrapText(true);  // 启用自动换行
+
+        Font headerFont = workbook.createFont();
+        headerFont.setColor(IndexedColors.WHITE.getIndex());  // 白色字体
+        headerFont.setBold(true);  // 加粗
+        headerStyle.setFont(headerFont);
+//        表头信息
+        String[] headers = {"型号", "车架号", "X光图片", "生产日期", "结论", "备注"};
+
+        // 第一行：导入模板说明
+        Row firstRow = sheet.createRow(0);
+        for (int i = 0; i < headers.length; i++) {
+            firstRow.createCell(i);
+        }
+        firstRow.getCell(0).setCellStyle(defaultStyle);
+        // 合并第一行的 6 列单元格
+        sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, headers.length - 1));
+        firstRow.createCell(0).setCellValue("导入模板说明：");
+
+        String[] instructions = getTemplateDescription(templateDescription);
+
+        // 创建一个富文本字符串来包含不同样式的文本
+        XSSFRichTextString richText = new XSSFRichTextString("导入模板说明\n");
+        richText.applyFont(0, richText.length(), defaultStyle.getFontIndex());
+        // 添加每一条描述到富文本字符串，并应用不同的样式
+        for (int i = 0; i < instructions.length; i++) {
+            String instruction = instructions[i].trim();
+
+            // 选择对应的样式
+            CellStyle styleToApply;
+            if (instruction.startsWith("*")) {
+                instruction = instruction.substring(1);
+                styleToApply = redStyle;  // 红色样式
+            } else {
+                styleToApply = blueStyle;  // 蓝色样式
+            }
+
+            // 为富文本字符串设置不同的样式
+            int startIndex = richText.length();
+            richText.append(instruction + "\n");
+            richText.applyFont(startIndex, startIndex + instruction.length(), styleToApply.getFontIndex());
+        }
+        // 将富文本字符串设置到单元格中
+        firstRow.getCell(0).setCellValue(richText);
+        int lineHeight = 200;
+        if (headerRowHeight != null && !headerRowHeight.getValue().isEmpty()) {
+            lineHeight = Integer.parseInt(headerRowHeight.getValue());
+        }
+        firstRow.setHeightInPoints(lineHeight);
+
+        // 获取数据库中存在的型号/和结论
+        QueryWrapper<SystemDictDataEntry> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("dict_type", "model", "conclusion");
+        List<SystemDictDataEntry> systemDictDataEntries = dictDataMapper.selectList(queryWrapper);
+        // 第二行：表头
+        Row headerRow = sheet.createRow(1);  // 表头从第2行开始
+        for (int i = 0; i < headers.length; i++) {
+            Cell headerCell = headerRow.createCell(i);
+            headerCell.setCellValue(headers[i]);
+            headerCell.setCellStyle(headerStyle);
+            sheet.setColumnWidth(i, 30 * 256);
+        }
+        // 设置型号单元格为下拉选项
+        String[] modelOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("model")).map(SystemDictDataEntry::getName).toArray(String[]::new);;
+
+
+        // 创建数据验证规则（设置下拉选项）
+        DataValidationHelper validationHelper = sheet.getDataValidationHelper();
+        DataValidationConstraint constraint = validationHelper.createExplicitListConstraint(modelOptions);
+
+        // 设置验证区域，假设只对第2行至最后一行（第一列）进行数据验证
+        CellRangeAddressList addressList = new CellRangeAddressList(2, 1000, 0, 0); // 对A列进行下拉验证
+        DataValidation validation = validationHelper.createValidation(constraint, addressList);
+        validation.setShowErrorBox(true);  // 如果选择无效，显示错误框
+        sheet.addValidationData(validation);
+
+        // 设置结论单元格为下拉选项
+        String[] conclusionOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("conclusion")).map(SystemDictDataEntry::getName).toArray(String[]::new);
+
+        // 创建数据验证规则
+        validationHelper = sheet.getDataValidationHelper();
+        DataValidationConstraint conclusionConstraint = validationHelper.createExplicitListConstraint(conclusionOptions);
+        // 设置验证区域，从第二行验证到最后一行
+        addressList = new CellRangeAddressList(2, 1000, 4, 4);
+        DataValidation conclusionValidation = validationHelper.createValidation(conclusionConstraint, addressList);
+        conclusionValidation.setShowErrorBox(true);
+        sheet.addValidationData(conclusionValidation);
+
+        // 设置响应头信息，文件名，保证浏览器能够正常识别下载
+        String headerContentType = String.format("attachment; filename=%s", URLEncoder.encode(fileName + ".xlsx", StandardCharsets.UTF_8));
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, headerContentType);
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setCharacterEncoding("UTF-8");
+        // 输出到响应流
+        workbook.write(response.getOutputStream());
+        // 关闭工作簿
+        workbook.close();
+    }
 
     /**
      * 批量导入自行车信息
@@ -229,7 +395,7 @@ public class BicycleServiceImpl implements BicycleService {
                 String id = randomService.randomId(RandomPrefix.BICYCLE_PREFIX.getDrugPrefix());
 
                 bicycleEntry.setId(checkId(id, "id", ids));
-                int model = (int)Double.parseDouble(vo.getModel());
+                int model = (int) Double.parseDouble(vo.getModel());
                 bicycleEntry.setModel(model);
                 bicycleEntry.setFrameNo(vo.getFrameNo());
                 bicycleEntry.setConclusion(vo.getConclusion().equals("通过") ? 1 : 0);
@@ -277,7 +443,7 @@ public class BicycleServiceImpl implements BicycleService {
     @Override
     public AjaxResult<Object> queryByQrcode(String qrcode) {
         QueryWrapper<BicycleEntry> queryWrapper = new QueryWrapper<>();
-        //queryWrapper.eq("is_del", 0);
+        queryWrapper.eq("is_del", 0);
         queryWrapper.and(wrapper -> wrapper.eq("qrcode", qrcode).or().eq("frame_no", qrcode));
         BicycleEntry bicycleEntry = bicycleMapper.selectOne(queryWrapper);
         return AjaxResult.success(bicycleEntry);
@@ -302,9 +468,9 @@ public class BicycleServiceImpl implements BicycleService {
      */
     public String checkId(String id, String fieldName, List<String> ids) {
         if (ids.isEmpty()) {
-           return checkId(id, fieldName);
+            return checkId(id, fieldName);
         }
-         // 判断id在ids中是否存在
+        // 判断id在ids中是否存在
         if (ids.contains(id)) {
             return checkId(randomService.randomId(RandomPrefix.BICYCLE_PREFIX.getDrugPrefix()), fieldName, ids);
         }
@@ -336,45 +502,45 @@ public class BicycleServiceImpl implements BicycleService {
 
     /**
      * 将解析出来的图片保存到本地
-     * */
+     */
     private String saveImage(List<XSSFPictureData> pictureDataList, HttpServletRequest request) {
-            List<String> imageUrls = new ArrayList<>();
-            for (PictureData picData : pictureDataList) {
-                byte[] pictureBytes = picData.getData();
-                String ext = getPictureExtension(picData.getPictureType());
-                // 生成时间戳
-                long timestamp = System.currentTimeMillis() / 1000;
-                // 生成随机数
-                int randomNum = new Random().nextInt(90000) + 10000;
-                String fileName = String.format("%d%d%s", timestamp , randomNum , ext);
-                String basePath = FilePathUtil.generateBasePath("images");
-                // 创建图片路径
-                String filePath = String.format("%s/%s/%s", ConfigUtils.getFilePath(), basePath, fileName);
-                try {
-                    // 判断路径是否存在
-                    File file = new File(filePath);
-                    if (!file.getParentFile().exists()) {
-                        file.getParentFile().mkdirs();
-                    }
-                    // 保存图片
-                    OutputStream fos = new FileOutputStream(file);
-                    fos.write(pictureBytes);
-                    fos.close();
-                    String serverUrl = ConfigUtils.getServerUrl();
-                    if (serverUrl!= null) {
-                        serverUrl = request.getScheme() + "://" + request.getServerName();
-                    }
-                    imageUrls.add(serverUrl + "/static/" + basePath + "/" + fileName);
-                } catch (IOException e) {
-                    log.error("保存文件失败：" + e.getMessage());
+        List<String> imageUrls = new ArrayList<>();
+        for (PictureData picData : pictureDataList) {
+            byte[] pictureBytes = picData.getData();
+            String ext = getPictureExtension(picData.getPictureType());
+            // 生成时间戳
+            long timestamp = System.currentTimeMillis() / 1000;
+            // 生成随机数
+            int randomNum = new Random().nextInt(90000) + 10000;
+            String fileName = String.format("%d%d%s", timestamp, randomNum, ext);
+            String basePath = FilePathUtil.generateBasePath("images");
+            // 创建图片路径
+            String filePath = String.format("%s/%s/%s", ConfigUtils.getFilePath(), basePath, fileName);
+            try {
+                // 判断路径是否存在
+                File file = new File(filePath);
+                if (!file.getParentFile().exists()) {
+                    file.getParentFile().mkdirs();
                 }
+                // 保存图片
+                OutputStream fos = new FileOutputStream(file);
+                fos.write(pictureBytes);
+                fos.close();
+                String serverUrl = ConfigUtils.getServerUrl();
+                if (serverUrl != null) {
+                    serverUrl = request.getScheme() + "://" + request.getServerName();
+                }
+                imageUrls.add(serverUrl + "/static/" + basePath + "/" + fileName);
+            } catch (IOException e) {
+                log.error("保存文件失败：" + e.getMessage());
             }
+        }
         return StringUtils.join(imageUrls, ";");
     }
 
     /**
      * 获取图片扩展名
-     * */
+     */
     private static String getPictureExtension(int pictureType) {
         switch (pictureType) {
             case Workbook.PICTURE_TYPE_EMF:
@@ -393,5 +559,40 @@ public class BicycleServiceImpl implements BicycleService {
                 return ".bin";  // 未知格式，使用 .bin 作为默认扩展名
         }
     }
+
+    /**
+     * 将输入的颜色值转换为十六进制颜色
+     */
+    private byte[] convertColorToHex(String color) throws DecoderException {
+        // 去掉前缀 "0x"
+        if (color.startsWith("0x")) {
+            color = color.substring(2);
+        }
+        // 去掉颜色字符串的 "#" 符号
+        if (color.startsWith("#")) {
+            color = color.substring(1);
+        }
+        return Hex.decodeHex(color);
+    }
+
+    /**
+     * 获取导入模板说明描述
+     */
+    private static String[] getTemplateDescription(SystemConfigEntry templateDescription) {
+        String[] instructions = {
+                "*1.型号：请在下拉选项中进行选择，如果不选择或不按配置项填写将会导致导入失败！",
+                "*2.车架号：不能出现重复的车架号和已经录入系统的车架号，否则将导致导入失败！",
+                "*3.X光图片：图片不能嵌入单元格，只需要插入即可，否则会导致图片信息提取不到！",
+                "*4.生产日期：需要为日期格式，例如：2025/1/20！",
+                "*5.结论：请通过下拉选项选择，如果不进行选择默认为通过！",
+                "*6.备注：备注信息不能超过1024个字符！",
+                "7.数据编号和二维码编号以及二维码由系统自动生成！"
+        };
+        if (templateDescription != null && templateDescription.getValue() != null && !templateDescription.getValue().isEmpty()) {
+            instructions = templateDescription.getValue().split(";");
+        }
+        return instructions;
+    }
+
 
 }

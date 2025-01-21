@@ -76,14 +76,23 @@ export function getBicycleDetail(params: { id: string }) {
   })
 }
 
-export interface ImportRequest {
-  file: any
+/**
+ * 下载模版文件
+ * */
+export function downloadTemplate() {
+  return request.get(
+    {
+      url: '/bicycle/download/template',
+      responseType: 'blob',
+    },
+    { isDownloadFile: true },
+  )
 }
 
 /**
  * 批量导入数据列表
  * */
-export function importBicycleList(data: ImportRequest) {
+export function importBicycleList(data: any) {
   return request.post({
     url: '/bicycle/import',
     data,

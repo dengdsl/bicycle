@@ -38,7 +38,7 @@ const axiosHooks: AxiosHooks = {
   },
   // 响应拦截器，所有的请求接口返回的响应内容都会先经过此处
   async responseInterceptorHook(response) {
-    const { isTransformResponse, isReturnDefaultResponse } =
+    const { isTransformResponse, isReturnDefaultResponse, isDownloadFile } =
       response.config.requestOptions
 
     // 返回默认响应，当需要获取响应头及其他数据时可使用
@@ -49,8 +49,15 @@ const axiosHooks: AxiosHooks = {
     if (!isTransformResponse) {
       return response.data
     }
-    const { code, data, message } = response.data
+    if (isDownloadFile) {
+      const link = document.createElement('a')
+      link.href = URL.createObjectURL(response.data)
+      link.target = '_blank'
+      link.click()
+      return feedback.msgSuccess('下载成功')
+    }
 
+    const { code, data, message } = response.data
     // 判断响应状态码是否请求成功
     switch (code) {
       case ResponseStatusEnum.SUCCESS:
@@ -124,6 +131,8 @@ const defaultOptions: AxiosRequestConfig = {
     retryCount: 2,
     // 是否开启,默认开启重复请求
     isOpenRetry: true,
+    // 是否是文件下载
+    isDownloadFile: false,
   },
 }
 

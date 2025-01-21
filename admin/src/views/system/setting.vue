@@ -10,7 +10,9 @@
     <el-menu-item index="logo">网站LOGO设置</el-menu-item>
     <el-menu-item index="qrcode">二维码配置</el-menu-item>
     <el-menu-item index="official">轮播图配置</el-menu-item>
+    <el-menu-item index="excel">Excel导入模版配置</el-menu-item>
   </el-menu>
+  <!--  网站LOGO配置-->
   <el-card class="!border-none" shadow="never" v-if="activeIndex === 'logo'">
     <div class="flex flex-wrap gap-32">
       <div class="flex flex-col items-center gap-4">
@@ -67,13 +69,14 @@
       </div>
     </div>
   </el-card>
+  <!--  网站设置-->
   <el-card
     class="!border-none"
     shadow="never"
     v-else-if="activeIndex === 'web'"
   >
     <el-row :gutter="10" class="mb-4">
-      <el-col :span="12">
+      <el-col :span="12" :xs="24" :sm="24" :md="12">
         <div class="flex flex-col">
           <div class="mb-4 ml-1">
             {{ configFormData.webName.label }}
@@ -84,7 +87,7 @@
           <el-input v-model="configFormData.webName.value" size="large" />
         </div>
       </el-col>
-      <el-col :span="12">
+      <el-col :span="12" :xs="24" :sm="24" :md="12">
         <div class="flex flex-col mx-auto">
           <div class="mb-4 ml-1">
             {{ configFormData.filings.label }}和{{
@@ -109,7 +112,7 @@
       </el-col>
     </el-row>
     <el-row :gutter="40" class="mb-4">
-      <el-col :span="12">
+      <el-col :span="12" :xs="24" :sm="24" :md="12">
         <div class="flex flex-col mx-auto">
           <div class="mb-4 ml-1">
             {{ configFormData.theme.label }}
@@ -120,7 +123,7 @@
           <el-input v-model="configFormData.theme.value" size="large" />
         </div>
       </el-col>
-      <el-col :span="12">
+      <el-col :span="12" :xs="24" :sm="24" :md="12">
         <div class="flex flex-col">
           <div class="mb-4 ml-1">
             {{ configFormData.mobileTheme.label }}
@@ -133,7 +136,7 @@
       </el-col>
     </el-row>
     <el-row :gutter="40" class="mb-4">
-      <el-col :span="12">
+      <el-col :span="12" :xs="24" :sm="24" :md="12">
         <div class="flex flex-col mx-auto">
           <div class="mb-4 ml-1">
             {{ configFormData.serverUrl.label }}
@@ -144,7 +147,7 @@
           <el-input v-model="configFormData.serverUrl.value" size="large" />
         </div>
       </el-col>
-      <el-col :span="12">
+      <el-col :span="12" :xs="24" :sm="24" :md="12">
         <div class="flex flex-col">
           <div class="mb-4 ml-1">
             {{ configFormData.filePath.label }}
@@ -157,52 +160,106 @@
       </el-col>
     </el-row>
   </el-card>
+  <!--  二维码配置-->
   <el-card
     class="!border-none"
     shadow="never"
     v-else-if="activeIndex === 'qrcode'"
   >
-    <div class="flex flex-wrap gap-y-8">
-      <div
-        class="flex items-center gap-4"
-        style="width: calc((100% - 80px) / 4)"
-      >
-        {{ configFormData.qrcodeWidth.label }}
-        <el-input-number v-model="configFormData.qrcodeWidth.value as number" />
-      </div>
-      <div
-        class="flex items-center gap-4"
-        style="width: calc((100% - 80px) / 4)"
-      >
-        {{ configFormData.qrcodeHeight.label }}
-        <el-input-number
-          v-model="configFormData.qrcodeHeight.value as number"
-        />
-      </div>
-      <div
-        class="flex items-center gap-4"
-        style="width: calc((100% - 80px) / 4)"
-      >
-        {{ configFormData.qrcodeFontSize.label }}
-        <el-input-number
-          v-model="configFormData.qrcodeFontSize.value as number"
-        />
-      </div>
-      <div
-        class="flex items-center gap-4"
-        style="width: calc((100% - 80px) / 4)"
-      >
-        {{ configFormData.qrcodeMargin.label }}
-        <el-input-number
-          v-model="configFormData.qrcodeMargin.value as number"
-        />
-      </div>
-    </div>
+    <el-row :gutter="20">
+      <el-col :span="6" :xs="24" :sm="24" :md="12" :lg="6" class="mb-4">
+        <div class="flex items-center gap-4">
+          {{ configFormData.qrcodeWidth.label }}
+          <el-input-number
+            v-model="configFormData.qrcodeWidth.value as number"
+          />
+        </div>
+      </el-col>
+      <el-col :span="6" :xs="24" :sm="24" :md="12" :lg="6" class="mb-4">
+        <div class="flex items-center gap-4">
+          {{ configFormData.qrcodeHeight.label }}
+          <el-input-number
+            v-model="configFormData.qrcodeHeight.value as number"
+          />
+        </div>
+      </el-col>
+      <el-col :span="6" :xs="24" :sm="24" :md="12" :lg="6" class="mb-4">
+        <div class="flex items-center gap-4">
+          {{ configFormData.qrcodeFontSize.label }}
+          <el-input-number
+            v-model="configFormData.qrcodeFontSize.value as number"
+          />
+        </div>
+      </el-col>
+      <el-col :span="6" :xs="24" :sm="24" :md="12" :lg="6" class="mb-4">
+        <div class="flex items-center gap-4">
+          {{ configFormData.qrcodeMargin.label }}
+          <el-input-number
+            v-model="configFormData.qrcodeMargin.value as number"
+          />
+        </div>
+      </el-col>
+    </el-row>
+  </el-card>
+  <!--excel导入模版配置-->
+  <el-card
+    class="!border-none"
+    shadow="never"
+    v-else-if="activeIndex === 'excel'"
+  >
+    <el-row :gutter="10" class="mb-4">
+      <el-col :span="12" :xs="24" :sm="24" :md="24" :lg="12">
+        <div class="flex flex-col">
+          <div class="mb-4 ml-1">
+            {{ configFormData.headerBgColor.label }}
+            <span class="text-info text-xs">
+              （{{ configFormData.headerBgColor.remark }}）
+            </span>
+          </div>
+          <el-input v-model="configFormData.headerBgColor.value" size="large" />
+        </div>
+      </el-col>
+      <el-col :span="12" :xs="24" :sm="24" :md="24" :lg="12">
+        <div class="flex flex-col mx-auto">
+          <div class="mb-4 ml-1">
+            {{ configFormData.headerTextColor.label }}
+            <span class="text-info text-xs">
+              （{{ configFormData.headerTextColor.remark }}）
+            </span>
+          </div>
+          <el-input
+            class="flex-1"
+            v-model="configFormData.headerTextColor.value"
+            size="large"
+            :placeholder="configFormData.headerTextColor.remark"
+          />
+        </div>
+      </el-col>
+    </el-row>
+    <el-row :gutter="40" class="mb-4">
+      <el-col :span="24">
+        <div class="flex flex-col mx-auto">
+          <div class="mb-4 ml-1">
+            {{ configFormData.templateDescription.label }}
+            <span class="text-info text-xs">
+              （ {{ configFormData.templateDescription.remark }}）
+            </span>
+          </div>
+          <el-input
+            type="textarea"
+            :autosize="{ minRows: 2 }"
+            v-model="configFormData.templateDescription.value"
+            size="large"
+          />
+        </div>
+      </el-col>
+    </el-row>
   </el-card>
 
+  <!--轮播图配置-->
   <el-card class="!border-none" shadow="never" v-else>
     <el-row :gutter="40">
-      <el-col class="mb-4" :span="8">
+      <el-col class="mb-4" :span="8" :xs="24" :sm="24" :md="24" :lg="8">
         <el-card shadow="never" header="效果预览">
           <div class="flex items-center justify-center">
             <div
@@ -250,7 +307,7 @@
           </div>
         </el-card>
       </el-col>
-      <el-col class="mb-4" :span="16">
+      <el-col class="mb-4" :span="16" :xs="24" :sm="24" :md="24" :lg="16">
         <el-card shadow="never">
           <template #header>
             <div class="flex items-center justify-between">
@@ -283,6 +340,9 @@
             <el-col
               class="mb-4"
               :span="12"
+              :xs="24"
+              :sm="24"
+              :md="12"
               v-for="(item, index) in configFormData.bannerImgs.imgList"
               :key="index"
             >
@@ -337,6 +397,7 @@
       </el-col>
     </el-row>
   </el-card>
+
   <footer-btns>
     <el-button type="primary" :loading="loading" @click="handleSubmit">
       保存
@@ -387,6 +448,10 @@ interface ConfigFormData {
   // 文件上传服务器和文件路径
   serverUrl: Partial<SystemConfigMo>
   filePath: Partial<SystemConfigMo>
+  // 导入模版配置
+  headerBgColor: Partial<SystemConfigMo>
+  headerTextColor: Partial<SystemConfigMo>
+  templateDescription: Partial<SystemConfigMo>
 }
 
 const configFormData = reactive<ConfigFormData>({
@@ -412,6 +477,10 @@ const configFormData = reactive<ConfigFormData>({
   // 文件上传配置
   serverUrl: {},
   filePath: {},
+  // 导入模版配置
+  headerBgColor: {},
+  headerTextColor: {},
+  templateDescription: {},
 })
 
 const handleSelect = (index: 'web' | 'logo' | 'qrcode' | 'official') => {

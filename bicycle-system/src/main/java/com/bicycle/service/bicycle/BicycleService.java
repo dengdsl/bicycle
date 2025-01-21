@@ -5,10 +5,11 @@ import com.bicycle.validate.bicycle.BicycleCreateValidate;
 import com.bicycle.validate.bicycle.BicycleUpdateValidate;
 import com.bicycle.validate.page.PageValidate;
 import com.bicycle.validate.bicycle.BicycleSearchValidate;
-import com.google.zxing.WriterException;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.codec.DecoderException;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public interface BicycleService {
@@ -52,4 +53,9 @@ public interface BicycleService {
      * 扫描二维码进行查询
      * */
     AjaxResult<Object> queryByQrcode(String qrcode);
+
+    /**
+     * 下载文件导入模版
+     * */
+    void downloadImportTemplate(HttpServletResponse response) throws IOException, DecoderException;
 }

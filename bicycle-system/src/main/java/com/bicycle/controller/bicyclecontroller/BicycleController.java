@@ -10,11 +10,14 @@ import com.bicycle.validate.bicycle.BicycleCreateValidate;
 import com.bicycle.validate.bicycle.BicycleUpdateValidate;
 import com.bicycle.validate.bicycle.BicycleSearchValidate;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.DecoderException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
@@ -43,7 +46,7 @@ public class BicycleController  {
      * 新增自行车信息
      * */
     @PostMapping("add")
-    public AjaxResult<Object> addBicycle(HttpServletRequest request,  @Validated @RequestBody BicycleCreateValidate create){
+    public AjaxResult<Object> addBicycle(@NotNull HttpServletRequest request, @Validated @RequestBody BicycleCreateValidate create){
         return bicycleService.addBicycle(create, request);
     }
 
@@ -72,10 +75,17 @@ public class BicycleController  {
     }
 
     /**
+     * 下载导入模版
+     * */
+    @GetMapping("download/template")
+    public void downloadTemplate(@NotNull HttpServletResponse response) throws IOException, DecoderException {
+         bicycleService.downloadImportTemplate(response);
+    }
+    /**
      * 批量导入
      * */
     @PostMapping("import")
-    public AjaxResult<Object> importBicycle(HttpServletRequest request, @Validated @RequestParam MultipartFile file) throws IOException {
+    public AjaxResult<Object> importBicycle(@NotNull HttpServletRequest request, @Validated @RequestParam MultipartFile file) throws IOException {
         if (file.isEmpty()) {
             return AjaxResult.failed("上传文件不能为空");
         }
@@ -105,5 +115,6 @@ public class BicycleController  {
     public AjaxResult<Object> query(@Validated @RequestParam String qrcode ){
         return bicycleService.queryByQrcode(qrcode);
     }
+
 }
 

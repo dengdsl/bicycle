@@ -318,7 +318,7 @@
               <b
                 class="text-primary"
                 style="cursor: pointer"
-                @click="handleDownload"
+                @click="downloadTemplate"
               >
                 下载模板
               </b>
@@ -347,7 +347,12 @@
 import EditPopup from './edit.vue'
 import { usePaging } from '@/hooks/usePaging.ts'
 import feedback from '@/utils/feedback.ts'
-import { getBicycleList, deleteBicycle, importBicycleList } from '@/api/bicycle'
+import {
+  getBicycleList,
+  deleteBicycle,
+  importBicycleList,
+  downloadTemplate,
+} from '@/api/bicycle'
 import Detail from './detail.vue'
 import {
   genFileId,
@@ -417,18 +422,6 @@ const handleExceed: UploadProps['onExceed'] = (files) => {
 
 const handleClose = (done: () => void) => {
   done()
-}
-
-// 下载服务工单模板文件
-const handleDownload = () => {
-  // const link = document.createElement('a')
-  // link.href = downloadUrl
-  // const url = decodeURIComponent(downloadUrl)
-  // const urlSuffix = url.split("/")[1]
-  // link.download = urlSuffix.split(".")[0]
-  // document.body.appendChild(link)
-  // link.click()
-  // document.body.removeChild(link)
 }
 
 // 批量导入文件

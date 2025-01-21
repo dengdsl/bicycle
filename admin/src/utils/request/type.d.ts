@@ -15,6 +15,8 @@ export interface RequestOptions {
   retryCount: number
   // 是否开启重复请求
   isOpenRetry: boolean
+  // 是否是文件流传输
+  isDownloadFile: boolean
 }
 
 // 后台响应的数据结构
