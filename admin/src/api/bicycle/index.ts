@@ -105,11 +105,10 @@ export function importBicycleList(data: any) {
     {
       url: '/bicycle/import',
       data,
-
       headers: {
         'Content-Type': ContentTypeEnum.FORM_DATA,
-        timeout: 30 * 60 * 1000,
       },
+      timeout: 30 * 60 * 1000,
     },
     { isDownloadFile: false },
   )
@@ -124,9 +123,7 @@ export function exportBicycleList(data: { ids: string[] }) {
       url: '/bicycle/export',
       data,
       responseType: 'blob',
-      headers: {
-        timeout: 30 * 60 * 1000,
-      },
+      timeout: 30 * 60 * 1000,
     },
     { isDownloadFile: true },
   )
