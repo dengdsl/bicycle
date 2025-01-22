@@ -32,7 +32,7 @@ export function usePaging(options: Options) {
   // 请求分页数据
   const getLists = () => {
     pager.loading = true
-    fetchFn({
+    return fetchFn({
       pageNo: pager.page,
       pageSize: pager.size,
       ...params,

@@ -7,23 +7,31 @@ interface ListRequest {
   model: string
   frameNo: string
   conclusion: string
-  produceTime: string
+  produceTimeStart: string
+  produceTimeEnd: string
 }
 
 // 列表相应结果
-interface ListResponse {
+export interface TableRow {
   id: string
   model: string
   frameNo: string
   conclusion: string
   produceTime: string
+  createTime: string
+  image: string
+  qrImg: string
+  qrcode: string
+  updateTime: string
+  remark: string
+  isDel: number
 }
 
 /**
  * 获取数据列表
  * */
 export function getBicycleList(params: ListRequest) {
-  return request.get<ListResponse>(
+  return request.get<Array<TableRow>>(
     {
       url: '/bicycle/list',
       params,
@@ -97,6 +105,7 @@ export function importBicycleList(data: any) {
     {
       url: '/bicycle/import',
       data,
+
       headers: {
         'Content-Type': ContentTypeEnum.FORM_DATA,
         timeout: 30 * 60 * 1000,
@@ -106,16 +115,21 @@ export function importBicycleList(data: any) {
   )
 }
 
-export interface exportRequest {}
-
 /**
  * 批量导出数据列表
  * */
-export function exportBicycleList(params: exportRequest) {
-  return request.post({
-    url: '/bicycle/export',
-    params,
-  })
+export function exportBicycleList(data: { ids: string[] }) {
+  return request.post(
+    {
+      url: '/bicycle/export',
+      data,
+      responseType: 'blob',
+      headers: {
+        timeout: 30 * 60 * 1000,
+      },
+    },
+    { isDownloadFile: true },
+  )
 }
 
 /**

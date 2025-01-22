@@ -5,6 +5,7 @@ import com.bicycle.annotation.NotLogin;
 import com.bicycle.annotation.NotPower;
 import com.bicycle.service.bicycle.BicycleService;
 import com.bicycle.utils.AjaxResult;
+import com.bicycle.validate.bicycle.ExportValidate;
 import com.bicycle.validate.page.PageValidate;
 import com.bicycle.validate.bicycle.BicycleCreateValidate;
 import com.bicycle.validate.bicycle.BicycleUpdateValidate;
@@ -13,12 +14,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.DecoderException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 /**
  * 供应商表实体类
@@ -102,8 +106,8 @@ public class BicycleController  {
      * 批量导出
      * */
     @PostMapping("export")
-    public AjaxResult<Object> exportBicycle(@Validated @RequestParam String id){
-        return bicycleService.exportBicycle();
+    public void exportBicycle(@NotNull HttpServletResponse response, @Validated @RequestBody ExportValidate exportValidate) throws IOException {
+         bicycleService.exportBicycle(response, exportValidate.getIds());
     }
 
     /**

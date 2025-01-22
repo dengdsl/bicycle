@@ -53,9 +53,10 @@ const axiosHooks: AxiosHooks = {
       const link = document.createElement('a')
       link.href = URL.createObjectURL(response.data as unknown as Blob)
       link.target = '_blank'
-      link.download = 'import_template.xlsx'
       link.click()
       feedback.msgSuccess('下载成功')
+      // 清理 URL 对象
+      URL.revokeObjectURL(link.href)
       return Promise.resolve()
     }
 

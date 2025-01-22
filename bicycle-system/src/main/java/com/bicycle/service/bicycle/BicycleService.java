@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 public interface BicycleService {
 
@@ -47,7 +48,7 @@ public interface BicycleService {
      /**
       * 批量导出自行车信息
       * */
-     AjaxResult<Object> exportBicycle( );
+     void exportBicycle(HttpServletResponse response, List<String> ids) throws IOException;
 
     /**
      * 扫描二维码进行查询

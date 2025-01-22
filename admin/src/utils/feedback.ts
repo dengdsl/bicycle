@@ -73,8 +73,8 @@ export class Feedback {
     ElNotification.warning(msg)
   }
   // 确认窗体
-  confirm(msg: string) {
-    return ElMessageBox.confirm(msg, '温馨提示', {
+  confirm(msg: string, title = '温馨提示') {
+    return ElMessageBox.confirm(msg, title, {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning',

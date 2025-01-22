@@ -87,20 +87,34 @@
         <el-button
           v-perms="['bicycle:export']"
           type="primary"
+          :loading="exportLoading"
           @click="handleExport"
         >
           <template #icon>
             <icon name="el-icon-Download" />
           </template>
-          批量导出
+          {{ selectIds.btnText }}
+        </el-button>
+        <el-button
+          v-if="selectIds.isSelected"
+          type="info"
+          @click="handleClearSelect"
+        >
+          <template #icon>
+            <icon name="el-icon-Close" />
+          </template>
+          批量取消{{ selectIds.selectNum }}条勾选
         </el-button>
       </el-space>
 
       <div class="supplier-list mt-2">
         <el-table
+          ref="tableRef"
           :data="pager.lists"
+          row-key="id"
           v-loading="pager.loading"
-          @selection-change="handleSelectChange"
+          @select-all="handleSelectChange"
+          @select="handleSelectChange"
         >
           <el-table-column type="selection" width="55" />
           <el-table-column
@@ -266,7 +280,7 @@
           </el-table-column>
         </el-table>
         <div class="pagination-container mt-4 flex justify-end">
-          <papination v-model="pager" @change="getLists" />
+          <papination v-model="pager" @change="handlePaginationChange" />
         </div>
       </div>
     </el-card>
@@ -361,9 +375,11 @@ import {
   deleteBicycle,
   importBicycleList,
   downloadTemplate,
+  exportBicycleList,
 } from '@/api/bicycle'
 import Detail from './detail.vue'
 import {
+  ElTable,
   genFileId,
   UploadInstance,
   UploadProps,
@@ -374,11 +390,13 @@ import { useDictData } from '@/hooks/useDictOptions.ts'
 
 const editRef = shallowRef<InstanceType<typeof EditPopup>>()
 const detailRef = shallowRef<InstanceType<typeof Detail>>()
+const tableRef = shallowRef<InstanceType<typeof ElTable>>()
 const uploadRef = ref<UploadInstance>()
 const showImport = ref(false)
 const importLoading = ref(false)
+const exportLoading = ref(false)
 const fileList = ref<UploadUserFile[]>([])
-const selectRows = ref<any[]>([])
+const selectRows = reactive<Record<string, Array<string>>>({})
 
 const showEdit = ref(false)
 const drawer = ref(false)
@@ -403,6 +421,16 @@ const { getLists, pager, resetPage, resetParams } = usePaging({
   params: queryParams,
 })
 
+const selectIds = computed(() => {
+  const ids = Object.values(selectRows).flat()
+  return {
+    btnText: ids.length > 0 ? `批量导出${ids.length}条` : '批量导出全部',
+    isSelected: !!ids.length,
+    selectNum: ids.length,
+    ids,
+  }
+})
+
 // 筛选时间发生变化
 const handleChange = (dates: string[] | null) => {
   if (dates) {
@@ -415,10 +443,40 @@ const handleChange = (dates: string[] | null) => {
 }
 
 // 勾选发生变化
-const handleSelectChange = (newSelection: any[]) => {
-  selectRows.value = newSelection
-  console.log('selectRows.value ==>', selectRows.value)
-  // toggleRowSelection
+const handleSelectChange = (selectList: any) => {
+  // 如果当前数据全部选中，将当前选中的数据全部添加到数据列表进行保存
+  if (selectList.length) {
+    selectRows[pager.page] = selectList.map((item: any) => item.id)
+  } else {
+    // 如果不存在，删除数据列表中的键值对
+    if (Object.prototype.hasOwnProperty.call(selectRows, pager.page)) {
+      delete selectRows[pager.page]
+    }
+  }
+}
+// 分页发生变化
+const handlePaginationChange = async () => {
+  await getLists()
+  try {
+    await getLists()
+    await nextTick()
+    if (!selectRows[pager.page]) return
+    tableRef.value?.clearSelection()
+    pager.lists.forEach((row) => {
+      if (selectRows[pager.page].includes(row.id)) {
+        tableRef.value?.toggleRowSelection(row, true)
+      }
+    })
+  } catch (err) {
+    console.log('err==>', err)
+  }
+}
+// 清空勾选
+const handleClearSelect = () => {
+  tableRef.value?.clearSelection()
+  Object.keys(selectRows).forEach((key) => {
+    delete selectRows[key]
+  })
 }
 
 // 上传时覆盖前一个文件
@@ -499,7 +557,25 @@ const handleDelete = async (row: any) => {
 const handleImport = () => {
   showImport.value = true
 }
-const handleExport = () => {}
+const handleExport = async () => {
+  try {
+    exportLoading.value = true
+    const res = await feedback.confirm(
+      `确定要${selectIds.value.btnText}吗？`,
+      '防误操作提示',
+    )
+    if (res === 'confirm') {
+      await exportBicycleList({ ids: selectIds.value.ids || [] })
+    }
+  } catch (err) {
+    if ('cancel' === err) return
+    console.log('err ==>', err)
+    feedback.msgError('导出失败，请联系管理员进行处理')
+    await Promise.reject()
+  } finally {
+    exportLoading.value = false
+  }
+}
 
 getLists()
 </script>

@@ -19,17 +19,16 @@ import com.bicycle.validate.bicycle.BicycleSearchValidate;
 import com.bicycle.validate.bicycle.BicycleUpdateValidate;
 import com.bicycle.validate.page.PageValidate;
 import com.bicycle.vo.bicycle.ExcelRowDetailVo;
+import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.model.InternalSheet;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.usermodel.XSSFColor;
-import org.apache.poi.xssf.usermodel.XSSFPictureData;
-import org.apache.poi.xssf.usermodel.XSSFRichTextString;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -39,12 +38,16 @@ import org.apache.poi.ss.util.CellRangeAddressList;
 
 import jakarta.servlet.http.HttpServletResponse;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.apache.poi.hssf.model.InternalSheet.createSheet;
 
 @Slf4j
 @Service
@@ -223,17 +226,8 @@ public class BicycleServiceImpl implements BicycleService {
      */
     @Override
     public void downloadImportTemplate(HttpServletResponse response) throws IOException, DecoderException {
-        // 创建一个新的 Excel 工作簿
         Workbook workbook = new XSSFWorkbook();
-        // 根据当前年月日和时间戳创建动态文件名
-        Calendar instance = Calendar.getInstance();
-        String year = String.valueOf(instance.get(Calendar.YEAR));
-        String month = String.format("%02d", instance.get(Calendar.MONTH) + 1);
-        String day = String.format("%02d", instance.get(Calendar.DAY_OF_MONTH));
-
-        String fileName = String.format("%s%s%s%d", year, month, day, System.currentTimeMillis());
-        Sheet sheet = workbook.createSheet(fileName);
-
+        Sheet sheet = workbook.createSheet();
         // 创建单元格样式
         CellStyle defaultStyle = workbook.createCellStyle();
         Font defaultFont = workbook.createFont();
@@ -328,38 +322,21 @@ public class BicycleServiceImpl implements BicycleService {
             sheet.setColumnWidth(i, 30 * 256);
         }
         // 设置型号单元格为下拉选项
-        String[] modelOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("model")).map(SystemDictDataEntry::getName).toArray(String[]::new);;
-
-
-        // 创建数据验证规则（设置下拉选项）
-        DataValidationHelper validationHelper = sheet.getDataValidationHelper();
-        DataValidationConstraint constraint = validationHelper.createExplicitListConstraint(modelOptions);
-
-        // 设置验证区域，假设只对第2行至最后一行（第一列）进行数据验证
-        CellRangeAddressList addressList = new CellRangeAddressList(2, 1000, 0, 0); // 对A列进行下拉验证
-        DataValidation validation = validationHelper.createValidation(constraint, addressList);
-        validation.setShowErrorBox(true);  // 如果选择无效，显示错误框
-        sheet.addValidationData(validation);
-
-        // 设置结论单元格为下拉选项
+        String[] modelOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("model")).map(SystemDictDataEntry::getName).toArray(String[]::new);
+        ;
         String[] conclusionOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("conclusion")).map(SystemDictDataEntry::getName).toArray(String[]::new);
 
-        // 创建数据验证规则
-        validationHelper = sheet.getDataValidationHelper();
-        DataValidationConstraint conclusionConstraint = validationHelper.createExplicitListConstraint(conclusionOptions);
-        // 设置验证区域，从第二行验证到最后一行
-        addressList = new CellRangeAddressList(2, 1000, 4, 4);
-        DataValidation conclusionValidation = validationHelper.createValidation(conclusionConstraint, addressList);
-        conclusionValidation.setShowErrorBox(true);
-        sheet.addValidationData(conclusionValidation);
+        createSheetValidator(sheet, modelOptions, 2, 1000, 0, 0);
+        createSheetValidator(sheet, conclusionOptions, 2, 1000, 4, 4);
 
         // 设置响应头信息，文件名，保证浏览器能够正常识别下载
-        String headerContentType = String.format("attachment; filename=%s", URLEncoder.encode(fileName + ".xlsx", StandardCharsets.UTF_8));
-        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, headerContentType);
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=import_template.xlsx");
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setCharacterEncoding("UTF-8");
         // 输出到响应流
-        workbook.write(response.getOutputStream());
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        outputStream.flush();
         // 关闭工作簿
         workbook.close();
     }
@@ -414,7 +391,7 @@ public class BicycleServiceImpl implements BicycleService {
             }
 
             // 判断结论值是否合法
-            List<String> conclusionNames =  conclusionList.stream().map(SystemDictDataEntry::getName).toList();
+            List<String> conclusionNames = conclusionList.stream().map(SystemDictDataEntry::getName).toList();
             List<String> conclusions = rowDetails.stream()
                     .map(ExcelRowDetailVo::getConclusion)
                     .filter(model -> !conclusionNames.contains(model))
@@ -471,8 +448,154 @@ public class BicycleServiceImpl implements BicycleService {
      * 批量导出自行车信息
      */
     @Override
-    public AjaxResult<Object> exportBicycle() {
-        return null;
+    public void exportBicycle(HttpServletResponse response, List<String> ids) throws IOException {
+        QueryWrapper<BicycleEntry> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("is_del", 0);
+        if (!ids.isEmpty()) {
+            queryWrapper.in("id", ids);
+        }
+        List<BicycleEntry> bicycleEntries = bicycleMapper.selectList(queryWrapper);
+        // 查询数据库中的结论字典数据和型号字典数据
+        List<SystemDictDataEntry> systemDictDataEntries = dictDataMapper.selectList(new QueryWrapper<SystemDictDataEntry>().in("dict_type", "model", "conclusion"));
+        // 筛选出不同的字典类型数据
+        List<SystemDictDataEntry> modelList = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("model")).toList();
+        List<SystemDictDataEntry> conclusionList = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("conclusion")).toList();
+        // 将数据转换为map，以value作为键、name作为值
+        Map<String, String> modelMap = modelList.stream().collect(Collectors.toMap(SystemDictDataEntry::getValue, SystemDictDataEntry::getName));
+        Map<String, String> conclusionMap = conclusionList.stream().collect(Collectors.toMap(SystemDictDataEntry::getValue, SystemDictDataEntry::getName));
+        // 创建excel表格将数据写入到表中最后以流的形式返回给前端
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet();
+        List<String> headerList = Arrays.asList("编号", "型号", "车架号", "X光图片", "生产日期", "二维码编码", "二维码图片", "结论", "备注");
+
+        // 创建表头背景颜色样式
+        CellStyle headerStyle = workbook.createCellStyle();
+        headerStyle.setFillForegroundColor(IndexedColors.CORNFLOWER_BLUE.getIndex());
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        headerStyle.setWrapText(true);  // 启用自动换行
+
+        // 创建表头
+        Row headerRow = sheet.createRow(0);
+        for (int i = 0; i < headerList.size(); i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headerList.get(i));
+            cell.setCellStyle(headerStyle);
+            if (headerList.get(i).equals("二维码编码")) {
+                sheet.setColumnWidth(i, 42 * 256);
+            }else {
+                sheet.setColumnWidth(i, 20 * 256);
+            }
+        }
+        // 创建数据
+        XSSFClientAnchor anchor;
+        BufferedImage bufferedImage;
+        File file;
+        String suffix;
+        String path;
+        ByteArrayOutputStream byteArrayOutputStream;
+        XSSFDrawing drawingPatriarch = (XSSFDrawing) sheet.createDrawingPatriarch();
+        for (int i = 0; i < bicycleEntries.size(); i++) {
+            Row row = sheet.createRow(i + 1);
+            row.setHeight((short) (150 * 10));
+            BicycleEntry bicycleEntry = bicycleEntries.get(i);
+            // 循环headerList进行列的匹配
+            for (int j = 0; j < headerList.size(); j++) {
+                Cell cell = row.createCell(j);
+                switch (headerList.get(j)) {
+                    case "二维码图片":
+                         path = bicycleEntry.getQrImg().replaceAll("^(https?://[^/]+/static)", ConfigUtils.getFilePath());
+                         // 获取图片后缀
+                         suffix = path.substring(path.lastIndexOf(".") + 1);
+                        sheet.setColumnWidth(j, 4000);
+                        file = new File(path);
+                        byteArrayOutputStream = new ByteArrayOutputStream();
+                        bufferedImage = ImageIO.read(file);
+                        /* dx1:图片左边界距离单元格左边框像素值,
+                         * dy1:图片上边界距离单元格上边框像素值,
+                         * dx2:图片右边界距离单元格右边框像素值（负数）,
+                         * dy2:图片下边界距离单元格下边框像素值（负数）,
+                         * col1:列下标（0开始），
+                         * row1:行下标（0开始），
+                         * col2:列下标（1开始），
+                         * row2:行下标（1开始）。*/
+                        anchor = new XSSFClientAnchor(
+                                100000, 100000, -100000, -100000,  // dx1, dy1, dx2, dy2 控制图片的边距
+                                (short) j, i + 1,
+                                (short) (j + 1), i + 2
+                        );
+                        ImageIO.write(bufferedImage, suffix, byteArrayOutputStream);
+                        anchor.setAnchorType(ClientAnchor.AnchorType.MOVE_AND_RESIZE);
+                        int pictureType = getPictureType(suffix);
+                        drawingPatriarch.createPicture(anchor, workbook.addPicture(byteArrayOutputStream.toByteArray(),pictureType ));
+                        break;
+                    case "X光图片":
+                        String[] filePathList = bicycleEntry.getImage().split(";");
+                        sheet.setColumnWidth(j, 4000 * filePathList.length);
+                        for (int k = 0; k < filePathList.length; k++) {
+                            path = filePathList[k].replaceAll("^(https?://[^/]+/static)", ConfigUtils.getFilePath());
+                            // 获取图片后缀
+                            suffix = path.substring(path.lastIndexOf(".") + 1);
+                            file = new File(path);
+                            byteArrayOutputStream = new ByteArrayOutputStream();
+                            bufferedImage = ImageIO.read(file);
+                            anchor = new XSSFClientAnchor(
+                                    (1000000 * k) + 100000, 100000, -((1000000 * filePathList.length + 100000) - 1000000 * (k + 1)), -100000,  // dx1, dy1, dx2, dy2 控制图片的边距
+                                    (short) j, i + 1,
+                                    (short) (j + 1), i + 2
+                            );
+                            ImageIO.write(bufferedImage, suffix, byteArrayOutputStream);
+                            anchor.setAnchorType(ClientAnchor.AnchorType.MOVE_AND_RESIZE);
+                            drawingPatriarch.createPicture(anchor, workbook.addPicture(byteArrayOutputStream.toByteArray(), getPictureType(suffix)));
+                        }
+                        break;
+                    case "生产日期":
+                        CellStyle cellStyle = workbook.createCellStyle();
+                        CreationHelper creationHelper = workbook.getCreationHelper();
+                        cellStyle.setDataFormat(creationHelper.createDataFormat().getFormat("yyyy-MM-dd"));
+                        cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+                        cellStyle.setAlignment(HorizontalAlignment.LEFT);
+                        cell.setCellValue(bicycleEntry.getProduceTime());
+                        cell.setCellStyle(cellStyle);
+                        break;
+                    case "二维码编码":
+                        cell.setCellValue(bicycleEntry.getQrcode());
+                        break;
+                    case "备注":
+                        cell.setCellValue(bicycleEntry.getRemark());
+                        break;
+                    case "车架号":
+                        cell.setCellValue(bicycleEntry.getFrameNo());
+                        break;
+                    case "编号":
+                        cell.setCellValue(bicycleEntry.getId());
+                        break;
+                    case "型号":
+                        cell.setCellValue(modelMap.get(bicycleEntry.getModel()));
+                        break;
+                    case "结论":
+                        cell.setCellValue(conclusionMap.get(bicycleEntry.getConclusion()));
+                        break;
+                }
+            }
+        }
+        // 型号下拉选项
+        String[] modelOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("model")).map(SystemDictDataEntry::getName).toArray(String[]::new);
+        // 结论下拉选项
+        String[] conclusionOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("conclusion")).map(SystemDictDataEntry::getName).toArray(String[]::new);
+
+        createSheetValidator(sheet, modelOptions, 1, bicycleEntries.size() + 100, 1, 1);
+        createSheetValidator(sheet, conclusionOptions, 1, bicycleEntries.size() + 100, 7, 7);
+
+        // 设置响应头信息，文件名，保证浏览器能够正常识别下载
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=bicycle_export.xlsx");
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setCharacterEncoding("UTF-8");
+        // 输出到响应流
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        outputStream.flush();
+        // 关闭工作簿
+        workbook.close();
     }
 
     /**
@@ -579,7 +702,7 @@ public class BicycleServiceImpl implements BicycleService {
     /**
      * 获取图片扩展名
      */
-    private static String getPictureExtension(int pictureType) {
+    private String getPictureExtension(int pictureType) {
         switch (pictureType) {
             case Workbook.PICTURE_TYPE_EMF:
                 return ".emf";  // 增强型图元文件 (Enhanced Metafile)
@@ -599,24 +722,31 @@ public class BicycleServiceImpl implements BicycleService {
     }
 
     /**
-     * 将输入的颜色值转换为十六进制颜色
-     */
-    private byte[] convertColorToHex(String color) throws DecoderException {
-        // 去掉前缀 "0x"
-        if (color.startsWith("0x")) {
-            color = color.substring(2);
+     * 根据图片扩展名获取图片类型
+     * */
+    private int getPictureType(String suffix) {
+        switch (suffix) {
+            case "emf":
+                return Workbook.PICTURE_TYPE_EMF;  // 增强型图元文件 (Enhanced Metafile)
+            case "wmf":
+                return Workbook.PICTURE_TYPE_WMF;  // Windows 图元文件 (Windows Metafile)
+            case "pict":
+                return  Workbook.PICTURE_TYPE_PICT; // Apple Macintosh 图元文件
+            case "jpg":
+                return Workbook.PICTURE_TYPE_JPEG;  // 常见的有损压缩图像 (JPEG)
+            case "png":
+                return Workbook.PICTURE_TYPE_PNG;  // 无损压缩图像 (PNG)
+            case "dib":
+                return Workbook.PICTURE_TYPE_DIB;  // 设备无关位图 (Device Independent Bitmap)
+            default:
+                return Workbook.PICTURE_TYPE_PNG;  // 未知格式，使用 .bin 作为默认扩展名
         }
-        // 去掉颜色字符串的 "#" 符号
-        if (color.startsWith("#")) {
-            color = color.substring(1);
-        }
-        return Hex.decodeHex(color);
     }
 
     /**
      * 获取导入模板说明描述
      */
-    private static String[] getTemplateDescription(SystemConfigEntry templateDescription) {
+    private String[] getTemplateDescription(SystemConfigEntry templateDescription) {
         String[] instructions = {
                 "*1.型号：请在下拉选项中进行选择，如果不选择或不按配置项填写将会导致导入失败！",
                 "*2.车架号：不能出现重复的车架号和已经录入系统的车架号，否则将导致导入失败！",
@@ -632,5 +762,16 @@ public class BicycleServiceImpl implements BicycleService {
         return instructions;
     }
 
-
+    /**
+     * 创建工作簿验证规则
+     */
+    private void createSheetValidator(Sheet sheet, String[] options, int firstRow, int lastRow, int firstCol, int lastCol) {
+        // 创建数据验证规则（设置下拉选项）
+        DataValidationHelper validationHelper = sheet.getDataValidationHelper();
+        DataValidationConstraint constraint = validationHelper.createExplicitListConstraint(options);
+        CellRangeAddressList addressList = new CellRangeAddressList(firstRow, lastRow, firstCol, lastCol); // 对A列进行下拉验证
+        DataValidation validation = validationHelper.createValidation(constraint, addressList);
+        validation.setShowErrorBox(true);
+        sheet.addValidationData(validation);
+    }
 }
