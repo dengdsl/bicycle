@@ -11,7 +11,7 @@
  Target Server Version : 80030 (8.0.30)
  File Encoding         : 65001
 
- Date: 21/01/2025 16:53:23
+ Date: 08/02/2025 09:26:09
 */
 
 SET NAMES utf8mb4;
@@ -23,7 +23,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `bicycle_info`;
 CREATE TABLE `bicycle_info`  (
   `id` varchar(16) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT 'id',
-  `model` bigint NOT NULL COMMENT '型号',
+  `model` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '型号',
   `image` varchar(10240) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT 'X光图片',
   `frame_no` varchar(128) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '车架号',
   `produce_time` datetime NOT NULL COMMENT '生产日期',
@@ -41,11 +41,24 @@ CREATE TABLE `bicycle_info`  (
 -- ----------------------------
 -- Records of bicycle_info
 -- ----------------------------
-INSERT INTO `bicycle_info` VALUES ('BY20250121549794', 1, 'http://1.94.143.210/static/images/2025/01/21/173739164680301.jpg;http://1.94.143.210/static/images/2025/01/21/173739164667903.jpg', '123456789987456123', '2025-01-20 00:00:00', 'B3X85UV8J646HN41DVOUBJV2B8944V26', 'http://1.94.143.210/static/qrcode/2025/01/21/B3X85UV8J646HN41DVOUBJV2B8944V26.png', 1, '这是导入的测试数据', 0, '2025-01-21 00:47:26', '2025-01-21 00:47:26', NULL);
-INSERT INTO `bicycle_info` VALUES ('BY20250121618296', 1, 'http://1.94.143.210/static/images/2025/01/21/1737433337banner1.jpg', '123456789', '2025-01-21 00:00:00', '816DQHLCJ4LX6ZAIRVJDLKA11GIG781C', '/static/qrcode/2025/01/21/816DQHLCJ4LX6ZAIRVJDLKA11GIG781C.png', 1, '', 0, '2025-01-21 00:53:46', '2025-01-21 00:53:46', NULL);
-INSERT INTO `bicycle_info` VALUES ('BY20250121792617', 1, 'http://1.94.143.210/static/images/2025/01/21/173739164560998.jpg;http://1.94.143.210/static/images/2025/01/21/173739164572491.jpg', '123456789987645', '2025-01-20 00:00:00', '1CQNWI8NH7FBVKO0UTMDOPR25X63IXY8', 'http://1.94.143.210/static/qrcode/2025/01/21/1CQNWI8NH7FBVKO0UTMDOPR25X63IXY8.png', 1, '这是导入的测试数据', 0, '2025-01-21 00:47:26', '2025-01-21 00:47:26', NULL);
-INSERT INTO `bicycle_info` VALUES ('BY20250121821692', 1, 'http://1.94.143.210/static/images/2025/01/21/173739164624744.jpg;http://1.94.143.210/static/images/2025/01/21/173739164660439.jpg', '1234567899876454234', '2025-01-20 00:00:00', '6O52FF7PCW309K1L80C2A44RBF3VWZAK', 'http://1.94.143.210/static/qrcode/2025/01/21/6O52FF7PCW309K1L80C2A44RBF3VWZAK.png', 1, '这是导入的测试数据', 0, '2025-01-21 00:47:26', '2025-01-21 00:47:26', NULL);
-INSERT INTO `bicycle_info` VALUES ('BY20250121938496', 1, 'http://1.94.143.210/static/images/2025/01/21/173739164634674.jpg;http://1.94.143.210/static/images/2025/01/21/173739164674150.jpg', '12345678998764546548989', '2025-01-20 00:00:00', '71RZG960WG9NXI6K70S6Q9SIOUUGIPRU', 'http://1.94.143.210/static/qrcode/2025/01/21/71RZG960WG9NXI6K70S6Q9SIOUUGIPRU.png', 1, '这是导入的测试数据', 0, '2025-01-21 00:47:26', '2025-01-21 00:47:26', NULL);
+INSERT INTO `bicycle_info` VALUES ('BY20250121027845', '1', 'http://1.94.143.210/static/images/2025/01/21/173747413632081.jpg;http://1.94.143.210/static/images/2025/01/21/173747413614032.jpg', '456456564564568', '2025-01-28 00:00:00', 'SCSFL3MHH1BWZJPAZ4Z38HX8Z6OWFVLY', 'http://1.94.143.210/static/qrcode/2025/01/21/SCSFL3MHH1BWZJPAZ4Z38HX8Z6OWFVLY.png', 1, '这是导入数据的备注信息', 1, '2025-01-21 23:42:17', '2025-01-21 23:42:17', '2025-02-06 09:22:16');
+INSERT INTO `bicycle_info` VALUES ('BY20250121036928', '1', 'http://1.94.143.210/static/images/2025/01/21/173747413728895.jpg;http://1.94.143.210/static/images/2025/01/21/173747413772894.jpg', '4564565645645699', '2025-02-07 00:00:00', '1DO6EYR5VZ1DE3I5DFL8IEYYYB12F70P', 'http://1.94.143.210/static/qrcode/2025/01/21/1DO6EYR5VZ1DE3I5DFL8IEYYYB12F70P.png', 1, '这是导入数据的备注信息', 1, '2025-01-21 23:42:17', '2025-01-21 23:42:17', '2025-02-06 09:21:35');
+INSERT INTO `bicycle_info` VALUES ('BY20250121114640', '1', 'http://1.94.143.210/static/images/2025/01/21/173747413615592.jpg;http://1.94.143.210/static/images/2025/01/21/173747413684772.jpg', '4564565645645655', '2025-02-03 00:00:00', 'Q9DUYAO047K2AAV4VTUEO7TDBH0YJ763', 'http://1.94.143.210/static/qrcode/2025/01/21/Q9DUYAO047K2AAV4VTUEO7TDBH0YJ763.png', 1, '这是导入数据的备注信息', 1, '2025-01-21 23:42:17', '2025-01-21 23:42:17', '2025-02-06 09:21:38');
+INSERT INTO `bicycle_info` VALUES ('BY20250121145173', '1', 'http://1.94.143.210/static/images/2025/01/21/173747413648171.jpg;http://1.94.143.210/static/images/2025/01/21/173747413669632.jpg', '4564565645645644', '2025-02-02 00:00:00', 'ZFEQREX9M6GDCW92CNW79OE9OADSF5L9', 'http://1.94.143.210/static/qrcode/2025/01/21/ZFEQREX9M6GDCW92CNW79OE9OADSF5L9.png', 1, '这是导入数据的备注信息', 1, '2025-01-21 23:42:17', '2025-01-21 23:42:17', '2025-02-06 09:21:42');
+INSERT INTO `bicycle_info` VALUES ('BY20250121147922', '1', 'http://1.94.143.210/static/images/2025/01/21/173747413663428.jpg;http://1.94.143.210/static/images/2025/01/21/173747413639319.jpg', '4564565645645612', '2025-01-31 00:00:00', 'L2A7ETZJ00X1JIMN5B7KG0EGY11QBICA', 'http://1.94.143.210/static/qrcode/2025/01/21/L2A7ETZJ00X1JIMN5B7KG0EGY11QBICA.png', 1, '这是导入数据的备注信息', 1, '2025-01-21 23:42:17', '2025-01-21 23:42:17', '2025-02-06 09:22:18');
+INSERT INTO `bicycle_info` VALUES ('BY20250121219740', '1', 'http://1.94.143.210/static/images/2025/01/21/173747413647494.jpg;http://1.94.143.210/static/images/2025/01/21/173747413626321.jpg', '4564565645645633', '2025-02-01 00:00:00', '9YE1OR941QL7ULFCZG7YJ6YM6ULU9R1F', 'http://1.94.143.210/static/qrcode/2025/01/21/9YE1OR941QL7ULFCZG7YJ6YM6ULU9R1F.png', 1, '这是导入数据的备注信息', 1, '2025-01-21 23:42:17', '2025-01-21 23:42:17', '2025-02-06 09:22:20');
+INSERT INTO `bicycle_info` VALUES ('BY20250121232900', '1', 'http://1.94.143.210/static/images/2025/01/21/173747413641787.jpg;http://1.94.143.210/static/images/2025/01/21/173747413658342.jpg', '456456564564561', '2025-01-21 00:00:00', 'RR6STQLR2SO8AA7UNHGB6ZRYQIEK42WK', 'http://1.94.143.210/static/qrcode/2025/01/21/RR6STQLR2SO8AA7UNHGB6ZRYQIEK42WK.png', 1, '这是导入数据的备注信息', 1, '2025-01-21 23:42:17', '2025-01-21 23:42:17', '2025-02-06 09:22:23');
+INSERT INTO `bicycle_info` VALUES ('BY20250121297577', '1', 'http://1.94.143.210/static/images/2025/01/21/173747413666981.jpg;http://1.94.143.210/static/images/2025/01/21/173747413694140.jpg', '4564565645645611', '2025-01-30 00:00:00', 'B4IPCZ4IEYG7N78KEZ1YRC85P48O1BF1', 'http://1.94.143.210/static/qrcode/2025/01/21/B4IPCZ4IEYG7N78KEZ1YRC85P48O1BF1.png', 1, '这是导入数据的备注信息', 1, '2025-01-21 23:42:17', '2025-01-21 23:42:17', '2025-02-06 09:22:25');
+INSERT INTO `bicycle_info` VALUES ('BY20250121436443', '1', 'http://1.94.143.210/static/images/2025/01/21/173747413611428.jpg;http://1.94.143.210/static/images/2025/01/21/173747413622255.jpg', '456456564564564', '2025-01-24 00:00:00', '2MMYFNLTZ029AM5AT15NYQPGJHEWY3LN', 'http://1.94.143.210/static/qrcode/2025/01/21/2MMYFNLTZ029AM5AT15NYQPGJHEWY3LN.png', 1, '这是导入数据的备注信息', 0, '2025-01-21 23:42:17', '2025-01-21 23:42:17', NULL);
+INSERT INTO `bicycle_info` VALUES ('BY20250121457389', '1', 'http://1.94.143.210/static/images/2025/01/21/173747413675481.jpg;http://1.94.143.210/static/images/2025/01/21/173747413658557.jpg', '456456564564562', '2025-01-22 00:00:00', '4XAZIQVV7LAECFHXTB1PKYD2OUI6PQIA', 'http://1.94.143.210/static/qrcode/2025/01/21/4XAZIQVV7LAECFHXTB1PKYD2OUI6PQIA.png', 0, '这是导入数据的备注信息', 0, '2025-01-21 23:42:17', '2025-01-21 23:42:17', NULL);
+INSERT INTO `bicycle_info` VALUES ('BY20250121613831', '1', 'http://1.94.143.210/static/images/2025/01/21/173747413711814.jpg;http://1.94.143.210/static/images/2025/01/21/173747413734490.jpg', '4564565645645688', '2025-02-06 00:00:00', 'OFC5TGZA9PNN53LYJU05IECE6I2ONFPQ', 'http://1.94.143.210/static/qrcode/2025/01/21/OFC5TGZA9PNN53LYJU05IECE6I2ONFPQ.png', 1, '这是导入数据的备注信息', 0, '2025-01-21 23:42:17', '2025-01-21 23:42:17', NULL);
+INSERT INTO `bicycle_info` VALUES ('BY20250121634387', '1', 'http://1.94.143.210/static/images/2025/01/21/173747413719843.jpg;http://1.94.143.210/static/images/2025/01/21/173747413796842.jpg', '4564565645645677', '2025-02-05 00:00:00', '0ZVUVIZZZNW2X8UYUQ31T5Q51ZAHJS7B', 'http://1.94.143.210/static/qrcode/2025/01/21/0ZVUVIZZZNW2X8UYUQ31T5Q51ZAHJS7B.png', 1, '这是导入数据的备注信息', 1, '2025-01-21 23:42:17', '2025-01-21 23:42:17', '2025-02-06 09:22:09');
+INSERT INTO `bicycle_info` VALUES ('BY20250121651261', '1', 'http://1.94.143.210/static/images/2025/01/21/173747413694905.jpg;http://1.94.143.210/static/images/2025/01/21/173747413664436.jpg', '456456564564565', '2025-01-25 00:00:00', 'SR41Z5E4UVN7YU4MRQHFJAP8MB4XWE4E', 'http://1.94.143.210/static/qrcode/2025/01/21/SR41Z5E4UVN7YU4MRQHFJAP8MB4XWE4E.png', 1, '这是导入数据的备注信息', 1, '2025-01-21 23:42:17', '2025-01-21 23:42:17', '2025-02-06 09:22:06');
+INSERT INTO `bicycle_info` VALUES ('BY20250121651829', '1', 'http://1.94.143.210/static/images/2025/01/21/173747413673428.jpg;http://1.94.143.210/static/images/2025/01/21/173747413653613.jpg', '456456564564563', '2025-01-23 00:00:00', '9W1OT1ORFYHBIDLDKLJTR723XPXV383V', 'http://1.94.143.210/static/qrcode/2025/01/21/9W1OT1ORFYHBIDLDKLJTR723XPXV383V.png', 1, '这是导入数据的备注信息', 1, '2025-01-21 23:42:17', '2025-01-21 23:42:17', '2025-02-06 09:22:03');
+INSERT INTO `bicycle_info` VALUES ('BY20250121671365', '1', 'http://1.94.143.210/static/images/2025/01/21/173747413691841.jpg;http://1.94.143.210/static/images/2025/01/21/173747413676203.jpg', '456456564564569', '2025-01-29 00:00:00', '636FO2ZAM0ZLH19UNZAWON153IG2EPDH', 'http://1.94.143.210/static/qrcode/2025/01/21/636FO2ZAM0ZLH19UNZAWON153IG2EPDH.png', 1, '这是导入数据的备注信息', 1, '2025-01-21 23:42:17', '2025-01-21 23:42:17', '2025-02-06 09:22:01');
+INSERT INTO `bicycle_info` VALUES ('BY20250121761182', '1', 'http://1.94.143.210/static/images/2025/01/21/173747413633850.jpg;http://1.94.143.210/static/images/2025/01/21/173747413629610.jpg', '456456564564566', '2025-01-26 00:00:00', 'KTP22B6U575RSKKKJAIHMYJK26OLOEB6', 'http://1.94.143.210/static/qrcode/2025/01/21/KTP22B6U575RSKKKJAIHMYJK26OLOEB6.png', 1, '这是导入数据的备注信息', 1, '2025-01-21 23:42:17', '2025-01-21 23:42:17', '2025-02-06 09:21:58');
+INSERT INTO `bicycle_info` VALUES ('BY20250121794090', '1', 'http://1.94.143.210/static/images/2025/01/21/173747413650220.jpg;http://1.94.143.210/static/images/2025/01/21/173747413679555.jpg', '456456564564567', '2025-01-27 00:00:00', 'EW44ZFXJ2XLI5MF3J6615A6SCITS4IDS', 'http://1.94.143.210/static/qrcode/2025/01/21/EW44ZFXJ2XLI5MF3J6615A6SCITS4IDS.png', 1, '这是导入数据的备注信息', 1, '2025-01-21 23:42:17', '2025-01-21 23:42:17', '2025-02-06 09:21:56');
+INSERT INTO `bicycle_info` VALUES ('BY20250121845727', '1', 'http://1.94.143.210/static/images/2025/01/26/1737919698X光.jpg', '4564565645645666', '2025-02-03 00:00:00', 'VORXGB6C65GEJHT6F5NHOJLU5XDASTVZ', 'http://1.94.143.210/static/qrcode/2025/01/21/VORXGB6C65GEJHT6F5NHOJLU5XDASTVZ.png', 1, '这是导入数据的备注信息', 1, '2025-01-21 23:42:17', '2025-01-26 09:08:08', '2025-02-06 09:21:52');
 
 -- ----------------------------
 -- Table structure for sys_config
@@ -63,7 +76,7 @@ CREATE TABLE `sys_config`  (
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `name`(`name` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 21 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '系统配置表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 22 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '系统配置表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_config
@@ -86,8 +99,9 @@ INSERT INTO `sys_config` VALUES (15, 1, 'banner', 'autoplay', '轮播图播放�
 INSERT INTO `sys_config` VALUES (16, 1, 'sys', 'filingsName', '网站IC备案号', 'XXX备 123456789-1号', 'IC备案号，例如：XXX备 123456789号', '2025-01-19 19:10:59', '2025-01-19 19:38:49');
 INSERT INTO `sys_config` VALUES (17, 1, 'sys', 'loginFooterBg', '页脚背景图', 'http://1.94.143.210/static/config/2025/01/20/1737398251winspace.png', '登录界面底部背景图片，宽高比例建议为1920:200', '2025-01-20 14:38:36', '2025-01-20 15:15:16');
 INSERT INTO `sys_config` VALUES (18, 1, 'excel', 'headerBgColor', '表头背景颜色', '0x2682FC ', '下载的导入模版表头背景颜色，必须使用0x开头或#号开头的十六进制开头颜色，例如0x2682FC或者#2682FC ', '2025-01-21 13:54:13', '2025-01-21 16:51:42');
-INSERT INTO `sys_config` VALUES (19, 1, 'excel', 'templateDescription', '模版说明', NULL, '模版说明，用于对导入格式进行描述，多条描述之间使用分号隔开，描述信息默认显示蓝色，如果要显示为红色，在每一条描述前面添加*号即可', '2025-01-21 13:58:35', '2025-01-21 16:53:11');
+INSERT INTO `sys_config` VALUES (19, 1, 'excel', 'templateDescription', '模版说明', ' *1.型号：请在下拉选项中进行选择，如果不选择或不按配置项填写将会导致导入失败！;\n *2.车架号：不能出现重复的车架号和已经录入系统的车架号，否则将导致导入失败！;\n*3.X光图片：图片不能嵌入单元格，只需要插入即可，否则会导致图片信息提取不到！;\n*4.生产日期：需要为日期格式，例如：2025/1/20！;\n*5.结论：请通过下拉选项选择，如果不进行选择默认为通过！;\n*6.备注：备注信息不能超过1024个字符！;\n7.数据编号和二维码编号以及二维码由系统自动生成！;', '模版说明，用于对导入格式进行描述，多条描述之间使用英文分号隔开，描述信息默认显示蓝色，如果要显示为红色，在每一条描述前面添加*号即可', '2025-01-21 13:58:35', '2025-01-21 19:26:46');
 INSERT INTO `sys_config` VALUES (20, 1, 'excel', 'headerTextColor', '表头字体颜色', '0xffffff', '表头字体颜色，默认为白色，必须使用0x开头的十六进制颜色，例如0x2682FC或者#2682FC ', '2025-01-21 14:00:54', '2025-01-21 16:51:09');
+INSERT INTO `sys_config` VALUES (21, 1, 'excel', 'headerRowHeight', '导入模板描述单元格高度', '200', '批量导入模板第一行描述信息行高，默认为200', '2025-01-21 22:08:25', '2025-01-21 22:08:25');
 
 -- ----------------------------
 -- Table structure for sys_dept
@@ -194,7 +208,7 @@ CREATE TABLE `sys_dict_data`  (
 -- ----------------------------
 -- Records of sys_dict_data
 -- ----------------------------
-INSERT INTO `sys_dict_data` VALUES (4, 'model', '山地自行车', 1, 1, '', 0);
+INSERT INTO `sys_dict_data` VALUES (4, 'model', '公路自行车', 1, 1, '', 0);
 INSERT INTO `sys_dict_data` VALUES (5, 'conclusion', '通过', 1, 1, '', 0);
 INSERT INTO `sys_dict_data` VALUES (6, 'conclusion', '不通过', 0, 1, '', 0);
 
@@ -220,7 +234,7 @@ CREATE TABLE `sys_menu`  (
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 148 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统菜单管理表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 149 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统菜单管理表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_menu
@@ -282,6 +296,7 @@ INSERT INTO `sys_menu` VALUES (144, 25, 'A', '详情', '', 0, 'bicycle:detail', 
 INSERT INTO `sys_menu` VALUES (145, 0, 'C', '系统设置', 'el-icon-Setting', 0, 'system:settings', '/system/settings', 'system/setting', '', '', 0, 0, 0, '2025-01-19 15:41:25', '2025-01-19 15:49:25');
 INSERT INTO `sys_menu` VALUES (146, 145, 'A', '查询', '', 0, 'config:list', '', '', '', '', 0, 1, 0, '2025-01-19 15:42:10', '2025-01-19 15:42:10');
 INSERT INTO `sys_menu` VALUES (147, 145, 'A', '保存', '', 0, 'config:save', '', '', '', '', 0, 1, 0, '2025-01-19 15:42:40', '2025-01-19 15:42:40');
+INSERT INTO `sys_menu` VALUES (148, 25, 'A', '下载模板', '', 0, 'bicycle:download:template', '', '', '', '', 0, 1, 0, '2025-01-21 23:44:10', '2025-01-21 23:44:10');
 
 -- ----------------------------
 -- Table structure for sys_role

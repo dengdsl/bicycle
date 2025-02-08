@@ -7,9 +7,9 @@ export interface RequestOptions {
   isParamsToData: boolean
   // 是否返回默认请求
   isReturnDefaultResponse: boolean
-  // 是否对响应进行进行处理再发挥
+  // 是否对响应进行进行处理再返回
   isTransformResponse: boolean
-  // 是否忽略重复请i去
+  // 是否忽略重复请求
   ignoreCancelToken: boolean
   // 重复请求的次数
   retryCount: number
