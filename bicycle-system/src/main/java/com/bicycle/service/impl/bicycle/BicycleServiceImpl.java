@@ -103,7 +103,7 @@ public class BicycleServiceImpl implements BicycleService {
         // 创建查询对象
         Page<BicycleEntry> page = new Page<>(pageNo, pageSize);
         QueryWrapper<BicycleEntry> queryWrapper = getBicycleEntryQueryWrapper(searchValidate);
-        if ((searchValidate.getProduceTimeStart() != null && !searchValidate.getProduceTimeStart().isEmpty()) && !(searchValidate.getProduceTimeEnd() != null && !searchValidate.getProduceTimeEnd().isEmpty())) {
+        if ((searchValidate.getProduceTimeStart() != null && !searchValidate.getProduceTimeStart().isEmpty()) && (searchValidate.getProduceTimeEnd() != null && !searchValidate.getProduceTimeEnd().isEmpty())) {
             queryWrapper.between("produce_time", searchValidate.getProduceTimeStart(), searchValidate.getProduceTimeEnd());
         }
         Page<BicycleEntry> bicycleEntryPage = bicycleMapper.selectPage(page, queryWrapper);
