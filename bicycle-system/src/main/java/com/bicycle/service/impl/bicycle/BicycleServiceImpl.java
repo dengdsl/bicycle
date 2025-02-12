@@ -427,7 +427,7 @@ public class BicycleServiceImpl implements BicycleService {
                 Map<String, String> qrcodeMap = generateQrcode(qrcodeList);
                 bicycleEntry.setQrcode(qrcodeMap.get("qrcode"));
                 String serverUrl = ConfigUtils.getServerUrl();
-                if (serverUrl != null) {
+                if (serverUrl == null) {
                     serverUrl = request.getScheme() + "://" + request.getServerName();
                 }
                 bicycleEntry.setQrImg(serverUrl + qrcodeMap.get("qrUrl"));
@@ -606,8 +606,12 @@ public class BicycleServiceImpl implements BicycleService {
         QueryWrapper<BicycleEntry> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("is_del", 0);
         queryWrapper.and(wrapper -> wrapper.eq("qrcode", qrcode).or().eq("frame_no", qrcode));
-        BicycleEntry bicycleEntry = bicycleMapper.selectOne(queryWrapper);
-        return AjaxResult.success(bicycleEntry);
+//        BicycleEntry bicycleEntry = bicycleMapper.selectOne(queryWrapper);
+        List<BicycleEntry> bicycleEntries = bicycleMapper.selectList(queryWrapper);
+        if (bicycleEntries.isEmpty()) {
+            return AjaxResult.failed("未查询到相关数据");
+        }
+        return AjaxResult.success(bicycleEntries.get(0));
     }
 
     /**
@@ -688,7 +692,7 @@ public class BicycleServiceImpl implements BicycleService {
                 fos.write(pictureBytes);
                 fos.close();
                 String serverUrl = ConfigUtils.getServerUrl();
-                if (serverUrl != null) {
+                if (serverUrl == null) {
                     serverUrl = request.getScheme() + "://" + request.getServerName();
                 }
                 imageUrls.add(serverUrl + "/static/" + basePath + "/" + fileName);
