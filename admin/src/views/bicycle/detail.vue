@@ -17,7 +17,7 @@
         class="mb-4 border-[1px] border-solid border-info py-2"
         :gutter="20"
       >
-        <el-col :span="12">车架号：{{ detail.frameNo }}</el-col>
+        <el-col :span="12">产品编号：{{ detail.frameNo }}</el-col>
         <el-col :span="12">生产日期：{{ detail.produceTime }}</el-col>
       </el-row>
       <el-row

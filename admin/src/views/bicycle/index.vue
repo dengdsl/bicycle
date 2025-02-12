@@ -25,11 +25,11 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="车架号">
+        <el-form-item label="产品编号">
           <el-input
             v-model="queryParams.frameNo"
             @keyup.enter="getLists"
-            placeholder="请输入车架号"
+            placeholder="请输入产品编号"
           />
         </el-form-item>
         <el-form-item label="结论">
@@ -198,7 +198,7 @@
           </el-table-column>
           <el-table-column
             prop="frameNo"
-            label="车架号"
+            label="产品编号"
             align="center"
             min-width="120"
             show-overflow-tooltip
