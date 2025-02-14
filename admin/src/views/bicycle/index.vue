@@ -183,6 +183,13 @@
             </template>
           </el-table-column>
           <el-table-column
+            prop="frameNo"
+            label="产品编号"
+            align="center"
+            min-width="120"
+            show-overflow-tooltip
+          />
+          <el-table-column
             prop="model"
             label="型号"
             align="center"
@@ -196,13 +203,6 @@
               ></dict-value>
             </template>
           </el-table-column>
-          <el-table-column
-            prop="frameNo"
-            label="产品编号"
-            align="center"
-            min-width="120"
-            show-overflow-tooltip
-          />
           <el-table-column
             prop="produceTime"
             label="生产日期"

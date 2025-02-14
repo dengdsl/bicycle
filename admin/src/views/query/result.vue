@@ -32,18 +32,18 @@
             <van-col span="16">{{ detail.id }}</van-col>
           </van-row>
           <van-row class="pb-4" gutter="20">
+            <van-col span="8">产品编号</van-col>
+            <van-col span="16">
+              {{ detail.frameNo }}
+            </van-col>
+          </van-row>
+          <van-row class="pb-4" gutter="20">
             <van-col span="8">型号</van-col>
             <van-col span="16">
               <dict-value
                 :options="dictData.model"
                 :value="detail.model"
               ></dict-value>
-            </van-col>
-          </van-row>
-          <van-row class="pb-4" gutter="20">
-            <van-col span="8">产品编号</van-col>
-            <van-col span="16">
-              {{ detail.frameNo }}
             </van-col>
           </van-row>
           <van-row gutter="20">
