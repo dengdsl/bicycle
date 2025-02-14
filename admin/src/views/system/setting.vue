@@ -549,12 +549,18 @@ const handleAdd = () => {
   }
   configFormData.bannerImgs.imgList.push(bannerItem)
   configFormData.bannerImgs.imgList.sort()
+  configFormData.bannerImgs.value = JSON.stringify(
+    configFormData.bannerImgs.imgList,
+  )
 }
 
 // 删除轮播项
 const handleDelete = (index: number) => {
   configFormData.bannerImgs.imgList.splice(index, 1)
   configFormData.bannerImgs.imgList.sort()
+  configFormData.bannerImgs.value = JSON.stringify(
+    configFormData.bannerImgs.imgList,
+  )
 }
 
 // 图片上传成功
