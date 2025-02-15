@@ -5,6 +5,12 @@
         class="mb-4 border-[1px] border-solid border-info py-2"
         :gutter="20"
       >
+        <el-col :span="24">产品名称：{{ detail.proName }}</el-col>
+      </el-row>
+      <el-row
+        class="mb-4 border-[1px] border-solid border-info py-2"
+        :gutter="20"
+      >
         <el-col :span="12">编号：{{ detail.id }}</el-col>
         <el-col :span="12">产品编号：{{ detail.frameNo }}</el-col>
       </el-row>
@@ -133,7 +139,7 @@
         class="mb-4 border-[1px] border-solid border-info py-2"
         :gutter="20"
       >
-        <el-col :span="12">备注：{{ detail.remark }}</el-col>
+        <el-col :span="24">备注：{{ detail.remark }}</el-col>
       </el-row>
     </el-card>
   </div>
@@ -145,6 +151,7 @@ import { useDictData } from '@/hooks/useDictOptions.ts'
 const loading = ref(false)
 const detail = reactive({
   id: '',
+  proName: '', // 产品名称
   model: '', // 型号
   frameNo: '', // 车架号
   conclusion: '',

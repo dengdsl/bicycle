@@ -10,6 +10,9 @@ import java.util.List;
 @Data
 public class ExcelRowDetailVo {
 
+    @Excel(name = "产品名称")
+    private String proName;
+
     @Excel(name = "型号")
     private String model;
 

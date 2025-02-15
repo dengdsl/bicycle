@@ -44,10 +44,11 @@ export class Axios {
     this.axiosInstance.interceptors.request.use(
       // 请求配置拦截器
       (config) => {
+        console.log('config ==>', config)
         this.addCancelToken(config)
         // 判断自定义请求拦截器是否存在
         if (requestInterceptorsHook instanceof Function) {
-          // @ts-ignore
+          // @ts-expect-error
           config = requestInterceptorsHook(config)
         }
         return config

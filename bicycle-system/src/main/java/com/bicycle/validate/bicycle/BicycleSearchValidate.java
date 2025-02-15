@@ -1,6 +1,7 @@
 package com.bicycle.validate.bicycle;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -11,6 +12,8 @@ public class BicycleSearchValidate implements Serializable {
 
     // id
     private String id;
+
+    private String proName; // 产品名称
 
     // 型号
     private Integer model;

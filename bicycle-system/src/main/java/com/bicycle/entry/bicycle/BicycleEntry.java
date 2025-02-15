@@ -21,6 +21,9 @@ public class BicycleEntry implements Serializable {
     @TableId(value = "id")
     private String id; // id
 
+    @TableField("pro_name")
+    private String proName; // 型号
+
     @TableField("model")
     private String model; // 型号
 

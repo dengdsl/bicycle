@@ -16,6 +16,9 @@ public class BicycleUpdateValidate implements Serializable {
     @NotBlank(message = "缺少ID编号")
     private String id;
 
+    @NotNull(message = "产品名称")
+    private String proName; // 产品名称
+
     @NotNull(message = "请选择型号")
     private String model;
 

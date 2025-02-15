@@ -43,7 +43,12 @@
               {{ detail.produceTime }}
             </van-col>
           </van-row>
-
+          <van-row class="pb-4" gutter="20">
+            <van-col span="8">产品名称</van-col>
+            <van-col span="16">
+              {{ detail.proName }}
+            </van-col>
+          </van-row>
           <van-row class="pb-4" gutter="20">
             <van-col span="8">型号</van-col>
             <van-col span="16">
@@ -106,6 +111,7 @@ const theme = computed(() => {
 
 const detail = reactive({
   id: '',
+  proName: '',
   model: '', // 型号
   frameNo: '', // 车架号
   conclusion: '',

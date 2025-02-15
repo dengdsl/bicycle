@@ -9,6 +9,13 @@
             placeholder="请输入编号"
           />
         </el-form-item>
+        <el-form-item label="产品名称">
+          <el-input
+            v-model="queryParams.proName"
+            @keyup.enter="getLists"
+            placeholder="请输入产品名称"
+          />
+        </el-form-item>
         <el-form-item label="型号">
           <el-select
             v-model="queryParams.model"
@@ -170,6 +177,13 @@
             label="ID"
             align="center"
             min-width="180"
+          />
+          <el-table-column
+            prop="proName"
+            label="产品名称"
+            align="center"
+            min-width="200"
+            show-overflow-tooltip
           />
           <el-table-column
             prop="qrcode"
@@ -500,6 +514,7 @@ const direction = ref<'rtl' | 'ltr' | 'ttb' | 'btt'>('rtl')
 const produceTime = ref<string[]>([])
 const queryParams = reactive({
   id: '',
+  proName: '',
   model: '',
   frameNo: '',
   conclusion: '',

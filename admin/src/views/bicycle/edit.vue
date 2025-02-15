@@ -30,6 +30,13 @@
           <img class="w-full" :src="dialogImageUrl" alt="Preview Image" />
         </el-dialog>
       </el-form-item>
+      <el-form-item label="产品名称" prop="proName">
+        <el-input
+          v-model="formData.proName"
+          placeholder="请输入产品名称"
+          clearable
+        />
+      </el-form-item>
       <el-form-item label="型号" prop="model">
         <el-select v-model="formData.model" placeholder="请选择" clearable>
           <el-option
@@ -142,6 +149,7 @@ const action = computed(() => {
 
 const formData = reactive({
   id: '' as string | number,
+  proName: '', // 产品名称
   model: '', // 型号
   frameNo: '', // 车架号
   conclusion: true, // 结论
@@ -166,6 +174,9 @@ const imageValidate = (_: any, __: any, callback: any) => {
   }
 }
 const formRules = reactive({
+  proName: [
+    { required: true, message: '请输入产品名称', trigger: ['blur', 'change'] },
+  ],
   model: [
     { required: true, message: '请选择型号', trigger: ['blur', 'change'] },
   ],

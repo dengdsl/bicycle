@@ -43,6 +43,9 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -91,6 +94,9 @@ public class BicycleServiceImpl implements BicycleService {
         }
         if (searchValidate.getRaveling() != null && !searchValidate.getFrameNo().isEmpty()) {
             queryWrapper.eq("raveling", searchValidate.getRaveling());
+        }
+        if (searchValidate.getProName() != null && !searchValidate.getProName().isEmpty()) {
+            queryWrapper.like("pro_name", searchValidate.getProName());
         }
         return queryWrapper;
     }
@@ -149,6 +155,7 @@ public class BicycleServiceImpl implements BicycleService {
         randomId = checkId(randomId, "id");
         BicycleEntry createEntry = new BicycleEntry();
         createEntry.setId(randomId);
+        createEntry.setProName(createValidate.getProName());
         createEntry.setModel(createValidate.getModel());
         createEntry.setFrameNo(createValidate.getFrameNo());
         createEntry.setConclusion(createValidate.getConclusion());
@@ -191,6 +198,7 @@ public class BicycleServiceImpl implements BicycleService {
         }
 
         // 修改自行车信息
+        bicycleEntry.setProName(updateValidate.getProName());
         bicycleEntry.setModel(updateValidate.getModel());
         bicycleEntry.setFrameNo(updateValidate.getFrameNo());
         bicycleEntry.setConclusion(updateValidate.getConclusion());
@@ -221,6 +229,13 @@ public class BicycleServiceImpl implements BicycleService {
         }
 
         bicycleMapper.deleteById(bicycleEntry.getId());
+        // 根据二维码路径和x光图片路径删除本地文件
+        deleteLocalFile(bicycleEntry.getQrImg());
+
+        String[] urlList = bicycleEntry.getImage().split((";"));
+        for (String url : urlList) {
+            deleteLocalFile(url);
+        }
         log.info("数据删除成功：" + bicycleEntry);
         return AjaxResult.success("删除成功");
     }
@@ -270,7 +285,7 @@ public class BicycleServiceImpl implements BicycleService {
         headerFont.setBold(true);  // 加粗
         headerStyle.setFont(headerFont);
         // 表头信息
-        String[] headers = {"型号", "车架号", "X光图片", "生产日期", "结论", "空孔", "内折", "乱纱", "备注"};
+        String[] headers = {"产品名称", "型号", "车架号", "X光图片", "生产日期", "结论", "空孔", "内折", "乱纱", "备注"};
 
         // 第一行：导入模板说明
         Row firstRow = sheet.createRow(0);
@@ -327,19 +342,19 @@ public class BicycleServiceImpl implements BicycleService {
         }
         // 设置型号单元格为下拉选项
         String[] modelOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("model")).map(SystemDictDataEntry::getName).toArray(String[]::new);
-        createSheetValidator(sheet, modelOptions, 2, 1000, 0, 0);
+        createSheetValidator(sheet, modelOptions, 2, 1000, 1, 1);
 
         String[] conclusionOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("conclusion")).map(SystemDictDataEntry::getName).toArray(String[]::new);
-        createSheetValidator(sheet, conclusionOptions, 2, 1000, 4, 4);
+        createSheetValidator(sheet, conclusionOptions, 2, 1000, 5, 5);
 
         String[] hollowHoleOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("hollowHole")).map(SystemDictDataEntry::getName).toArray(String[]::new);
-        createSheetValidator(sheet, hollowHoleOptions, 2, 1000, 5, 5);
+        createSheetValidator(sheet, hollowHoleOptions, 2, 1000, 6, 6);
 
         String[] inFoldOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("inFold")).map(SystemDictDataEntry::getName).toArray(String[]::new);
-        createSheetValidator(sheet, inFoldOptions, 2, 1000, 6, 6);
+        createSheetValidator(sheet, inFoldOptions, 2, 1000, 7, 7);
 
         String[] ravelingOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("raveling")).map(SystemDictDataEntry::getName).toArray(String[]::new);
-        createSheetValidator(sheet, ravelingOptions, 2, 1000, 7, 7);
+        createSheetValidator(sheet, ravelingOptions, 2, 1000, 8, 8);
 
 
         // 设置响应头信息，文件名，保证浏览器能够正常识别下载
@@ -467,6 +482,7 @@ public class BicycleServiceImpl implements BicycleService {
                 String id = randomService.randomId(RandomPrefix.BICYCLE_PREFIX.getDrugPrefix());
 
                 bicycleEntry.setId(checkId(id, "id", ids));
+                bicycleEntry.setProName(vo.getProName());
                 bicycleEntry.setModel(modelMap.get(vo.getModel()));
                 bicycleEntry.setFrameNo(vo.getFrameNo());
                 bicycleEntry.setConclusion(conclusionMap.get(vo.getConclusion()));
@@ -508,7 +524,7 @@ public class BicycleServiceImpl implements BicycleService {
     @Override
     public void exportBicycle(HttpServletResponse response, List<String> ids) throws IOException {
         QueryWrapper<BicycleEntry> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("is_del", 0);
+        queryWrapper.orderByDesc("create_time");
         if (!ids.isEmpty()) {
             queryWrapper.in("id", ids);
         }
@@ -532,7 +548,7 @@ public class BicycleServiceImpl implements BicycleService {
         // 创建excel表格将数据写入到表中最后以流的形式返回给前端
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet();
-        List<String> headerList = Arrays.asList("编号", "型号", "车架号", "X光图片", "生产日期", "二维码编码", "二维码图片", "结论", "空孔", "内折", "乱纱", "备注");
+        List<String> headerList = Arrays.asList("编号", "产品名称", "型号", "车架号", "X光图片", "生产日期", "二维码编码", "二维码图片", "结论", "空孔", "内折", "乱纱", "备注");
 
         // 创建表头背景颜色样式
         CellStyle headerStyle = workbook.createCellStyle();
@@ -569,7 +585,7 @@ public class BicycleServiceImpl implements BicycleService {
                 Cell cell = row.createCell(j);
                 switch (headerList.get(j)) {
                     case "二维码图片":
-                         path = bicycleEntry.getQrImg().replaceAll("^(https?://[^/]+/static)", ConfigUtils.getFilePath());
+                         path = bicycleEntry.getQrImg().replaceAll("^((https?://[^/]+/static)|(/static))", ConfigUtils.getFilePath());
                          // 获取图片后缀
                          suffix = path.substring(path.lastIndexOf(".") + 1);
                         sheet.setColumnWidth(j, 4000);
@@ -598,7 +614,7 @@ public class BicycleServiceImpl implements BicycleService {
                         String[] filePathList = bicycleEntry.getImage().split(";");
                         sheet.setColumnWidth(j, 4000 * filePathList.length);
                         for (int k = 0; k < filePathList.length; k++) {
-                            path = filePathList[k].replaceAll("^(https?://[^/]+/static)", ConfigUtils.getFilePath());
+                            path = filePathList[k].replaceAll("^((https?://[^/]+/static)|(/static))", ConfigUtils.getFilePath());
                             // 获取图片后缀
                             suffix = path.substring(path.lastIndexOf(".") + 1);
                             file = new File(path);
@@ -623,6 +639,9 @@ public class BicycleServiceImpl implements BicycleService {
                         cell.setCellValue(bicycleEntry.getProduceTime());
                         cell.setCellStyle(cellStyle);
                         break;
+                    case "产品名称":
+                        cell.setCellValue(bicycleEntry.getProName());
+                        break;
                     case "二维码编码":
                         cell.setCellValue(bicycleEntry.getQrcode());
                         break;
@@ -642,13 +661,13 @@ public class BicycleServiceImpl implements BicycleService {
                         cell.setCellValue(conclusionMap.get(bicycleEntry.getConclusion()));
                         break;
                     case "空孔":
-                        cell.setCellValue(bicycleEntry.getHollowHole());
+                        cell.setCellValue(hollowHoleMap.get(bicycleEntry.getHollowHole()));
                         break;
                     case "内折":
-                        cell.setCellValue(bicycleEntry.getInFold());
+                        cell.setCellValue(inFoldMap.get(bicycleEntry.getInFold()));
                         break;
                     case "乱纱":
-                        cell.setCellValue(bicycleEntry.getRaveling());
+                        cell.setCellValue(ravelingMap.get(bicycleEntry.getRaveling()));
                         break;
                 }
             }
@@ -658,18 +677,18 @@ public class BicycleServiceImpl implements BicycleService {
         // 结论下拉选项
         String[] conclusionOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("conclusion")).map(SystemDictDataEntry::getName).toArray(String[]::new);
         // 空孔下拉选项
-        String[] hollowHoleOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("hollow_hole")).map(SystemDictDataEntry::getName).toArray(String[]::new);
+        String[] hollowHoleOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("hollowHole")).map(SystemDictDataEntry::getName).toArray(String[]::new);
         // 内折下拉选项
-        String[] inFoldOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("in_fold")).map(SystemDictDataEntry::getName).toArray(String[]::new);
+        String[] inFoldOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("inFold")).map(SystemDictDataEntry::getName).toArray(String[]::new);
         // 乱纱下拉选项
         String[] ravelingOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("raveling")).map(SystemDictDataEntry::getName).toArray(String[]::new);
 
 
-        createSheetValidator(sheet, modelOptions, 1, bicycleEntries.size() + 100, 1, 1);
-        createSheetValidator(sheet, conclusionOptions, 1, bicycleEntries.size() + 100, 7, 7);
-        createSheetValidator(sheet, hollowHoleOptions, 1, bicycleEntries.size() + 100, 8, 8);
-        createSheetValidator(sheet, inFoldOptions, 1, bicycleEntries.size() + 100, 9, 9);
-        createSheetValidator(sheet, ravelingOptions, 1, bicycleEntries.size() + 100, 10, 10);
+        createSheetValidator(sheet, modelOptions, 1, bicycleEntries.size() + 100, 2, 2);
+        createSheetValidator(sheet, conclusionOptions, 1, bicycleEntries.size() + 100, 8, 8);
+        createSheetValidator(sheet, hollowHoleOptions, 1, bicycleEntries.size() + 100, 9, 9);
+        createSheetValidator(sheet, inFoldOptions, 1, bicycleEntries.size() + 100, 10, 10);
+        createSheetValidator(sheet, ravelingOptions, 1, bicycleEntries.size() + 100, 11, 11);
 
         // 设置响应头信息，文件名，保证浏览器能够正常识别下载
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=bicycle_export.xlsx");
@@ -744,7 +763,7 @@ public class BicycleServiceImpl implements BicycleService {
         QrCodeUtils.generateQRCode(qrCode, String.format("%s/%s.png", dirPath, qrCode));
         Map<String, String> qrcodeMap = new HashMap<>();
         qrcodeMap.put("qrcode", qrCode);
-        qrcodeMap.put("qrUrl", String.format("/static/%s/%s.png", basePath, qrCode));
+        qrcodeMap.put("qrUrl", String.format("/%s/%s.png", basePath, qrCode));
         return qrcodeMap;
     }
 
@@ -778,7 +797,7 @@ public class BicycleServiceImpl implements BicycleService {
                 if (serverUrl == null) {
                     serverUrl = request.getScheme() + "://" + request.getServerName();
                 }
-                imageUrls.add(serverUrl + "/static/" + basePath + "/" + fileName);
+                imageUrls.add(serverUrl + "/" + basePath + "/" + fileName);
             } catch (IOException e) {
                 log.error("保存文件失败：" + e.getMessage());
             }
@@ -863,5 +882,27 @@ public class BicycleServiceImpl implements BicycleService {
         DataValidation validation = validationHelper.createValidation(constraint, addressList);
         validation.setShowErrorBox(true);
         sheet.addValidationData(validation);
+    }
+    /**
+     * 删除本地文件
+     *
+     * @param filePath 文件路径
+     */
+    private void deleteLocalFile(String filePath) {
+        if (filePath == null || filePath.isEmpty()) {
+            return;
+        }
+        try {
+            String localPath = filePath.replaceAll("^((https?://[^/]+/static)|(/static))", ConfigUtils.getFilePath());
+            Path path = Paths.get(localPath);
+            if (Files.exists(path)) {
+                Files.delete(path);
+                log.info("成功删除文件：" + filePath);
+            } else {
+                log.warn("文件不存在：" + filePath);
+            }
+        } catch (Exception e) {
+            log.error("删除文件失败：" + filePath, e);
+        }
     }
 }
