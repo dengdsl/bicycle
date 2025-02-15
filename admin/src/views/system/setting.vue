@@ -286,13 +286,14 @@
                 :autoplay="configFormData.autoplay.value"
               >
                 <van-swipe-item
+                  :style="{ width: '375px', height: `${375 / (4 / 3)}px` }"
                   v-for="(item, index) in configFormData.bannerImgs.imgList"
                   :key="index"
                 >
                   <van-image
                     width="375"
                     :height="375 / (4 / 3)"
-                    fit="cover"
+                    position="center"
                     :src="item.src"
                   />
                 </van-swipe-item>

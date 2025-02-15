@@ -7,7 +7,7 @@
             <van-image
               width="100vw"
               :height="`${100 / (4 / 3)}vw`"
-              fit="cover"
+              position="center"
               :src="item.src"
             />
           </van-swipe-item>

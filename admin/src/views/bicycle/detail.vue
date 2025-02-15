@@ -6,18 +6,18 @@
         :gutter="20"
       >
         <el-col :span="12">编号：{{ detail.id }}</el-col>
+        <el-col :span="12">产品编号：{{ detail.frameNo }}</el-col>
+      </el-row>
+      <el-row
+        class="mb-4 border-[1px] border-solid border-info py-2"
+        :gutter="20"
+      >
         <el-col :span="12">
           <div class="flex items-center">
             <span>型号：</span>
             <dict-value :options="dictData.model" :value="detail.model" />
           </div>
         </el-col>
-      </el-row>
-      <el-row
-        class="mb-4 border-[1px] border-solid border-info py-2"
-        :gutter="20"
-      >
-        <el-col :span="12">产品编号：{{ detail.frameNo }}</el-col>
         <el-col :span="12">生产日期：{{ detail.produceTime }}</el-col>
       </el-row>
       <el-row
