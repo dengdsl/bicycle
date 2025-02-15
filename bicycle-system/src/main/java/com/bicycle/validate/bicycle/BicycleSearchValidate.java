@@ -21,6 +21,13 @@ public class BicycleSearchValidate implements Serializable {
     // 结论
     private String conclusion;
 
+    // 空孔
+    private String hollowHole;
+    // 内折
+    private String inFold;
+    // 乱纱
+    private String raveling;
+
     // 生产日期
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT + 8")
     @DateTimeFormat(pattern = "yyyy-MM-dd")

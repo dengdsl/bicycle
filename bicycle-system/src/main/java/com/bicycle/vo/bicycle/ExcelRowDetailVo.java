@@ -25,6 +25,15 @@ public class ExcelRowDetailVo {
     @Excel(name = "结论")
     private String conclusion;
 
+    @Excel(name = "空孔")
+    private String hollowHole;
+
+    @Excel(name = "内折")
+    private String inFold;
+
+    @Excel(name = "乱纱")
+    private String raveling;
+
     @Excel(name = "备注")
     private String remark;
 }

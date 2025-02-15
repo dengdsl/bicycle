@@ -39,16 +39,22 @@ public class BicycleEntry implements Serializable {
     @TableField("conclusion")
     private String conclusion; // 结论
 
+    @TableField("hollow_hole")
+    private String hollowHole; // 空孔：1-合格；0-不合格
+
+    @TableField("in_fold")
+    private String inFold; // 内折：1-合格；0-不合格
+
+    @TableField("raveling")
+    private String raveling; // 乱纱：1-合格；0-不合格
+
     @TableField("remark")
     private String remark; // 备注
-
-    @TableField("is_del")
-    private Integer isDel; // 是否删除
 
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT + 8")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @TableField("produce_time")
-    private Date produceTime; // 创建时间
+    private Date produceTime; // 生产日期
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT + 8")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -59,10 +65,5 @@ public class BicycleEntry implements Serializable {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @TableField("update_time")
     private Date updateTime; // 更新时间
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT + 8")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @TableField("delete_time")
-    private Date deleteTime; // 删除时间
 }
 

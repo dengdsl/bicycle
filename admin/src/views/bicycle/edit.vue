@@ -14,6 +14,22 @@
       label-width="100px"
       :rules="formRules"
     >
+      <el-form-item label="X光图片" prop="fileList">
+        <el-upload
+          v-model:file-list="fileList"
+          accept="image/**"
+          :data="{ path: 'images' }"
+          :action="action"
+          list-type="picture-card"
+          :on-preview="handlePictureCardPreview"
+          :on-success="handleSuccess"
+        >
+          <icon name="el-icon-Plus"></icon>
+        </el-upload>
+        <el-dialog v-model="dialogVisible">
+          <img class="w-full" :src="dialogImageUrl" alt="Preview Image" />
+        </el-dialog>
+      </el-form-item>
       <el-form-item label="型号" prop="model">
         <el-select v-model="formData.model" placeholder="请选择" clearable>
           <el-option
@@ -33,6 +49,7 @@
       </el-form-item>
       <el-form-item label="生产日期" prop="produceTime">
         <el-date-picker
+          style="width: 100%"
           v-model="formData.produceTime"
           type="date"
           format="YYYY-MM-DD"
@@ -40,21 +57,35 @@
           placeholder="请选择"
         />
       </el-form-item>
-      <el-form-item label="X光图片" prop="fileList">
-        <el-upload
-          v-model:file-list="fileList"
-          accept="image/**"
-          :data="{ path: 'images' }"
-          :action="action"
-          list-type="picture-card"
-          :on-preview="handlePictureCardPreview"
-          :on-success="handleSuccess"
-        >
-          <icon name="el-icon-Plus"></icon>
-        </el-upload>
-        <el-dialog v-model="dialogVisible">
-          <img class="w-full" :src="dialogImageUrl" alt="Preview Image" />
-        </el-dialog>
+      <el-form-item label="空孔" prop="hollowHole">
+        <el-select v-model="formData.hollowHole" placeholder="请选择" clearable>
+          <el-option
+            v-for="item in dictData.hollowHole"
+            :key="item.id"
+            :label="item.name"
+            :value="item.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="内折" prop="inFold">
+        <el-select v-model="formData.inFold" placeholder="请选择" clearable>
+          <el-option
+            v-for="item in dictData.inFold"
+            :key="item.id"
+            :label="item.name"
+            :value="item.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="型号" prop="raveling">
+        <el-select v-model="formData.raveling" placeholder="请选择" clearable>
+          <el-option
+            v-for="item in dictData.raveling"
+            :key="item.id"
+            :label="item.name"
+            :value="item.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="备注" prop="remark">
         <el-input
@@ -94,8 +125,11 @@ const submitLoading = ref(false)
 const openType = ref('')
 
 const { dictData } = useDictData<{
-  model: string[]
-}>(['model'])
+  model: any[]
+  hollowHole: any[]
+  inFold: any[]
+  raveling: any[]
+}>(['model', 'hollowHole', 'inFold', 'raveling'])
 
 const popupTitle = computed(() => {
   return openType.value === 'add' ? '新增' : '编辑'
@@ -112,8 +146,11 @@ const formData = reactive({
   frameNo: '', // 车架号
   conclusion: true, // 结论
   produceTime: '', // 生产日期
-  remark: '',
-  image: '',
+  remark: '', // 备注
+  image: '', // X光图片
+  hollowHole: '', // 空孔
+  inFold: '', // 内折
+  raveling: '', // 乱纱
 })
 
 const imageValidate = (_: any, __: any, callback: any) => {
@@ -237,12 +274,12 @@ defineExpose({
 
 <style lang="scss" scoped>
 ::v-deep(.el-upload--picture-card) {
-  width: 8em !important;
-  height: 8em !important;
+  width: 6em !important;
+  height: 6em !important;
 }
 
 ::v-deep(.el-upload-list__item) {
-  width: 8em !important;
-  height: 8em !important;
+  width: 6em !important;
+  height: 6em !important;
 }
 </style>

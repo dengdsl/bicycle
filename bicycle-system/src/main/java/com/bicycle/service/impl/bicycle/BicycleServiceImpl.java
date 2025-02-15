@@ -70,7 +70,6 @@ public class BicycleServiceImpl implements BicycleService {
      */
     private static QueryWrapper<BicycleEntry> getBicycleEntryQueryWrapper(BicycleSearchValidate searchValidate) {
         QueryWrapper<BicycleEntry> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("is_del", 0);
         queryWrapper.orderByDesc("create_time");
         if (searchValidate.getId() != null && !searchValidate.getId().isEmpty()) {
             queryWrapper.eq("id", searchValidate.getId());
@@ -83,6 +82,15 @@ public class BicycleServiceImpl implements BicycleService {
         }
         if (searchValidate.getConclusion() != null && !searchValidate.getConclusion().isEmpty()) {
             queryWrapper.eq("conclusion", searchValidate.getConclusion());
+        }
+        if (searchValidate.getHollowHole() != null && !searchValidate.getFrameNo().isEmpty()) {
+            queryWrapper.eq("hollow_hole", searchValidate.getHollowHole());
+        }
+        if (searchValidate.getInFold() != null && !searchValidate.getFrameNo().isEmpty()) {
+            queryWrapper.eq("in_fold", searchValidate.getInFold());
+        }
+        if (searchValidate.getRaveling() != null && !searchValidate.getFrameNo().isEmpty()) {
+            queryWrapper.eq("raveling", searchValidate.getRaveling());
         }
         return queryWrapper;
     }
@@ -120,11 +128,7 @@ public class BicycleServiceImpl implements BicycleService {
      */
     @Override
     public AjaxResult<Object> getBicycleDetail(String id) {
-        QueryWrapper<BicycleEntry> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("is_del", 0);
-        queryWrapper.eq("id", id);
-        BicycleEntry supplierEntry = bicycleMapper.selectOne(queryWrapper);
-        return AjaxResult.success(supplierEntry);
+        return AjaxResult.success(bicycleMapper.selectById(id));
     }
 
     /**
@@ -134,7 +138,6 @@ public class BicycleServiceImpl implements BicycleService {
     public AjaxResult<Object> addBicycle(BicycleCreateValidate createValidate, HttpServletRequest request) {
         // 查询当前车架号是否已经存在
         QueryWrapper<BicycleEntry> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("is_del", 0);
         queryWrapper.eq("frame_no", createValidate.getFrameNo());
         BicycleEntry bicycleEntry = bicycleMapper.selectOne(queryWrapper);
         if (bicycleEntry != null) {
@@ -149,6 +152,9 @@ public class BicycleServiceImpl implements BicycleService {
         createEntry.setModel(createValidate.getModel());
         createEntry.setFrameNo(createValidate.getFrameNo());
         createEntry.setConclusion(createValidate.getConclusion());
+        createEntry.setHollowHole(createValidate.getHollowHole());
+        createEntry.setInFold(createValidate.getInFold());
+        createEntry.setRaveling(createValidate.getRaveling());
         createEntry.setProduceTime(createValidate.getProduceTime());
         createEntry.setImage(createValidate.getImage());
         createEntry.setRemark(createValidate.getRemark());
@@ -169,27 +175,28 @@ public class BicycleServiceImpl implements BicycleService {
      */
     @Override
     public AjaxResult<Object> editBicycle(BicycleUpdateValidate updateValidate) {
-        // 查询要修改的自行车信息是否存在
-        QueryWrapper<BicycleEntry> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("is_del", 0);
-        queryWrapper.eq("id", updateValidate.getId());
-        BicycleEntry bicycleEntry = bicycleMapper.selectOne(queryWrapper);
+
+        BicycleEntry bicycleEntry = bicycleMapper.selectById(updateValidate.getId());
         if (bicycleEntry == null) {
             log.info("要修改的自行车数据不存在：id = " + updateValidate.getId());
             return AjaxResult.failed("数据不存在");
         }
-        // 查找车架号是否存在
-        queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("is_del", 0);
+
+        // 查询要修改的自行车信息是否存在
+        QueryWrapper<BicycleEntry> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("frame_no", updateValidate.getFrameNo());
         BicycleEntry bicycleEntry2 = bicycleMapper.selectOne(queryWrapper);
         if (bicycleEntry2 != null && !bicycleEntry2.getId().equals(updateValidate.getId())) {
             return AjaxResult.failed("该车架号已存在");
         }
+
         // 修改自行车信息
         bicycleEntry.setModel(updateValidate.getModel());
         bicycleEntry.setFrameNo(updateValidate.getFrameNo());
         bicycleEntry.setConclusion(updateValidate.getConclusion());
+        bicycleEntry.setHollowHole(updateValidate.getHollowHole());
+        bicycleEntry.setInFold(updateValidate.getInFold());
+        bicycleEntry.setRaveling(updateValidate.getRaveling());
         bicycleEntry.setProduceTime(updateValidate.getProduceTime());
         bicycleEntry.setImage(updateValidate.getImage());
         bicycleEntry.setRemark(updateValidate.getRemark());
@@ -206,17 +213,14 @@ public class BicycleServiceImpl implements BicycleService {
     public AjaxResult<Object> deleteBicycle(String id) {
         // 查询要删除的供应商信息是否存在
         QueryWrapper<BicycleEntry> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("is_del", 0);
         queryWrapper.eq("id", id);
-        BicycleEntry bicycleEntry = bicycleMapper.selectOne(queryWrapper);
+        BicycleEntry bicycleEntry = bicycleMapper.selectById(id);
         if (bicycleEntry == null) {
             log.info("要删除的数据不存在：id = " + id);
             return AjaxResult.failed("数据不存在");
         }
-        // 修改供应商信息
-        bicycleEntry.setIsDel(1);
-        bicycleEntry.setDeleteTime(new Date());
-        bicycleMapper.updateById(bicycleEntry);
+
+        bicycleMapper.deleteById(bicycleEntry.getId());
         log.info("数据删除成功：" + bicycleEntry);
         return AjaxResult.success("删除成功");
     }
@@ -225,7 +229,7 @@ public class BicycleServiceImpl implements BicycleService {
      * 下载批量导入模版
      */
     @Override
-    public void downloadImportTemplate(HttpServletResponse response) throws IOException, DecoderException {
+    public void downloadImportTemplate(HttpServletResponse response) throws IOException {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet();
         // 创建单元格样式
@@ -266,7 +270,7 @@ public class BicycleServiceImpl implements BicycleService {
         headerFont.setBold(true);  // 加粗
         headerStyle.setFont(headerFont);
         // 表头信息
-        String[] headers = {"型号", "车架号", "X光图片", "生产日期", "结论", "备注"};
+        String[] headers = {"型号", "车架号", "X光图片", "生产日期", "结论", "空孔", "内折", "乱纱", "备注"};
 
         // 第一行：导入模板说明
         Row firstRow = sheet.createRow(0);
@@ -311,7 +315,7 @@ public class BicycleServiceImpl implements BicycleService {
 
         // 获取数据库中存在的型号/和结论
         QueryWrapper<SystemDictDataEntry> queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("dict_type", "model", "conclusion");
+        queryWrapper.in("dict_type", "model", "conclusion", "hollowHole", "inFold", "raveling");
         List<SystemDictDataEntry> systemDictDataEntries = dictDataMapper.selectList(queryWrapper);
         // 第二行：表头
         Row headerRow = sheet.createRow(1);  // 表头从第2行开始
@@ -323,11 +327,20 @@ public class BicycleServiceImpl implements BicycleService {
         }
         // 设置型号单元格为下拉选项
         String[] modelOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("model")).map(SystemDictDataEntry::getName).toArray(String[]::new);
-        ;
-        String[] conclusionOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("conclusion")).map(SystemDictDataEntry::getName).toArray(String[]::new);
-
         createSheetValidator(sheet, modelOptions, 2, 1000, 0, 0);
+
+        String[] conclusionOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("conclusion")).map(SystemDictDataEntry::getName).toArray(String[]::new);
         createSheetValidator(sheet, conclusionOptions, 2, 1000, 4, 4);
+
+        String[] hollowHoleOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("hollowHole")).map(SystemDictDataEntry::getName).toArray(String[]::new);
+        createSheetValidator(sheet, hollowHoleOptions, 2, 1000, 5, 5);
+
+        String[] inFoldOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("inFold")).map(SystemDictDataEntry::getName).toArray(String[]::new);
+        createSheetValidator(sheet, inFoldOptions, 2, 1000, 6, 6);
+
+        String[] ravelingOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("raveling")).map(SystemDictDataEntry::getName).toArray(String[]::new);
+        createSheetValidator(sheet, ravelingOptions, 2, 1000, 7, 7);
+
 
         // 设置响应头信息，文件名，保证浏览器能够正常识别下载
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=import_template.xlsx");
@@ -362,7 +375,7 @@ public class BicycleServiceImpl implements BicycleService {
             List<String> qrcodeList = bicycleList.stream().map(BicycleEntry::getQrcode).toList();
             queryWrapper = new QueryWrapper<>();
             queryWrapper.select("frame_no");
-            queryWrapper.eq("is_del", 0);
+
             List<String> frameNos = bicycleMapper.selectList(queryWrapper).stream().map(BicycleEntry::getFrameNo).toList();
             // 判断上传的车架号是否已经存在
             List<String> list = rowDetails.stream().map(ExcelRowDetailVo::getFrameNo).filter(frameNos::contains).toList();
@@ -370,18 +383,25 @@ public class BicycleServiceImpl implements BicycleService {
                 // 将list用换行符进行拼接
                 return AjaxResult.failed(HttpEnum.CONFIRM_FAILED.getCode(), "车架号已存在：" + String.join("\n\r", list));
             }
+
             // 获取数据库中存在型号和结论
             QueryWrapper<SystemDictDataEntry> dictQueryWrapper = new QueryWrapper<>();
-            queryWrapper.in("dict_type", "model", "conclusion");
+            queryWrapper.in("dict_type", "model", "conclusion", "hollowHole", "inFold", "raveling");
             List<SystemDictDataEntry> systemDictDataEntries = dictDataMapper.selectList(dictQueryWrapper);
             // 型号列表
             List<SystemDictDataEntry> modelList = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("model")).toList();
             // 结论列表
             List<SystemDictDataEntry> conclusionList = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("conclusion")).toList();
+            // 空孔列表
+            List<SystemDictDataEntry> hollowHoleList = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("hollowHole")).toList();
+            // 内折列表
+            List<SystemDictDataEntry> inFoldList = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("inFold")).toList();
+            // 乱纱列表
+            List<SystemDictDataEntry> ravelingList = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("raveling")).toList();
 
+            // 验证上传的数据是否合法
             // 判断型号是否存在
             List<String> modelNames = modelList.stream().map(SystemDictDataEntry::getName).toList();
-
             List<String> models = rowDetails.stream()
                     .map(ExcelRowDetailVo::getModel)
                     .filter(model -> !modelNames.contains(model))
@@ -394,16 +414,52 @@ public class BicycleServiceImpl implements BicycleService {
             List<String> conclusionNames = conclusionList.stream().map(SystemDictDataEntry::getName).toList();
             List<String> conclusions = rowDetails.stream()
                     .map(ExcelRowDetailVo::getConclusion)
-                    .filter(model -> !conclusionNames.contains(model))
+                    .filter(conclusion -> !conclusionNames.contains(conclusion))
                     .toList();
             if (!conclusions.isEmpty()) {
                 return AjaxResult.failed(HttpEnum.FAILED.getCode(), "结论数据不合法：" + String.join("\n\r", conclusions));
             }
 
-            // 提取出所有的型号和法值
-            Map<String, String> modelMap = modelList.stream().collect(Collectors.toMap(SystemDictDataEntry::getName, SystemDictDataEntry::getValue));
+            // 判断空孔值是否合法
+            List<String> hollowHoleNames = hollowHoleList.stream().map(SystemDictDataEntry::getName).toList();
+            List<String> hollowHoles = rowDetails.stream()
+                    .map(ExcelRowDetailVo::getHollowHole)
+                    .filter(hollowHole -> !hollowHoleNames.contains(hollowHole))
+                    .toList();
+            if (!hollowHoles.isEmpty()) {
+                return AjaxResult.failed(HttpEnum.FAILED.getCode(), "空孔数据不合法：" + String.join("\n\r", String.valueOf(hollowHoles)));
+            }
 
+            // 判断内折是否合法
+            List<String> inFoldNames = inFoldList.stream().map(SystemDictDataEntry::getName).toList();
+            List<String> inFolds = rowDetails.stream()
+                    .map(ExcelRowDetailVo::getInFold)
+                    .filter(inFold -> !inFoldNames.contains(inFold))
+                    .toList();
+            if (!inFolds.isEmpty()) {
+                return AjaxResult.failed(HttpEnum.FAILED.getCode(), "内折数据不合法：" + String.join("\n\r", String.valueOf(inFolds)));
+            }
+
+            // 判断乱纱值是否合法
+            List<String> ravelingNames = ravelingList.stream().map(SystemDictDataEntry::getName).toList();
+            List<String> ravelings = rowDetails.stream()
+                    .map(ExcelRowDetailVo::getRaveling)
+                    .filter(raveling -> !ravelingNames.contains(raveling))
+                    .toList();
+            if (!ravelings.isEmpty()) {
+                return AjaxResult.failed(HttpEnum.FAILED.getCode(), "乱纱数据不合法：" + String.join("\n\r", String.valueOf(ravelings)));
+            }
+
+            // 提取出所有的型号值
+            Map<String, String> modelMap = modelList.stream().collect(Collectors.toMap(SystemDictDataEntry::getName, SystemDictDataEntry::getValue));
+            // 提取出所有的结论值
             Map<String, String> conclusionMap = conclusionList.stream().collect(Collectors.toMap(SystemDictDataEntry::getName, SystemDictDataEntry::getValue));
+            // 提取出所有的空孔值
+            Map<String, String> hollowHoleMap = hollowHoleList.stream().collect(Collectors.toMap(SystemDictDataEntry::getName, SystemDictDataEntry::getValue));
+            // 提取出所有内折值
+            Map<String, String> inFoldMap = inFoldList.stream().collect(Collectors.toMap(SystemDictDataEntry::getName, SystemDictDataEntry::getValue));
+            // 提取出所有乱纱值
+            Map<String, String> ravelingMap = ravelingList.stream().collect(Collectors.toMap(SystemDictDataEntry::getName, SystemDictDataEntry::getValue));
 
             // 验证通过，开始插入数据库
             for (ExcelRowDetailVo vo : rowDetails) {
@@ -414,6 +470,9 @@ public class BicycleServiceImpl implements BicycleService {
                 bicycleEntry.setModel(modelMap.get(vo.getModel()));
                 bicycleEntry.setFrameNo(vo.getFrameNo());
                 bicycleEntry.setConclusion(conclusionMap.get(vo.getConclusion()));
+                bicycleEntry.setHollowHole(hollowHoleMap.get(vo.getHollowHole()));
+                bicycleEntry.setInFold(inFoldMap.get(vo.getInFold()));
+                bicycleEntry.setRaveling(ravelingMap.get(vo.getRaveling()));
                 bicycleEntry.setProduceTime(vo.getProduceTime());
                 // 处理X光图片
                 String imageUrls = saveImage(vo.getImages(), request);
@@ -421,7 +480,6 @@ public class BicycleServiceImpl implements BicycleService {
                 bicycleEntry.setRemark(vo.getRemark());
                 bicycleEntry.setCreateTime(new Date());
                 bicycleEntry.setUpdateTime(new Date());
-                bicycleEntry.setIsDel(0);
 
                 //生成二维码信息
                 Map<String, String> qrcodeMap = generateQrcode(qrcodeList);
@@ -456,17 +514,25 @@ public class BicycleServiceImpl implements BicycleService {
         }
         List<BicycleEntry> bicycleEntries = bicycleMapper.selectList(queryWrapper);
         // 查询数据库中的结论字典数据和型号字典数据
-        List<SystemDictDataEntry> systemDictDataEntries = dictDataMapper.selectList(new QueryWrapper<SystemDictDataEntry>().in("dict_type", "model", "conclusion"));
+        List<SystemDictDataEntry> systemDictDataEntries = dictDataMapper.selectList(new QueryWrapper<SystemDictDataEntry>().in("dict_type", "model", "conclusion", "hollowHole", "inFold", "raveling"));
         // 筛选出不同的字典类型数据
         List<SystemDictDataEntry> modelList = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("model")).toList();
         List<SystemDictDataEntry> conclusionList = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("conclusion")).toList();
+        List<SystemDictDataEntry> hollowHoleList = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("hollowHole")).toList();
+        List<SystemDictDataEntry> inFoldList = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("inFold")).toList();
+        List<SystemDictDataEntry> ravelingList = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("raveling")).toList();
+
+
         // 将数据转换为map，以value作为键、name作为值
         Map<String, String> modelMap = modelList.stream().collect(Collectors.toMap(SystemDictDataEntry::getValue, SystemDictDataEntry::getName));
         Map<String, String> conclusionMap = conclusionList.stream().collect(Collectors.toMap(SystemDictDataEntry::getValue, SystemDictDataEntry::getName));
+        Map<String, String> hollowHoleMap = hollowHoleList.stream().collect(Collectors.toMap(SystemDictDataEntry::getValue, SystemDictDataEntry::getName));
+        Map<String, String> inFoldMap = inFoldList.stream().collect(Collectors.toMap(SystemDictDataEntry::getValue, SystemDictDataEntry::getName));
+        Map<String, String> ravelingMap = ravelingList.stream().collect(Collectors.toMap(SystemDictDataEntry::getValue, SystemDictDataEntry::getName));
         // 创建excel表格将数据写入到表中最后以流的形式返回给前端
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet();
-        List<String> headerList = Arrays.asList("编号", "型号", "车架号", "X光图片", "生产日期", "二维码编码", "二维码图片", "结论", "备注");
+        List<String> headerList = Arrays.asList("编号", "型号", "车架号", "X光图片", "生产日期", "二维码编码", "二维码图片", "结论", "空孔", "内折", "乱纱", "备注");
 
         // 创建表头背景颜色样式
         CellStyle headerStyle = workbook.createCellStyle();
@@ -575,6 +641,15 @@ public class BicycleServiceImpl implements BicycleService {
                     case "结论":
                         cell.setCellValue(conclusionMap.get(bicycleEntry.getConclusion()));
                         break;
+                    case "空孔":
+                        cell.setCellValue(bicycleEntry.getHollowHole());
+                        break;
+                    case "内折":
+                        cell.setCellValue(bicycleEntry.getInFold());
+                        break;
+                    case "乱纱":
+                        cell.setCellValue(bicycleEntry.getRaveling());
+                        break;
                 }
             }
         }
@@ -582,9 +657,19 @@ public class BicycleServiceImpl implements BicycleService {
         String[] modelOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("model")).map(SystemDictDataEntry::getName).toArray(String[]::new);
         // 结论下拉选项
         String[] conclusionOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("conclusion")).map(SystemDictDataEntry::getName).toArray(String[]::new);
+        // 空孔下拉选项
+        String[] hollowHoleOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("hollow_hole")).map(SystemDictDataEntry::getName).toArray(String[]::new);
+        // 内折下拉选项
+        String[] inFoldOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("in_fold")).map(SystemDictDataEntry::getName).toArray(String[]::new);
+        // 乱纱下拉选项
+        String[] ravelingOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("raveling")).map(SystemDictDataEntry::getName).toArray(String[]::new);
+
 
         createSheetValidator(sheet, modelOptions, 1, bicycleEntries.size() + 100, 1, 1);
         createSheetValidator(sheet, conclusionOptions, 1, bicycleEntries.size() + 100, 7, 7);
+        createSheetValidator(sheet, hollowHoleOptions, 1, bicycleEntries.size() + 100, 8, 8);
+        createSheetValidator(sheet, inFoldOptions, 1, bicycleEntries.size() + 100, 9, 9);
+        createSheetValidator(sheet, ravelingOptions, 1, bicycleEntries.size() + 100, 10, 10);
 
         // 设置响应头信息，文件名，保证浏览器能够正常识别下载
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=bicycle_export.xlsx");
@@ -604,9 +689,7 @@ public class BicycleServiceImpl implements BicycleService {
     @Override
     public AjaxResult<Object> queryByQrcode(String qrcode) {
         QueryWrapper<BicycleEntry> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("is_del", 0);
         queryWrapper.and(wrapper -> wrapper.eq("qrcode", qrcode).or().eq("frame_no", qrcode));
-//        BicycleEntry bicycleEntry = bicycleMapper.selectOne(queryWrapper);
         List<BicycleEntry> bicycleEntries = bicycleMapper.selectList(queryWrapper);
         if (bicycleEntries.isEmpty()) {
             return AjaxResult.failed("未查询到相关数据");
@@ -757,8 +840,11 @@ public class BicycleServiceImpl implements BicycleService {
                 "*3.X光图片：图片不能嵌入单元格，只需要插入即可，否则会导致图片信息提取不到！",
                 "*4.生产日期：需要为日期格式，例如：2025/1/20！",
                 "*5.结论：请通过下拉选项选择，如果不进行选择默认为通过！",
-                "*6.备注：备注信息不能超过1024个字符！",
-                "7.数据编号和二维码编号以及二维码由系统自动生成！"
+                "*6.空孔：请通过下拉选项选择，如果不进行选择默认为合格！",
+                "*7.内折：请通过下拉选项选择，如果不进行选择默认为合格！",
+                "*8.乱纱：请通过下拉选项选择，如果不进行选择默认为合格！",
+                "*9.备注：备注信息不能超过1024个字符！",
+                "10.数据编号和二维码编号以及二维码由系统自动生成！"
         };
         if (templateDescription != null && templateDescription.getValue() != null && !templateDescription.getValue().isEmpty()) {
             instructions = templateDescription.getValue().split(";");

@@ -31,6 +31,13 @@ public class BicycleUpdateValidate implements Serializable {
     @NotBlank(message = "图片参数必填")
     private String image;
 
+    // 空孔
+    private String hollowHole;
+    // 内折
+    private String inFold;
+    // 乱纱
+    private String raveling;
+
     private String remark;
 
     private String conclusion;

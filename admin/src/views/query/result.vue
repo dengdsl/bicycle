@@ -32,6 +32,19 @@
             <van-col span="16">{{ detail.id }}</van-col>
           </van-row>
           <van-row class="pb-4" gutter="20">
+            <van-col span="8">产品编号</van-col>
+            <van-col span="16">
+              {{ detail.frameNo }}
+            </van-col>
+          </van-row>
+          <van-row class="pb-4" gutter="20">
+            <van-col span="8">生产日期</van-col>
+            <van-col span="16">
+              {{ detail.produceTime }}
+            </van-col>
+          </van-row>
+
+          <van-row class="pb-4" gutter="20">
             <van-col span="8">型号</van-col>
             <van-col span="16">
               <dict-value
@@ -41,29 +54,32 @@
             </van-col>
           </van-row>
           <van-row class="pb-4" gutter="20">
-            <van-col span="8">产品编号</van-col>
+            <van-col span="8">空孔</van-col>
             <van-col span="16">
-              {{ detail.frameNo }}
+              <dict-value
+                :options="dictData.hollowHole"
+                :value="detail.hollowHole"
+              ></dict-value>
             </van-col>
           </van-row>
-          <van-row gutter="20">
-            <van-col span="8">生产日期</van-col>
+          <van-row class="pb-4" gutter="20">
+            <van-col span="8">内折</van-col>
             <van-col span="16">
-              {{ detail.produceTime }}
+              <dict-value
+                :options="dictData.inFold"
+                :value="detail.inFold"
+              ></dict-value>
             </van-col>
           </van-row>
-          <!--<van-row class="pb-4" gutter="20">-->
-          <!--  <van-col span="8">二维码编码</van-col>-->
-          <!--  <van-col span="16">-->
-          <!--    {{ detail.qrcode }}-->
-          <!--  </van-col>-->
-          <!--</van-row>-->
-          <!--<van-row class="pb-4" gutter="20">-->
-          <!--  <van-col span="8">二维码</van-col>-->
-          <!--  <van-col span="16">-->
-          <!--    <van-image width="100" fit="scale-down" :src="detail.qrImg" />-->
-          <!--  </van-col>-->
-          <!--</van-row>-->
+          <van-row class="pb-4" gutter="20">
+            <van-col span="8">乱纱</van-col>
+            <van-col span="16">
+              <dict-value
+                :options="dictData.raveling"
+                :value="detail.raveling"
+              ></dict-value>
+            </van-col>
+          </van-row>
         </van-cell-group>
       </div>
       <div v-else class="p-2">
@@ -79,7 +95,7 @@
 </template>
 <script lang="ts" setup>
 import { useDark } from '@vueuse/core'
-import { showLoadingToast, closeToast, showImagePreview } from 'vant'
+import { showLoadingToast, closeToast } from 'vant'
 import { queryByQrcode } from '@/api/bicycle'
 import { useDictData } from '@/hooks/useDictOptions'
 
@@ -93,6 +109,9 @@ const detail = reactive({
   model: '', // 型号
   frameNo: '', // 车架号
   conclusion: '',
+  hollowHole: '',
+  inFold: '',
+  raveling: '',
   createTime: '',
   image: [] as string[], // 图片
   qrcode: '', // 二维码编码
@@ -103,7 +122,10 @@ const detail = reactive({
 const { dictData } = useDictData<{
   model: any[]
   conclusion: any[]
-}>(['model', 'conclusion'])
+  hollowHole: any[]
+  inFold: any[]
+  raveling: any[]
+}>(['model', 'conclusion', 'hollowHole', 'inFold', 'raveling'])
 
 const router = useRouter()
 const route = useRoute()

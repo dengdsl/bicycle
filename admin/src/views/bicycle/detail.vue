@@ -26,14 +26,45 @@
       >
         <el-col :span="12">
           <span>结论：</span>
-          <el-tag :type="detail.conclusion == '1' ? 'success' : 'danger'">
+          <el-tag :type="detail.conclusion == '1' ? 'success' : 'primary'">
             <dict-value
               :options="dictData.conclusion"
               :value="detail.conclusion"
             ></dict-value>
           </el-tag>
         </el-col>
-        <el-col :span="12">备注：{{ detail.remark }}</el-col>
+        <el-col :span="12">
+          <span>乱纱：</span>
+          <el-tag :type="detail.raveling == '1' ? 'success' : 'danger'">
+            <dict-value
+              :options="dictData.raveling"
+              :value="detail.raveling"
+            ></dict-value>
+          </el-tag>
+        </el-col>
+      </el-row>
+      <el-row
+        class="mb-4 border-[1px] border-solid border-info py-2"
+        :gutter="20"
+      >
+        <el-col :span="12">
+          <span>空孔：</span>
+          <el-tag :type="detail.hollowHole == '1' ? 'success' : 'danger'">
+            <dict-value
+              :options="dictData.hollowHole"
+              :value="detail.hollowHole"
+            ></dict-value>
+          </el-tag>
+        </el-col>
+        <el-col :span="12">
+          <span>内折：</span>
+          <el-tag :type="detail.inFold == '1' ? 'success' : 'danger'">
+            <dict-value
+              :options="dictData.inFold"
+              :value="detail.inFold"
+            ></dict-value>
+          </el-tag>
+        </el-col>
       </el-row>
       <el-row
         class="mb-4 border-[1px] border-solid border-info py-2"
@@ -68,7 +99,7 @@
           </div>
         </el-col>
       </el-row>
-      <el-row class="border-[1px] border-solid border-info py-2" :gutter="20">
+      <el-row class="mb-4 border-[1px] border-solid border-info" :gutter="20">
         <el-col :span="24">
           <div class="flex items-center">
             <span>X光图片：</span>
@@ -97,6 +128,13 @@
           </div>
         </el-col>
       </el-row>
+      <el-row
+        v-if="detail.remark"
+        class="mb-4 border-[1px] border-solid border-info py-2"
+        :gutter="20"
+      >
+        <el-col :span="12">备注：{{ detail.remark }}</el-col>
+      </el-row>
     </el-card>
   </div>
 </template>
@@ -110,6 +148,9 @@ const detail = reactive({
   model: '', // 型号
   frameNo: '', // 车架号
   conclusion: '',
+  hollowHole: '', // 空孔
+  inFold: '', // 内折
+  raveling: '', // 乱纱
   createTime: '',
   image: [] as string[], // 图片
   qrcode: '', // 二维码编码
@@ -120,7 +161,10 @@ const detail = reactive({
 const { dictData } = useDictData<{
   model: any[]
   conclusion: any[]
-}>(['model', 'conclusion'])
+  hollowHole: any[]
+  inFold: any[]
+  raveling: any[]
+}>(['model', 'conclusion', 'hollowHole', 'inFold', 'raveling'])
 
 const loadData = async (id: string) => {
   try {

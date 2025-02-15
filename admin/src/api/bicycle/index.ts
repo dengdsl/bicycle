@@ -92,6 +92,7 @@ export function downloadTemplate() {
     {
       url: '/bicycle/download/template',
       responseType: 'blob',
+      timeout: 30 * 60 * 1000,
     },
     { isDownloadFile: true },
   )

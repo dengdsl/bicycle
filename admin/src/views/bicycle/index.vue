@@ -48,6 +48,54 @@
             />
           </el-select>
         </el-form-item>
+        <el-form-item label="空孔">
+          <el-select
+            v-model="queryParams.hollowHole"
+            placeholder="请选择"
+            clearable
+            style="width: 200px"
+          >
+            <el-option label="全部" value="" />
+            <el-option
+              v-for="item in dictData.hollowHole"
+              :key="item.id"
+              :label="item.name"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="内折">
+          <el-select
+            v-model="queryParams.inFold"
+            placeholder="请选择"
+            clearable
+            style="width: 200px"
+          >
+            <el-option label="全部" value="" />
+            <el-option
+              v-for="item in dictData.inFold"
+              :key="item.id"
+              :label="item.name"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="乱纱">
+          <el-select
+            v-model="queryParams.raveling"
+            placeholder="请选择"
+            clearable
+            style="width: 200px"
+          >
+            <el-option label="全部" value="" />
+            <el-option
+              v-for="item in dictData.raveling"
+              :key="item.id"
+              :label="item.name"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
         <el-form-item label="生产日期">
           <el-date-picker
             v-model="produceTime"
@@ -222,6 +270,54 @@
                 <dict-value
                   :options="dictData.conclusion"
                   :value="row.conclusion"
+                ></dict-value>
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="hollowHole"
+            label="空孔"
+            align="center"
+            min-width="120"
+            show-overflow-tooltip
+          >
+            <template #default="{ row }">
+              <el-tag :type="row.hollowHole == 1 ? 'success' : 'danger'">
+                <dict-value
+                  :options="dictData.hollowHole"
+                  :value="row.hollowHole"
+                ></dict-value>
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="inFold"
+            label="内折"
+            align="center"
+            min-width="120"
+            show-overflow-tooltip
+          >
+            <template #default="{ row }">
+              <el-tag :type="row.inFold == 1 ? 'success' : 'danger'">
+                <dict-value
+                  :options="dictData.inFold"
+                  :value="row.inFold"
+                ></dict-value>
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="raveling"
+            label="乱纱"
+            align="center"
+            min-width="120"
+            show-overflow-tooltip
+          >
+            <template #default="{ row }">
+              <el-tag :type="row.raveling == 1 ? 'success' : 'danger'">
+                <dict-value
+                  :options="dictData.raveling"
+                  :value="row.raveling"
                 ></dict-value>
               </el-tag>
             </template>
@@ -407,6 +503,9 @@ const queryParams = reactive({
   model: '',
   frameNo: '',
   conclusion: '',
+  hollowHole: '',
+  inFold: '',
+  raveling: '',
   produceTimeStart: '',
   produceTimeEnd: '',
 })
@@ -414,7 +513,10 @@ const queryParams = reactive({
 const { dictData } = useDictData<{
   model: any[]
   conclusion: any[]
-}>(['model', 'conclusion'])
+  hollowHole: any[]
+  inFold: any[]
+  raveling: any[]
+}>(['model', 'conclusion', 'hollowHole', 'inFold', 'raveling'])
 
 const { getLists, pager, resetPage, resetParams } = usePaging({
   fetchFn: getBicycleList,
