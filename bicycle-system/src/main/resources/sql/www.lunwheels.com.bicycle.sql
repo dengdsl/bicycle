@@ -11,7 +11,7 @@
  Target Server Version : 80028
  File Encoding         : 65001
 
- Date: 15/02/2025 23:41:44
+ Date: 16/02/2025 20:18:43
 */
 
 SET NAMES utf8mb4;
@@ -39,6 +39,13 @@ CREATE TABLE `bicycle_info`  (
   `update_time` datetime(0) NULL DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of bicycle_info
+-- ----------------------------
+INSERT INTO `bicycle_info` VALUES ('BY20250216467800', '1', '2', 'https://www.server.lunwheels.com/static/images/2025/02/16/1739740868banner1.jpg', '123456789', '2025-02-15 16:00:00', 'W9QFF93W79SL7ZCZV282QIHYKHLMPKXB', 'https://www.server.lunwheels.com/static/qrcode/2025/02/16/W9QFF93W79SL7ZCZV282QIHYKHLMPKXB.png', 1, 1, 1, 1, '', '2025-02-16 11:56:14', '2025-02-16 11:56:14');
+INSERT INTO `bicycle_info` VALUES ('BY20250216555998', '1', '1', 'https://www.server.lunwheels.com/static/images/2025/02/16/173970750691417.jpg', '123456451565', '2025-01-12 00:00:00', 'UQUF84VRRC5ULCVOJM6BDSUS6IJ7832O', 'https://www.server.lunwheels.com/static/qrcode/2025/02/16/UQUF84VRRC5ULCVOJM6BDSUS6IJ7832O.png', 1, 1, 1, 1, '测试数据', '2025-02-16 12:05:06', '2025-02-16 12:05:06');
+INSERT INTO `bicycle_info` VALUES ('BY20250216868599', '1', '1', 'https://www.server.lunwheels.com/static/images/2025/02/16/173970706944361.jpg', '1234564515656', '2025-01-11 16:00:00', 'LRGQMLOMZ4UEVYDE9WY7C156LG0SA242', 'https://www.server.lunwheels.com/static/qrcode/2025/02/16/LRGQMLOMZ4UEVYDE9WY7C156LG0SA242.png', 1, 1, 1, 1, '测试数据', '2025-02-16 11:57:49', '2025-02-16 12:04:44');
 
 -- ----------------------------
 -- Table structure for sys_config
@@ -165,6 +172,7 @@ INSERT INTO `sys_dict` VALUES (2, '结论', 'conclusion', 1, '结论：0-不通�
 INSERT INTO `sys_dict` VALUES (7, '空孔', 'hollowHole', 1, '1-合格；0-不合格', '2025-02-15 21:12:24', '2025-02-15 21:12:24');
 INSERT INTO `sys_dict` VALUES (8, '内折', 'inFold', 1, '1-合格；0-不合格', '2025-02-15 21:12:51', '2025-02-15 21:12:51');
 INSERT INTO `sys_dict` VALUES (9, '乱纱', 'raveling', 1, '1-合格；0-不合格', '2025-02-15 21:13:14', '2025-02-15 21:13:14');
+INSERT INTO `sys_dict` VALUES (10, '产品名称', 'proName', 1, '产品名称', '2025-02-16 09:30:00', '2025-02-16 09:30:18');
 
 -- ----------------------------
 -- Table structure for sys_dict_data
@@ -198,6 +206,7 @@ INSERT INTO `sys_dict_data` VALUES (12, 'inFold', '合格', 1, 1, '', 0);
 INSERT INTO `sys_dict_data` VALUES (13, 'inFold', '不合格', 0, 1, '', 0);
 INSERT INTO `sys_dict_data` VALUES (14, 'raveling', '合格', 1, 1, '', 0);
 INSERT INTO `sys_dict_data` VALUES (15, 'raveling', '不合格', 0, 1, '', 0);
+INSERT INTO `sys_dict_data` VALUES (16, 'proName', '前叉', 1, 1, '', 0);
 
 -- ----------------------------
 -- Table structure for sys_menu

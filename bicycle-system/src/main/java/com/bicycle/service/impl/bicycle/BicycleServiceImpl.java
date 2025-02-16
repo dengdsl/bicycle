@@ -147,7 +147,7 @@ public class BicycleServiceImpl implements BicycleService {
         queryWrapper.eq("frame_no", createValidate.getFrameNo());
         BicycleEntry bicycleEntry = bicycleMapper.selectOne(queryWrapper);
         if (bicycleEntry != null) {
-            return AjaxResult.failed("该车架号已存在");
+            return AjaxResult.failed("产品编号已存在");
         }
         // 查询当前商家名称是否已经存在
         // 生成编号
@@ -170,8 +170,12 @@ public class BicycleServiceImpl implements BicycleService {
 
         // 生成二维码
         Map<String, String> qrcodeInfo = generateQrcode(new ArrayList<>());
+        String serverUrl = ConfigUtils.getServerUrl();
+        if (serverUrl == null) {
+            serverUrl = request.getScheme() + "://" + request.getServerName();
+        }
         createEntry.setQrcode(qrcodeInfo.get("qrcode"));
-        createEntry.setQrImg(qrcodeInfo.get("qrUrl"));
+        createEntry.setQrImg(serverUrl + qrcodeInfo.get("qrUrl"));
         bicycleMapper.insert(createEntry);
         log.info("新增自行车数据成功：" + createEntry);
         return AjaxResult.success("新增成功");
@@ -194,7 +198,7 @@ public class BicycleServiceImpl implements BicycleService {
         queryWrapper.eq("frame_no", updateValidate.getFrameNo());
         BicycleEntry bicycleEntry2 = bicycleMapper.selectOne(queryWrapper);
         if (bicycleEntry2 != null && !bicycleEntry2.getId().equals(updateValidate.getId())) {
-            return AjaxResult.failed("该车架号已存在");
+            return AjaxResult.failed("产品编号已存在");
         }
 
         // 修改自行车信息
@@ -285,7 +289,7 @@ public class BicycleServiceImpl implements BicycleService {
         headerFont.setBold(true);  // 加粗
         headerStyle.setFont(headerFont);
         // 表头信息
-        String[] headers = {"产品名称", "型号", "车架号", "X光图片", "生产日期", "结论", "空孔", "内折", "乱纱", "备注"};
+        String[] headers = {"产品名称", "产品型号", "产品编号", "X光图片", "生产日期", "结论", "空孔", "内折", "乱纱", "备注"};
 
         // 第一行：导入模板说明
         Row firstRow = sheet.createRow(0);
@@ -330,7 +334,7 @@ public class BicycleServiceImpl implements BicycleService {
 
         // 获取数据库中存在的型号/和结论
         QueryWrapper<SystemDictDataEntry> queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("dict_type", "model", "conclusion", "hollowHole", "inFold", "raveling");
+        queryWrapper.in("dict_type", "model", "conclusion", "hollowHole", "inFold", "raveling", "proName");
         List<SystemDictDataEntry> systemDictDataEntries = dictDataMapper.selectList(queryWrapper);
         // 第二行：表头
         Row headerRow = sheet.createRow(1);  // 表头从第2行开始
@@ -340,7 +344,9 @@ public class BicycleServiceImpl implements BicycleService {
             headerCell.setCellStyle(headerStyle);
             sheet.setColumnWidth(i, 30 * 256);
         }
-        // 设置型号单元格为下拉选项
+        String[] proNameOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("proName")).map(SystemDictDataEntry::getName).toArray(String[]::new);
+        createSheetValidator(sheet, proNameOptions, 2, 1000, 0, 0);
+
         String[] modelOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("model")).map(SystemDictDataEntry::getName).toArray(String[]::new);
         createSheetValidator(sheet, modelOptions, 2, 1000, 1, 1);
 
@@ -355,7 +361,6 @@ public class BicycleServiceImpl implements BicycleService {
 
         String[] ravelingOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("raveling")).map(SystemDictDataEntry::getName).toArray(String[]::new);
         createSheetValidator(sheet, ravelingOptions, 2, 1000, 8, 8);
-
 
         // 设置响应头信息，文件名，保证浏览器能够正常识别下载
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=import_template.xlsx");
@@ -396,13 +401,15 @@ public class BicycleServiceImpl implements BicycleService {
             List<String> list = rowDetails.stream().map(ExcelRowDetailVo::getFrameNo).filter(frameNos::contains).toList();
             if (!list.isEmpty()) {
                 // 将list用换行符进行拼接
-                return AjaxResult.failed(HttpEnum.CONFIRM_FAILED.getCode(), "车架号已存在：" + String.join("\n\r", list));
+                return AjaxResult.failed(HttpEnum.CONFIRM_FAILED.getCode(), "产品编号已存在：" + String.join("\n\r", list));
             }
 
             // 获取数据库中存在型号和结论
             QueryWrapper<SystemDictDataEntry> dictQueryWrapper = new QueryWrapper<>();
-            queryWrapper.in("dict_type", "model", "conclusion", "hollowHole", "inFold", "raveling");
+            queryWrapper.in("dict_type", "model", "conclusion", "hollowHole", "inFold", "raveling", "proName");
             List<SystemDictDataEntry> systemDictDataEntries = dictDataMapper.selectList(dictQueryWrapper);
+            // 产品名称列表
+            List<SystemDictDataEntry> proNameList = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("proName")).toList();
             // 型号列表
             List<SystemDictDataEntry> modelList = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("model")).toList();
             // 结论列表
@@ -415,6 +422,16 @@ public class BicycleServiceImpl implements BicycleService {
             List<SystemDictDataEntry> ravelingList = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("raveling")).toList();
 
             // 验证上传的数据是否合法
+            // 判断产品名称是否存在
+            List<String> proNames = proNameList.stream().map(SystemDictDataEntry::getName).toList();
+            List<String> pros = rowDetails.stream()
+                    .map(ExcelRowDetailVo::getProName)
+                    .filter(pro -> !proNames.contains(pro))
+                    .toList();
+            if (!pros.isEmpty()) {
+                return AjaxResult.failed(HttpEnum.FAILED.getCode(), "产品名称数据不合法：" + String.join("\n\r", pros));
+            }
+
             // 判断型号是否存在
             List<String> modelNames = modelList.stream().map(SystemDictDataEntry::getName).toList();
             List<String> models = rowDetails.stream()
@@ -465,6 +482,8 @@ public class BicycleServiceImpl implements BicycleService {
                 return AjaxResult.failed(HttpEnum.FAILED.getCode(), "乱纱数据不合法：" + String.join("\n\r", String.valueOf(ravelings)));
             }
 
+            // 提取出所有产品名称的值
+            Map<String, String> proNameMap = proNameList.stream().collect(Collectors.toMap(SystemDictDataEntry::getName, SystemDictDataEntry::getValue));
             // 提取出所有的型号值
             Map<String, String> modelMap = modelList.stream().collect(Collectors.toMap(SystemDictDataEntry::getName, SystemDictDataEntry::getValue));
             // 提取出所有的结论值
@@ -482,7 +501,7 @@ public class BicycleServiceImpl implements BicycleService {
                 String id = randomService.randomId(RandomPrefix.BICYCLE_PREFIX.getDrugPrefix());
 
                 bicycleEntry.setId(checkId(id, "id", ids));
-                bicycleEntry.setProName(vo.getProName());
+                bicycleEntry.setProName(proNameMap.get(vo.getProName()));
                 bicycleEntry.setModel(modelMap.get(vo.getModel()));
                 bicycleEntry.setFrameNo(vo.getFrameNo());
                 bicycleEntry.setConclusion(conclusionMap.get(vo.getConclusion()));
@@ -530,8 +549,9 @@ public class BicycleServiceImpl implements BicycleService {
         }
         List<BicycleEntry> bicycleEntries = bicycleMapper.selectList(queryWrapper);
         // 查询数据库中的结论字典数据和型号字典数据
-        List<SystemDictDataEntry> systemDictDataEntries = dictDataMapper.selectList(new QueryWrapper<SystemDictDataEntry>().in("dict_type", "model", "conclusion", "hollowHole", "inFold", "raveling"));
+        List<SystemDictDataEntry> systemDictDataEntries = dictDataMapper.selectList(new QueryWrapper<SystemDictDataEntry>().in("dict_type", "model", "conclusion", "hollowHole", "inFold", "raveling", "proName"));
         // 筛选出不同的字典类型数据
+        List<SystemDictDataEntry> proNameList = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("proName")).toList();
         List<SystemDictDataEntry> modelList = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("model")).toList();
         List<SystemDictDataEntry> conclusionList = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("conclusion")).toList();
         List<SystemDictDataEntry> hollowHoleList = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("hollowHole")).toList();
@@ -540,6 +560,7 @@ public class BicycleServiceImpl implements BicycleService {
 
 
         // 将数据转换为map，以value作为键、name作为值
+        Map<String, String> proNameMap = proNameList.stream().collect(Collectors.toMap(SystemDictDataEntry::getValue, SystemDictDataEntry::getName));
         Map<String, String> modelMap = modelList.stream().collect(Collectors.toMap(SystemDictDataEntry::getValue, SystemDictDataEntry::getName));
         Map<String, String> conclusionMap = conclusionList.stream().collect(Collectors.toMap(SystemDictDataEntry::getValue, SystemDictDataEntry::getName));
         Map<String, String> hollowHoleMap = hollowHoleList.stream().collect(Collectors.toMap(SystemDictDataEntry::getValue, SystemDictDataEntry::getName));
@@ -548,7 +569,7 @@ public class BicycleServiceImpl implements BicycleService {
         // 创建excel表格将数据写入到表中最后以流的形式返回给前端
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet();
-        List<String> headerList = Arrays.asList("编号", "产品名称", "型号", "车架号", "X光图片", "生产日期", "二维码编码", "二维码图片", "结论", "空孔", "内折", "乱纱", "备注");
+        List<String> headerList = Arrays.asList("编号", "产品名称", "产品型号", "产品编号", "X光图片", "生产日期", "二维码编码", "二维码图片", "结论", "空孔", "内折", "乱纱", "备注");
 
         // 创建表头背景颜色样式
         CellStyle headerStyle = workbook.createCellStyle();
@@ -640,7 +661,7 @@ public class BicycleServiceImpl implements BicycleService {
                         cell.setCellStyle(cellStyle);
                         break;
                     case "产品名称":
-                        cell.setCellValue(bicycleEntry.getProName());
+                        cell.setCellValue(proNameMap.get(bicycleEntry.getProName()));
                         break;
                     case "二维码编码":
                         cell.setCellValue(bicycleEntry.getQrcode());
@@ -648,13 +669,13 @@ public class BicycleServiceImpl implements BicycleService {
                     case "备注":
                         cell.setCellValue(bicycleEntry.getRemark());
                         break;
-                    case "车架号":
+                    case "产品编号":
                         cell.setCellValue(bicycleEntry.getFrameNo());
                         break;
                     case "编号":
                         cell.setCellValue(bicycleEntry.getId());
                         break;
-                    case "型号":
+                    case "产品型号":
                         cell.setCellValue(modelMap.get(bicycleEntry.getModel()));
                         break;
                     case "结论":
@@ -672,6 +693,8 @@ public class BicycleServiceImpl implements BicycleService {
                 }
             }
         }
+        // 产品名称下拉选项
+        String[] proNameOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("proName")).map(SystemDictDataEntry::getName).toArray(String[]::new);
         // 型号下拉选项
         String[] modelOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("model")).map(SystemDictDataEntry::getName).toArray(String[]::new);
         // 结论下拉选项
@@ -684,6 +707,7 @@ public class BicycleServiceImpl implements BicycleService {
         String[] ravelingOptions = systemDictDataEntries.stream().filter(dictDataEntry -> dictDataEntry.getDictType().equals("raveling")).map(SystemDictDataEntry::getName).toArray(String[]::new);
 
 
+        createSheetValidator(sheet, proNameOptions, 1, bicycleEntries.size() + 100, 1, 1);
         createSheetValidator(sheet, modelOptions, 1, bicycleEntries.size() + 100, 2, 2);
         createSheetValidator(sheet, conclusionOptions, 1, bicycleEntries.size() + 100, 8, 8);
         createSheetValidator(sheet, hollowHoleOptions, 1, bicycleEntries.size() + 100, 9, 9);
@@ -854,7 +878,7 @@ public class BicycleServiceImpl implements BicycleService {
      */
     private String[] getTemplateDescription(SystemConfigEntry templateDescription) {
         String[] instructions = {
-                "*1.型号：请在下拉选项中进行选择，如果不选择或不按配置项填写将会导致导入失败！",
+                "*1.产品名称、产品型号：请在下拉选项中进行选择，如果不选择或不按配置项填写将会导致导入失败！",
                 "*2.车架号：不能出现重复的车架号和已经录入系统的车架号，否则将导致导入失败！",
                 "*3.X光图片：图片不能嵌入单元格，只需要插入即可，否则会导致图片信息提取不到！",
                 "*4.生产日期：需要为日期格式，例如：2025/1/20！",

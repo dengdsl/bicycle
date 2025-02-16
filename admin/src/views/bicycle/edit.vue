@@ -30,27 +30,10 @@
           <img class="w-full" :src="dialogImageUrl" alt="Preview Image" />
         </el-dialog>
       </el-form-item>
-      <el-form-item label="产品名称" prop="proName">
-        <el-input
-          v-model="formData.proName"
-          placeholder="请输入产品名称"
-          clearable
-        />
-      </el-form-item>
-      <el-form-item label="型号" prop="model">
-        <el-select v-model="formData.model" placeholder="请选择" clearable>
-          <el-option
-            v-for="item in dictData.model"
-            :key="item.id"
-            :label="item.name"
-            :value="item.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="车架号" prop="frameNo">
+      <el-form-item label="产品编码" prop="frameNo">
         <el-input
           v-model="formData.frameNo"
-          placeholder="请输入车架号"
+          placeholder="请输入产品编码"
           clearable
         />
       </el-form-item>
@@ -63,6 +46,36 @@
           value-format="YYYY-MM-DD"
           placeholder="请选择"
         />
+      </el-form-item>
+      <el-form-item label="产品名称" prop="proName">
+        <el-select
+          v-model="formData.proName"
+          filterable
+          placeholder="请选择"
+          clearable
+        >
+          <el-option
+            v-for="item in dictData.proName"
+            :key="item.id"
+            :label="item.name"
+            :value="item.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="产品型号" prop="model">
+        <el-select
+          v-model="formData.model"
+          filterable
+          placeholder="请选择"
+          clearable
+        >
+          <el-option
+            v-for="item in dictData.model"
+            :key="item.id"
+            :label="item.name"
+            :value="item.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="空孔" prop="hollowHole">
         <el-select v-model="formData.hollowHole" placeholder="请选择" clearable>
@@ -136,7 +149,8 @@ const { dictData } = useDictData<{
   hollowHole: any[]
   inFold: any[]
   raveling: any[]
-}>(['model', 'hollowHole', 'inFold', 'raveling'])
+  proName: any[]
+}>(['model', 'hollowHole', 'inFold', 'raveling', 'proName'])
 
 const popupTitle = computed(() => {
   return openType.value === 'add' ? '新增' : '编辑'
@@ -175,13 +189,13 @@ const imageValidate = (_: any, __: any, callback: any) => {
 }
 const formRules = reactive({
   proName: [
-    { required: true, message: '请输入产品名称', trigger: ['blur', 'change'] },
+    { required: true, message: '请选择产品名称', trigger: ['blur', 'change'] },
   ],
   model: [
     { required: true, message: '请选择型号', trigger: ['blur', 'change'] },
   ],
   frameNo: [
-    { required: true, message: '请输入车架号', trigger: ['blur', 'change'] },
+    { required: true, message: '请输入产品编号', trigger: ['blur', 'change'] },
   ],
   produceTime: [
     { required: true, message: '请选择生产日期', trigger: ['blur', 'change'] },

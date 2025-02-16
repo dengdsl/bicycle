@@ -13,10 +13,10 @@ public class ExcelRowDetailVo {
     @Excel(name = "产品名称")
     private String proName;
 
-    @Excel(name = "型号")
+    @Excel(name = "产品型号")
     private String model;
 
-    @Excel(name = "车架号")
+    @Excel(name = "产品编号")
     private String frameNo;
 
     @Excel(name = "X光图片", getPicture = true)

@@ -12,14 +12,14 @@ import java.util.Date;
 @Data
 public class BicycleCreateValidate implements Serializable {
 
-    @NotNull(message = "产品名称")
+    @NotNull(message = "请选择产品名称")
     private String proName; // 产品名称
 
     @NotNull(message = "请选择型号")
     private String model;
 
-    @NotNull(message = "请输入车架号")
-    @NotBlank(message = "请输入车架号")
+    @NotNull(message = "请输入产品编号")
+    @NotBlank(message = "请输入产品编号")
     private String frameNo;
 
     @NotNull(message = "请选择生产日期")

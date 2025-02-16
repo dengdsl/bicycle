@@ -46,11 +46,14 @@
           <van-row class="pb-4" gutter="20">
             <van-col span="8">产品名称</van-col>
             <van-col span="16">
-              {{ detail.proName }}
+              <dict-value
+                :options="dictData.proName"
+                :value="detail.proName"
+              ></dict-value>
             </van-col>
           </van-row>
           <van-row class="pb-4" gutter="20">
-            <van-col span="8">型号</van-col>
+            <van-col span="8">产品型号</van-col>
             <van-col span="16">
               <dict-value
                 :options="dictData.model"
@@ -131,7 +134,8 @@ const { dictData } = useDictData<{
   hollowHole: any[]
   inFold: any[]
   raveling: any[]
-}>(['model', 'conclusion', 'hollowHole', 'inFold', 'raveling'])
+  proName: any[]
+}>(['model', 'conclusion', 'hollowHole', 'inFold', 'raveling', 'proName'])
 
 const router = useRouter()
 const route = useRoute()

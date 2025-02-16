@@ -10,15 +10,26 @@
           />
         </el-form-item>
         <el-form-item label="产品名称">
-          <el-input
+          <el-select
             v-model="queryParams.proName"
-            @keyup.enter="getLists"
-            placeholder="请输入产品名称"
-          />
+            filterable
+            placeholder="请选择"
+            clearable
+            style="width: 200px"
+          >
+            <el-option label="全部" value="" />
+            <el-option
+              v-for="item in dictData.proName"
+              :key="item.id"
+              :label="item.name"
+              :value="item.value"
+            />
+          </el-select>
         </el-form-item>
-        <el-form-item label="型号">
+        <el-form-item label="产品型号">
           <el-select
             v-model="queryParams.model"
+            filterable
             placeholder="请选择"
             clearable
             style="width: 200px"
@@ -184,7 +195,14 @@
             align="center"
             min-width="200"
             show-overflow-tooltip
-          />
+          >
+            <template #default="{ row }">
+              <dict-value
+                :options="dictData.proName"
+                :value="row.proName"
+              ></dict-value>
+            </template>
+          </el-table-column>
           <el-table-column
             prop="qrcode"
             label="二维码编码"
@@ -253,7 +271,7 @@
           />
           <el-table-column
             prop="model"
-            label="型号"
+            label="产品型号"
             align="center"
             min-width="120"
             show-overflow-tooltip
@@ -531,7 +549,8 @@ const { dictData } = useDictData<{
   hollowHole: any[]
   inFold: any[]
   raveling: any[]
-}>(['model', 'conclusion', 'hollowHole', 'inFold', 'raveling'])
+  proName: any[]
+}>(['model', 'conclusion', 'hollowHole', 'inFold', 'raveling', 'proName'])
 
 const { getLists, pager, resetPage, resetParams } = usePaging({
   fetchFn: getBicycleList,

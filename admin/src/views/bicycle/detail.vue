@@ -5,7 +5,12 @@
         class="mb-4 border-[1px] border-solid border-info py-2"
         :gutter="20"
       >
-        <el-col :span="24">产品名称：{{ detail.proName }}</el-col>
+        <el-col :span="24">
+          <div class="flex items-center">
+            <span>产品名称：</span>
+            <dict-value :options="dictData.proName" :value="detail.proName" />
+          </div>
+        </el-col>
       </el-row>
       <el-row
         class="mb-4 border-[1px] border-solid border-info py-2"
@@ -20,7 +25,7 @@
       >
         <el-col :span="12">
           <div class="flex items-center">
-            <span>型号：</span>
+            <span>产品型号：</span>
             <dict-value :options="dictData.model" :value="detail.model" />
           </div>
         </el-col>
@@ -171,7 +176,8 @@ const { dictData } = useDictData<{
   hollowHole: any[]
   inFold: any[]
   raveling: any[]
-}>(['model', 'conclusion', 'hollowHole', 'inFold', 'raveling'])
+  proName: any[]
+}>(['model', 'conclusion', 'hollowHole', 'inFold', 'raveling', 'proName'])
 
 const loadData = async (id: string) => {
   try {
