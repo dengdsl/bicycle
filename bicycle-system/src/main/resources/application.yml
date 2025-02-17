@@ -8,11 +8,11 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://8.136.11.255:3306/www.lunwheels.com.bicycle?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false
-#    url: jdbc:mysql://1.94.143.210:3306/bicycle?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false
+#    url: jdbc:mysql://8.136.11.255:3306/www.lunwheels.com.bicycle?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false
+    url: jdbc:mysql://localhost:3306/bicycle?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false
     username: root
-    password: 911!Dswybs-1024
-#    password: mysql
+#    password: 911!Dswybs-1024
+    password: mysql
   hikari:
     connection-timeout: 30000     # 等待连接分配连接的最大时长(毫秒),超出时长还没可用连接则发送SQLException,默认30秒
     minimum-idle: 5               # 最小连接数
@@ -27,12 +27,12 @@ spring:
   data:
     redis:
       database: 0
-      host: 8.136.11.255
-#      host: 1.94.143.210
+#      host: 8.136.11.255
+      host: localhost
 #      password: redis
       timeout: 30000
-      port: 9736
-#      port: 6379
+#      port: 9736
+      port: 6379
       lettuce:
         pool:
           max-wait: 30000 # 连接池最大阻塞等待时间(使用负数表示没有限制,默认-1)

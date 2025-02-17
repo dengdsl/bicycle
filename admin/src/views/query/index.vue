@@ -26,7 +26,7 @@
         <van-field
           v-model="searchValue"
           input-align="center"
-          placeholder="二维码编码/车架号"
+          placeholder="产品编码/二维码编码"
         />
       </div>
       <div class="flex items-center justify-center px-4 mt-5">

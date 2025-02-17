@@ -28,13 +28,10 @@ public class BicycleEntry implements Serializable {
     private String model; // 型号
 
     @TableField("frame_no")
-    private String frameNo; // 车架号
+    private String frameNo; // 产品编号
 
     @TableField("image")
     private String image; // X光图片
-
-    @TableField("qrcode")
-    private String qrcode; // 二维码编码
 
     @TableField("qr_img")
     private String qrImg; // 二维码图片

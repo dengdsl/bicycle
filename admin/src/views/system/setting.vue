@@ -312,7 +312,7 @@
                 <van-field
                   input-align="center"
                   readonly
-                  placeholder="请输入条形码"
+                  placeholder="二维码编码/产品编码"
                 />
               </div>
               <div class="flex items-center justify-center px-4 mt-5">

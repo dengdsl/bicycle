@@ -70,12 +70,12 @@ public class ImageUploadController{
         if (!dest.getParentFile().exists()) {
             dest.getParentFile().mkdirs();
         }
-        String serverUrl = ConfigUtils.getServerUrl();
-        if (serverUrl == null) {
-            serverUrl = request.getScheme() + "://" + request.getServerName() +"/static";
-        }
+        //String serverUrl = ConfigUtils.getServerUrl();
+        //if (serverUrl == null) {
+        //    serverUrl = request.getScheme() + "://" + request.getServerName() +"/static";
+        //}
         // 拼接服务器地址
-        String url = String.format("%s/%s/%s",serverUrl, basePath, fileName);
+        String url = String.format("/static/%s/%s", basePath, fileName);
         log.info("图片上传路径：" + url);
         try {
             file.transferTo(dest);
@@ -118,12 +118,12 @@ public class ImageUploadController{
         if (!dest.getParentFile().exists()) {
             dest.getParentFile().mkdirs();
         }
-        String serverUrl = ConfigUtils.getServerUrl();
-        if (serverUrl == null) {
-            serverUrl = request.getScheme() + "://" + request.getServerName() + "/static";
-        }
+        //String serverUrl = ConfigUtils.getServerUrl();
+        //if (serverUrl == null) {
+        //    serverUrl = request.getScheme() + "://" + request.getServerName() + "/static";
+        //}
         // 拼接服务器地址
-        String url = String.format("%s/%s/%s", serverUrl, basePath, fileName);
+        String url = String.format("/static/%s/%s", basePath, fileName);
         try {
             file.transferTo(dest);
             return AjaxResult.success("文件上传成功", url);

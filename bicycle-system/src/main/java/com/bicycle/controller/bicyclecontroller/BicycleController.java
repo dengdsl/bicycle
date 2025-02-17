@@ -81,6 +81,7 @@ public class BicycleController  {
     @GetMapping("download/template")
     public void downloadTemplate(@NotNull HttpServletResponse response) throws IOException, DecoderException {
          bicycleService.downloadImportTemplate(response);
+         //return response;
     }
     /**
      * 批量导入

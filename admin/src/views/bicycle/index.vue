@@ -204,13 +204,6 @@
             </template>
           </el-table-column>
           <el-table-column
-            prop="qrcode"
-            label="二维码编码"
-            align="center"
-            min-width="200"
-            show-overflow-tooltip
-          />
-          <el-table-column
             prop="qrImg"
             label="二维码"
             align="center"
