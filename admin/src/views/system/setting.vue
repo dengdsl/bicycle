@@ -11,6 +11,7 @@
     <el-menu-item index="qrcode">二维码配置</el-menu-item>
     <el-menu-item index="official">轮播图配置</el-menu-item>
     <el-menu-item index="excel">Excel导入模版配置</el-menu-item>
+    <el-menu-item index="ximg">X光默认描述图片配置</el-menu-item>
   </el-menu>
   <!--  网站LOGO配置-->
   <el-card class="!border-none" shadow="never" v-if="activeIndex === 'logo'">
@@ -271,7 +272,30 @@
       </el-col>
     </el-row>
   </el-card>
-
+  <!--x光默认描述图片配置-->
+  <el-card
+    class="!border-none"
+    shadow="never"
+    v-else-if="activeIndex === 'ximg'"
+  >
+    <div class="flex flex-wrap gap-32">
+      <div
+        class="flex flex-col items-center gap-4"
+        v-for="item in proNameDefaultXImg.imgList"
+        :key="item.name"
+      >
+        <upload
+          :src="item.src as string"
+          file-path="ximg"
+          :show-file-list="false"
+          width="200"
+          height="200"
+          @success="(files: string) => handleSuccess(files, 'ximg', item.value)"
+        />
+        <div>{{ item.name }}默认X光图片</div>
+      </div>
+    </div>
+  </el-card>
   <!--轮播图配置-->
   <el-card class="!border-none" shadow="never" v-else>
     <el-row :gutter="40">
@@ -433,8 +457,11 @@ import feedback from '@/utils/feedback'
 import useSettingStore from '@/stores/modules/setting.ts'
 import { useDark } from '@vueuse/core'
 import useAppStore from '@/stores/modules/app.ts'
+import { useDictData } from '@/hooks/useDictOptions.ts'
 
-const activeIndex = ref<'web' | 'logo' | 'qrcode' | 'official' | 'excel'>('web')
+const activeIndex = ref<
+  'web' | 'logo' | 'qrcode' | 'official' | 'excel' | 'ximg'
+>('web')
 const loading = ref(false)
 const isDark = useDark()
 const appStore = useAppStore()
@@ -501,7 +528,20 @@ const configFormData = reactive<ConfigFormData>({
   templateDescription: {},
   headerRowHeight: {},
 })
-
+// 产品X光默认图片显示
+const proNameDefaultXImg = reactive<{
+  id?: number
+  name?: string
+  imgList?: {
+    dictType: string
+    src: string
+    name: string
+    value: string
+  }[]
+}>({})
+const { dictData } = useDictData<{
+  proName: any[]
+}>(['proName'])
 const handleSelect = (index: 'web' | 'logo' | 'qrcode' | 'official') => {
   activeIndex.value = index
 }
@@ -510,6 +550,12 @@ const loadConfigList = async () => {
   try {
     const data = await getConfigList()
     data.forEach((item) => {
+      let images: Array<{
+        src: string
+        dictType: string
+        name: string
+        value: string
+      }> = []
       switch (item.name) {
         case 'bannerImgs':
           try {
@@ -528,14 +574,36 @@ const loadConfigList = async () => {
               configFormData.bannerImgs.imgList.sort()
             }
           } catch (err) {
-            console.log(err)
+            // TODO:
           }
+          break
+        case 'proNameDefaultXImg':
+          proNameDefaultXImg.id = item.id
+          proNameDefaultXImg.name = item.name
+          if (item.value) {
+            images = JSON.parse(item.value as string) as Array<{
+              src: string
+              dictType: string
+              name: string
+              value: string
+            }>
+          }
+          proNameDefaultXImg.imgList = dictData.proName.map((item) => {
+            const img = images.find((img) => img.value === item.value)
+            return {
+              src: img ? img.src : '',
+              dictType: item.dictType,
+              name: item.name,
+              value: item.value,
+            }
+          })
           break
         default:
           configFormData[item.name] = item
           break
       }
     })
+    console.log(proNameDefaultXImg)
   } catch (error) {
     console.error('获取系统配置列表出错：', error)
   }
@@ -564,12 +632,19 @@ const handleDelete = (index: number) => {
 }
 
 // 图片上传成功
-const handleSuccess = (url: string, prop: string, index?: number) => {
+const handleSuccess = (url: string, prop: string, index?: number | string) => {
   if (prop === 'bannerImgs') {
     configFormData.bannerImgs.imgList[index as number].src = url
     configFormData.bannerImgs.value = JSON.stringify(
       configFormData.bannerImgs.imgList,
     )
+  } else if (prop === 'ximg') {
+    proNameDefaultXImg.imgList?.some((item) => {
+      if (item.value === index) {
+        item.src = url
+        return true
+      }
+    })
   } else {
     configFormData[prop].value = url
   }
@@ -584,6 +659,12 @@ const handleSubmit = async () => {
       req.push({
         id: item.id as number,
         value: item.value,
+      })
+    }
+    if (proNameDefaultXImg.imgList && proNameDefaultXImg.imgList.length) {
+      req.push({
+        id: proNameDefaultXImg.id as number,
+        value: JSON.stringify(proNameDefaultXImg.imgList),
       })
     }
     await saveConfigList(req)

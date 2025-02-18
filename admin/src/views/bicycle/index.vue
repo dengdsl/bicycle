@@ -229,12 +229,11 @@
             prop="image"
             label="X光图片"
             align="center"
-            min-width="120"
-            show-overflow-tooltip
+            min-width="200"
           >
             <template #default="{ row }">
               <div
-                class="image-box flex items-center justify-center gap-2 overflow-x-auto"
+                class="image-box flex items-center justify-center gap-2 w-full overflow-auto"
               >
                 <template
                   v-for="(src, index) in row.image?.split(';')"

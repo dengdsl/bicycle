@@ -104,7 +104,10 @@
           </div>
         </el-col>
       </el-row>
-      <el-row class="mb-4 border-[1px] border-solid border-info" :gutter="20">
+      <el-row
+        class="mb-4 border-[1px] border-solid border-info py-2"
+        :gutter="20"
+      >
         <el-col :span="24">
           <div class="flex items-center">
             <span>X光图片：</span>

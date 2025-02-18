@@ -25,7 +25,7 @@ export function getConfigList() {
 /**
  * 获取单个系统配置
  * */
-export function getConfig(data:string[]) {
+export function getConfig(data: string[]) {
   return request.post(
     {
       url: '/config/get',

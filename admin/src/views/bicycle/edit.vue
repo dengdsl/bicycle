@@ -15,17 +15,39 @@
       :rules="formRules"
     >
       <el-form-item label="X光图片" prop="fileList">
-        <el-upload
-          v-model:file-list="fileList"
-          accept="image/**"
-          :data="{ path: 'images' }"
-          :action="action"
-          list-type="picture-card"
-          :on-preview="handlePictureCardPreview"
-          :on-success="handleSuccess"
-        >
-          <icon name="el-icon-Plus"></icon>
-        </el-upload>
+        <div class="flex flex-wrap gap-2">
+          <el-upload
+            v-model:file-list="fileList"
+            accept="image/**"
+            :data="{ path: 'images' }"
+            :action="action"
+            list-type="picture-card"
+            :on-preview="handlePictureCardPreview"
+            :on-success="handleSuccess"
+          >
+            <icon name="el-icon-Plus"></icon>
+          </el-upload>
+          <div v-show="defaultImgUrl && formData.proName">
+            <el-image
+              class="el-upload el-upload--picture-card"
+              style="width: 6em; height: 6em"
+              :src="defaultImgUrl"
+              fit="fill"
+              :zoom-rate="2"
+              :max-scale="7"
+              :min-scale="0.2"
+              :preview-src-list="[defaultImgUrl]"
+            >
+              <template #error>
+                <div
+                  class="slot-image w-full h-full flex items-center justify-center"
+                >
+                  <icon name="el-icon-Picture" size="50" />
+                </div>
+              </template>
+            </el-image>
+          </div>
+        </div>
         <el-dialog v-model="dialogVisible">
           <img class="w-full" :src="dialogImageUrl" alt="Preview Image" />
         </el-dialog>
@@ -137,6 +159,7 @@ import feedback from '@/utils/feedback'
 import { addBicycle, editBicycle, getBicycleDetail } from '@/api/bicycle'
 import config from '@/config'
 import { useDictData } from '@/hooks/useDictOptions.ts'
+import { getConfig } from '@/api/config'
 
 const emits = defineEmits(['close', 'success'])
 const popupRef = shallowRef<InstanceType<typeof Popup>>()
@@ -161,6 +184,14 @@ const action = computed(() => {
   return `${config.baseUrl}api/upload/file`
 })
 
+const defaultImageList = ref<
+  Array<{
+    src: string
+    dictType: string
+    name: string
+    value: string
+  }>
+>([])
 const formData = reactive({
   id: '' as string | number,
   proName: '', // 产品名称
@@ -210,12 +241,22 @@ const formRules = reactive({
 
 // 已上传的文件列表
 const fileList = ref<UploadUserFile[]>([])
+const defaultImgUrl = ref('')
+
+watch(
+  () => [formData.proName, defaultImageList],
+  () => {
+    const img = defaultImageList.value.find(
+      (item) => item.value === formData.proName,
+    )
+    defaultImgUrl.value = img?.src || ''
+  },
+)
 
 const dialogImageUrl = ref('')
 const dialogVisible = ref(false)
 
 const handleSuccess: UploadProps['onSuccess'] = (response, uploadFile) => {
-  console.log(uploadFile)
   if (response.code === 200) {
     feedback.msgSuccess('上传成功')
   } else {
@@ -237,12 +278,13 @@ const handleSubmit = async () => {
   try {
     submitLoading.value = true
     await formRef.value?.validate()
-    console.log(fileList.value)
-    formData.image = fileList.value
+    const images = fileList.value
       .filter((item) => item.status === 'success')
       .map((item) => (item.response ? item.response.data : item.url))
-      .join(';')
-    console.log(formData.image)
+    if (openType.value === 'add') {
+      images.push(defaultImgUrl.value)
+    }
+    formData.image = images.join(';')
     openType.value === 'add'
       ? await addBicycle({ ...formData, conclusion: formData ? 1 : 0 })
       : await editBicycle({ ...formData, conclusion: formData ? 1 : 0 })
@@ -260,9 +302,20 @@ const handleClose = () => {
   emits('close')
 }
 
-const open = (type: 'add' | 'edit') => {
+const open = async (type: 'add' | 'edit') => {
   openType.value = type
   popupRef.value?.open()
+  // 获取默认的图片配置信息
+  getConfig(['proNameDefaultXImg']).then((res) => {
+    if (res.proNameDefaultXImg) {
+      defaultImageList.value = JSON.parse(res.proNameDefaultXImg) as Array<{
+        src: string
+        dictType: string
+        name: string
+        value: string
+      }>
+    }
+  })
 }
 
 const loadData = async (id: string) => {
@@ -273,12 +326,14 @@ const loadData = async (id: string) => {
       if (data.hasOwnProperty(key)) {
         formData[key] = data[key]
         if (key === 'image') {
-          fileList.value = data[key]
+          const images = data[key]
             .split(';')
             .filter((item) => !!item)
             .map((item) => ({
               url: item,
             }))
+          fileList.value = images.slice(0, images.length - 1)
+          defaultImgUrl.value = images[images.length - 1].url
         } else if (key === 'conclusion') {
           formData[key] = data[key] == 1
         } else if (key === 'model') {
