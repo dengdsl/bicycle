@@ -139,3 +139,18 @@ export function queryByQrcode(params: { qrcode: string }) {
     params,
   })
 }
+
+/**
+ * @description 批量下载
+ * */
+export function downloadQrcode(data: { ids: string[] }) {
+  return request.post(
+    {
+      url: '/bicycle/download/qrcode',
+      data,
+      responseType: 'blob',
+      timeout: 30 * 60 * 1000,
+    },
+    { isDownloadFile: true },
+  )
+}

@@ -81,7 +81,6 @@ public class BicycleController  {
     @GetMapping("download/template")
     public void downloadTemplate(@NotNull HttpServletResponse response) throws IOException, DecoderException {
          bicycleService.downloadImportTemplate(response);
-         //return response;
     }
     /**
      * 批量导入
@@ -116,6 +115,14 @@ public class BicycleController  {
     @GetMapping("query")
     public AjaxResult<Object> query(@Validated @RequestParam String qrcode ){
         return bicycleService.queryByQrcode(qrcode);
+    }
+
+    /**
+     * 批量下载二维码，通过压缩包的方式返回
+     * */
+    @PostMapping("download/qrcode")
+    public void downloadQrcode(@NotNull HttpServletResponse response, @Validated @RequestBody ExportValidate exportValidate) throws IOException {
+        bicycleService.downloadQrcode(response, exportValidate.getIds());
     }
 
 }

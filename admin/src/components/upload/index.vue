@@ -13,7 +13,7 @@
         class="flex items-center justify-center"
         :style="{ width: `${width}px`, height: `${height}px` }"
       >
-        <img v-if="imageUrl || src" :src="imageUrl || src" class="avatar" />
+        <img v-if="imageUrl" :src="imageUrl" class="avatar" />
         <icon
           v-else
           name="el-icon-Plus"
@@ -77,11 +77,11 @@ const handleAvatarSuccess: UploadProps['onSuccess'] = (
   uploadFile,
 ) => {
   if (response.code === 200) {
-    imageUrl.value = URL.createObjectURL(uploadFile.raw!)
+    // imageUrl.value = URL.createObjectURL(uploadFile.raw!)
     emits('success', response.data)
     feedback.msgSuccess('上传成功')
   } else {
-    imageUrl.value = ''
+    // imageUrl.value = ''
     emits('error')
     feedback.msgError(response.message || '上传失败')
   }
@@ -93,6 +93,16 @@ const handleError: UploadProps['onRemove'] = () => {
   emits('error')
   feedback.msgError('上传失败')
 }
+
+watch(
+  () => props.src,
+  () => {
+    imageUrl.value = props.src
+  },
+  {
+    immediate: true,
+  },
+)
 </script>
 
 <style scoped>

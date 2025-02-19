@@ -41,6 +41,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -49,6 +50,8 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static org.apache.poi.hssf.model.InternalSheet.createSheet;
 
@@ -169,7 +172,7 @@ public class BicycleServiceImpl implements BicycleService {
         createEntry.setUpdateTime(new Date());
 
         // 生成二维码
-         String qrcodeUrl = generateQrcode(createValidate.getFrameNo());
+        String qrcodeUrl = generateQrcode(createValidate.getFrameNo());
         createEntry.setQrImg(qrcodeUrl);
         bicycleMapper.insert(createEntry);
         log.info("新增自行车数据成功：" + createEntry);
@@ -198,7 +201,7 @@ public class BicycleServiceImpl implements BicycleService {
         String oldQrCodeImg = bicycleEntry.getQrImg();
         // 如果产品编码修改了，重新生成二维码
         if (!bicycleEntry.getFrameNo().equals(updateValidate.getFrameNo())) {
-            String qrcodeUrl =  generateQrcode(updateValidate.getFrameNo());
+            String qrcodeUrl = generateQrcode(updateValidate.getFrameNo());
             bicycleEntry.setQrImg(qrcodeUrl);
         }
 
@@ -237,13 +240,18 @@ public class BicycleServiceImpl implements BicycleService {
         }
 
         bicycleMapper.deleteById(bicycleEntry.getId());
-        // 根据二维码路径和x光图片路径删除本地文件
-        deleteLocalFile(bicycleEntry.getQrImg());
+        try {
+            // 根据二维码路径和x光图片路径删除本地文件
+            deleteLocalFile(bicycleEntry.getQrImg());
 
-        String[] urlList = bicycleEntry.getImage().split((";"));
-        for (String url : urlList) {
-            deleteLocalFile(url);
+            String[] urlList = bicycleEntry.getImage().split((";"));
+            for (String url : urlList) {
+                deleteLocalFile(url);
+            }
+        } catch (Exception e) {
+            log.error("删除本地文件出错：", e.getMessage());
         }
+
         log.info("数据删除成功：" + bicycleEntry);
         return AjaxResult.success("删除成功");
     }
@@ -351,7 +359,7 @@ public class BicycleServiceImpl implements BicycleService {
 
         createSheetValidator(sheet, systemDictDataEntries, "proName", 2, 1000, 0, 0);
 
-        createSheetValidator(sheet, systemDictDataEntries, "model",2, 1000, 1, 1);
+        createSheetValidator(sheet, systemDictDataEntries, "model", 2, 1000, 1, 1);
 
         createSheetValidator(sheet, systemDictDataEntries, "conclusion", 2, 1000, 5, 5);
 
@@ -578,7 +586,7 @@ public class BicycleServiceImpl implements BicycleService {
             cell.setCellStyle(headerStyle);
             if (headerList.get(i).equals("二维码编码")) {
                 sheet.setColumnWidth(i, 42 * 256);
-            }else {
+            } else {
                 sheet.setColumnWidth(i, 20 * 256);
             }
         }
@@ -599,9 +607,9 @@ public class BicycleServiceImpl implements BicycleService {
                 Cell cell = row.createCell(j);
                 switch (headerList.get(j)) {
                     case "二维码图片":
-                         path = bicycleEntry.getQrImg().replaceAll("^((https?://[^/]+/static)|(/static))", ConfigUtils.getFilePath());
-                         // 获取图片后缀
-                         suffix = path.substring(path.lastIndexOf(".") + 1);
+                        path = bicycleEntry.getQrImg().replaceAll("^((https?://[^/]+/static)|(/static))", ConfigUtils.getFilePath());
+                        // 获取图片后缀
+                        suffix = path.substring(path.lastIndexOf(".") + 1);
                         sheet.setColumnWidth(j, 4000);
                         file = new File(path);
                         byteArrayOutputStream = new ByteArrayOutputStream();
@@ -622,7 +630,7 @@ public class BicycleServiceImpl implements BicycleService {
                         ImageIO.write(bufferedImage, suffix, byteArrayOutputStream);
                         anchor.setAnchorType(ClientAnchor.AnchorType.MOVE_AND_RESIZE);
                         int pictureType = getPictureType(suffix);
-                        drawingPatriarch.createPicture(anchor, workbook.addPicture(byteArrayOutputStream.toByteArray(),pictureType ));
+                        drawingPatriarch.createPicture(anchor, workbook.addPicture(byteArrayOutputStream.toByteArray(), pictureType));
                         break;
                     case "X光图片":
                         String[] filePathList = bicycleEntry.getImage().split(";");
@@ -686,7 +694,7 @@ public class BicycleServiceImpl implements BicycleService {
 
         createSheetValidator(sheet, systemDictDataEntries, "proName", 2, bicycleEntries.size() + 100, 1, 1);
 
-        createSheetValidator(sheet, systemDictDataEntries, "model",2, bicycleEntries.size() + 100, 2, 2);
+        createSheetValidator(sheet, systemDictDataEntries, "model", 2, bicycleEntries.size() + 100, 2, 2);
 
         createSheetValidator(sheet, systemDictDataEntries, "conclusion", 2, bicycleEntries.size() + 100, 7, 7);
 
@@ -706,6 +714,100 @@ public class BicycleServiceImpl implements BicycleService {
         outputStream.flush();
         // 关闭工作簿
         workbook.close();
+    }
+
+    /**
+     * 批量下载二维码
+     */
+    @Override
+    public void downloadQrcode(HttpServletResponse response, List<String> ids) {
+        QueryWrapper<BicycleEntry> queryWrapper = new QueryWrapper<>();
+        queryWrapper.orderByDesc("create_time");
+        if (!ids.isEmpty()) {
+            queryWrapper.in("id", ids);
+        }
+        List<BicycleEntry> bicycleEntries = bicycleMapper.selectList(queryWrapper);
+
+        // 创建临时文件夹
+        String temp_path = ConfigUtils.getFilePath() + "/qrcode_download";
+        File temp_file = new File(temp_path);
+        if (!temp_file.exists()) {
+            temp_file.mkdirs();
+        }
+        // 开始下载
+        // 下载二维码图片到临时文件夹
+        for (BicycleEntry bicycleEntry : bicycleEntries) {
+            try {
+                String qrUrl = bicycleEntry.getQrImg().replaceAll("^((https?://[^/]+/static)|(/static))", ConfigUtils.getFilePath());
+
+                File file_url = new File(qrUrl); // 本地文件创建方法
+                File file = new File(temp_file, bicycleEntry.getFrameNo() + ".png");
+                // 本地文件写入方式
+                if (file_url.exists()) {
+                    log.info("开始下载二维码图片：", qrUrl);
+                    FileInputStream fis = new FileInputStream(file_url);
+                    FileOutputStream out = new FileOutputStream(file);
+                    byte[] buffer = new byte[1024];
+                    int bytesRead;
+                    while ((bytesRead = fis.read(buffer)) != -1) {
+                        out.write(buffer, 0, bytesRead);
+                    }
+                } else {
+                    log.error("二维码图片不存在：" + qrUrl);
+                }
+                //URL url = new URL(qrUrl); // 远程服务器路径创建方法
+                //try (InputStream in = url.openStream();
+                //     FileOutputStream out = new FileOutputStream(file)) {
+                //    byte[] buffer = new byte[1024];
+                //    int bytesRead;
+                //    while ((bytesRead = in.read(buffer)) != -1) {
+                //        out.write(buffer, 0, bytesRead);
+                //    }
+                //}
+            } catch (IOException e) {
+                log.error("下载图片到临时文件夹失败：", e.getMessage());
+            }
+        }
+        // 压缩文件夹
+        File zipFile = new File(ConfigUtils.getFilePath() + "/qrcode.zip");
+        try (FileOutputStream fos = new FileOutputStream(zipFile);
+             ZipOutputStream zipOut = new ZipOutputStream(fos)) {
+            for (File file : Objects.requireNonNull(temp_file.listFiles())) {
+                try (FileInputStream fis = new FileInputStream(file)) {
+                    ZipEntry zipEntry = new ZipEntry(file.getName());
+                    zipOut.putNextEntry(zipEntry);
+
+                    byte[] bytes = new byte[1024];
+                    int length;
+                    while ((length = fis.read(bytes)) >= 0) {
+                        zipOut.write(bytes, 0, length);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            log.error("压缩文件夹失败：", e.getMessage());
+        }
+        // 将ZIP文件写入响应
+        response.setContentType("application/zip");
+        response.setHeader("Content-Disposition", "attachment; filename=qrcode.zip");
+
+        try (FileInputStream fis = new FileInputStream(zipFile);
+             OutputStream out = response.getOutputStream()) {
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = fis.read(buffer)) != -1) {
+                out.write(buffer, 0, bytesRead);
+            }
+        } catch (IOException e) {
+            log.error("将压缩的文件夹写入响应中失败：", e.getMessage());
+        }
+
+        // 删除临时文件和文件夹
+        for (File file : Objects.requireNonNull(temp_file.listFiles())) {
+            file.delete();
+        }
+        temp_file.delete();
+        zipFile.delete();
     }
 
     /**
@@ -825,7 +927,7 @@ public class BicycleServiceImpl implements BicycleService {
 
     /**
      * 根据图片扩展名获取图片类型
-     * */
+     */
     private int getPictureType(String suffix) {
         switch (suffix) {
             case "emf":
@@ -833,7 +935,7 @@ public class BicycleServiceImpl implements BicycleService {
             case "wmf":
                 return Workbook.PICTURE_TYPE_WMF;  // Windows 图元文件 (Windows Metafile)
             case "pict":
-                return  Workbook.PICTURE_TYPE_PICT; // Apple Macintosh 图元文件
+                return Workbook.PICTURE_TYPE_PICT; // Apple Macintosh 图元文件
             case "jpg":
                 return Workbook.PICTURE_TYPE_JPEG;  // 常见的有损压缩图像 (JPEG)
             case "png":
@@ -879,6 +981,7 @@ public class BicycleServiceImpl implements BicycleService {
         validation.setShowErrorBox(true);
         sheet.addValidationData(validation);
     }
+
     /**
      * 删除本地文件
      *

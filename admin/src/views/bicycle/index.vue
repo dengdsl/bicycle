@@ -162,6 +162,17 @@
           {{ selectIds.btnText }}
         </el-button>
         <el-button
+          v-perms="['bicycle:export']"
+          type="primary"
+          :loading="qrcodeLoading"
+          @click="handleDownloadQrcode"
+        >
+          <template #icon>
+            <icon name="el-icon-Download" />
+          </template>
+          {{ selectIds.qrcodeText }}
+        </el-button>
+        <el-button
           v-if="selectIds.isSelected"
           type="info"
           @click="handleClearSelect"
@@ -496,6 +507,7 @@ import {
   importBicycleList,
   downloadTemplate,
   exportBicycleList,
+  downloadQrcode,
 } from '@/api/bicycle'
 import Detail from './detail.vue'
 import {
@@ -515,6 +527,7 @@ const uploadRef = ref<UploadInstance>()
 const showImport = ref(false)
 const importLoading = ref(false)
 const exportLoading = ref(false)
+const qrcodeLoading = ref(false)
 const fileList = ref<UploadUserFile[]>([])
 const selectRows = reactive<Record<string, Array<string>>>({})
 
@@ -553,6 +566,8 @@ const selectIds = computed(() => {
   const ids = Object.values(selectRows).flat()
   return {
     btnText: ids.length > 0 ? `批量导出${ids.length}条` : '批量导出全部',
+    qrcodeText:
+      ids.length > 0 ? `批量下载${ids.length}张二维码` : '批量下载全部二维码',
     isSelected: !!ids.length,
     selectNum: ids.length,
     ids,
@@ -685,6 +700,7 @@ const handleDelete = async (row: any) => {
 const handleImport = () => {
   showImport.value = true
 }
+// 批量导出
 const handleExport = async () => {
   try {
     exportLoading.value = true
@@ -704,7 +720,25 @@ const handleExport = async () => {
     exportLoading.value = false
   }
 }
-
+// 批量下载二维码
+const handleDownloadQrcode = async () => {
+  try {
+    qrcodeLoading.value = true
+    const res = await feedback.confirm(
+      `确定要${selectIds.value.qrcodeText}吗？`,
+      '防误操作提示',
+    )
+    if (res === 'confirm') {
+      await downloadQrcode({ ids: selectIds.value.ids || [] })
+    }
+  } catch (err) {
+    if ('cancel' === err) return
+    console.log('err ==>', err)
+    feedback.msgError('下载失败，请联系管理员进行处理')
+  } finally {
+    qrcodeLoading.value = false
+  }
+}
 getLists()
 </script>
 

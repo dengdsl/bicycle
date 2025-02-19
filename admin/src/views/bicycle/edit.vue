@@ -27,25 +27,23 @@
           >
             <icon name="el-icon-Plus"></icon>
           </el-upload>
-          <div v-show="defaultImgUrl && formData.proName">
-            <el-image
-              class="el-upload el-upload--picture-card"
-              style="width: 6em; height: 6em"
+          <div class="relative" v-show="formData.proName">
+            <upload
               :src="defaultImgUrl"
-              fit="fill"
-              :zoom-rate="2"
-              :max-scale="7"
-              :min-scale="0.2"
-              :preview-src-list="[defaultImgUrl]"
+              file-path="config"
+              :show-file-list="false"
+              :width="80"
+              :height="80"
+              @success="(url: string) => (defaultImgUrl = url)"
+            ></upload>
+            <span
+              v-if="defaultImgUrl"
+              class="absolute top-1 right-1 text-xs cursor-pointer"
+              style="z-index: 9999"
+              @click="() => (defaultImgUrl = '')"
             >
-              <template #error>
-                <div
-                  class="slot-image w-full h-full flex items-center justify-center"
-                >
-                  <icon name="el-icon-Picture" size="50" />
-                </div>
-              </template>
-            </el-image>
+              <icon name="el-icon-CircleClose" size="20" />
+            </span>
           </div>
         </div>
         <el-dialog v-model="dialogVisible">
@@ -75,6 +73,7 @@
           filterable
           placeholder="请选择"
           clearable
+          @change="handleChange"
         >
           <el-option
             v-for="item in dictData.proName"
@@ -160,6 +159,7 @@ import { addBicycle, editBicycle, getBicycleDetail } from '@/api/bicycle'
 import config from '@/config'
 import { useDictData } from '@/hooks/useDictOptions.ts'
 import { getConfig } from '@/api/config'
+import Upload from '@/components/upload/index.vue'
 
 const emits = defineEmits(['close', 'success'])
 const popupRef = shallowRef<InstanceType<typeof Popup>>()
@@ -243,15 +243,11 @@ const formRules = reactive({
 const fileList = ref<UploadUserFile[]>([])
 const defaultImgUrl = ref('')
 
-watch(
-  () => [formData.proName, defaultImageList],
-  () => {
-    const img = defaultImageList.value.find(
-      (item) => item.value === formData.proName,
-    )
-    defaultImgUrl.value = img?.src || ''
-  },
-)
+const handleChange = (value: string) => {
+  console.log('第一次触发')
+  const img = defaultImageList.value.find((item) => item.value === value)
+  defaultImgUrl.value = img?.src || ''
+}
 
 const dialogImageUrl = ref('')
 const dialogVisible = ref(false)
@@ -269,6 +265,7 @@ const handleSuccess: UploadProps['onSuccess'] = (response, uploadFile) => {
     })
   }
 }
+
 const handlePictureCardPreview: UploadProps['onPreview'] = (uploadFile) => {
   dialogImageUrl.value = uploadFile.url!
   dialogVisible.value = true
@@ -281,7 +278,7 @@ const handleSubmit = async () => {
     const images = fileList.value
       .filter((item) => item.status === 'success')
       .map((item) => (item.response ? item.response.data : item.url))
-    if (openType.value === 'add') {
+    if (defaultImgUrl.value) {
       images.push(defaultImgUrl.value)
     }
     formData.image = images.join(';')
@@ -354,12 +351,12 @@ defineExpose({
 
 <style lang="scss" scoped>
 ::v-deep(.el-upload--picture-card) {
-  width: 6em !important;
-  height: 6em !important;
+  width: 80px !important;
+  height: 80px !important;
 }
 
 ::v-deep(.el-upload-list__item) {
-  width: 6em !important;
-  height: 6em !important;
+  width: 80px !important;
+  height: 80px !important;
 }
 </style>
