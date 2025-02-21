@@ -21,8 +21,8 @@
           :src="configFormData.webFavicon.value as string"
           file-path="config"
           :show-file-list="false"
-          width="200"
-          height="200"
+          :width="200"
+          :height="200"
           @success="(files: string) => handleSuccess(files, 'webFavicon')"
         />
         <div>
@@ -34,8 +34,8 @@
           :src="configFormData.webLogo.value as string"
           file-path="config"
           :show-file-list="false"
-          width="200"
-          height="200"
+          :width="200"
+          :height="200"
           @success="(files: string) => handleSuccess(files, 'webLogo')"
         />
         <div class="mb-2 ml-1">
@@ -48,7 +48,7 @@
           file-path="config"
           :show-file-list="false"
           :width="200"
-          height="200"
+          :height="200"
           @success="(files: string) => handleSuccess(files, 'loginBg')"
         />
         <div class="mb-2 ml-1">
@@ -61,7 +61,7 @@
           file-path="config"
           :show-file-list="false"
           :width="200"
-          height="200"
+          :height="200"
           @success="(files: string) => handleSuccess(files, 'loginFooterBg')"
         />
         <div class="mb-2 ml-1">
@@ -288,8 +288,8 @@
           :src="item.src as string"
           file-path="ximg"
           :show-file-list="false"
-          width="200"
-          height="200"
+          :width="200"
+          :height="200"
           @success="(files: string) => handleSuccess(files, 'ximg', item.value)"
         />
         <div>{{ item.name }}默认X光图片</div>

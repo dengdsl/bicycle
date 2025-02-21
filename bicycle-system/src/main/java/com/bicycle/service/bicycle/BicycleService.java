@@ -59,4 +59,9 @@ public interface BicycleService {
      * 下载文件导入模版
      * */
     void downloadImportTemplate(HttpServletResponse response) throws IOException, DecoderException;
+
+    /**
+     * 批量下载二维码图片
+     * */
+    void downloadQrcode(HttpServletResponse response, List<String> ids);
 }

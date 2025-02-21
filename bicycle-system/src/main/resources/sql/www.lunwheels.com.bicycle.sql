@@ -11,7 +11,7 @@
  Target Server Version : 80028
  File Encoding         : 65001
 
- Date: 16/02/2025 20:18:43
+ Date: 19/02/2025 21:01:11
 */
 
 SET NAMES utf8mb4;
@@ -28,7 +28,6 @@ CREATE TABLE `bicycle_info`  (
   `image` varchar(10240) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'X光图片',
   `frame_no` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '车架号',
   `produce_time` datetime(0) NOT NULL COMMENT '生产日期',
-  `qrcode` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '二维码编码',
   `qr_img` varchar(512) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '二维码',
   `conclusion` tinyint(1) NULL DEFAULT NULL COMMENT '结论：1-通过；0-不通过',
   `hollow_hole` tinyint(0) NOT NULL DEFAULT 1 COMMENT '空孔：1-合格；0-不合格',
@@ -43,9 +42,10 @@ CREATE TABLE `bicycle_info`  (
 -- ----------------------------
 -- Records of bicycle_info
 -- ----------------------------
-INSERT INTO `bicycle_info` VALUES ('BY20250216467800', '1', '2', 'https://www.server.lunwheels.com/static/images/2025/02/16/1739740868banner1.jpg', '123456789', '2025-02-15 16:00:00', 'W9QFF93W79SL7ZCZV282QIHYKHLMPKXB', 'https://www.server.lunwheels.com/static/qrcode/2025/02/16/W9QFF93W79SL7ZCZV282QIHYKHLMPKXB.png', 1, 1, 1, 1, '', '2025-02-16 11:56:14', '2025-02-16 11:56:14');
-INSERT INTO `bicycle_info` VALUES ('BY20250216555998', '1', '1', 'https://www.server.lunwheels.com/static/images/2025/02/16/173970750691417.jpg', '123456451565', '2025-01-12 00:00:00', 'UQUF84VRRC5ULCVOJM6BDSUS6IJ7832O', 'https://www.server.lunwheels.com/static/qrcode/2025/02/16/UQUF84VRRC5ULCVOJM6BDSUS6IJ7832O.png', 1, 1, 1, 1, '测试数据', '2025-02-16 12:05:06', '2025-02-16 12:05:06');
-INSERT INTO `bicycle_info` VALUES ('BY20250216868599', '1', '1', 'https://www.server.lunwheels.com/static/images/2025/02/16/173970706944361.jpg', '1234564515656', '2025-01-11 16:00:00', 'LRGQMLOMZ4UEVYDE9WY7C156LG0SA242', 'https://www.server.lunwheels.com/static/qrcode/2025/02/16/LRGQMLOMZ4UEVYDE9WY7C156LG0SA242.png', 1, 1, 1, 1, '测试数据', '2025-02-16 11:57:49', '2025-02-16 12:04:44');
+INSERT INTO `bicycle_info` VALUES ('BY20250218089142', 'frame', '1', '/static/images/2025/02/18/1739968094banner1.jpg;/static/ximg/2025/02/18/1739984973banner2.jpg', '12345678989', '2025-02-17 16:00:00', '/static/qrcode/2025/02/18/12345678989.png', 1, 1, 1, 1, '', '2025-02-18 15:50:53', '2025-02-18 15:50:53');
+INSERT INTO `bicycle_info` VALUES ('BY20250219714693', '1', '2', '/static/images/2025/02/19/17399957591226610000GG040131.png;/static/ximg/2025/02/19/1739978545x光检测标准banner(2).jpg', '1226610000GG0401312', '2025-02-09 16:00:00', '/static/qrcode/2025/02/19/1226610000GG0401312.png', 1, 1, 1, 1, '', '2025-02-19 10:51:02', '2025-02-19 10:51:02');
+INSERT INTO `bicycle_info` VALUES ('BY20250219890440', '3', '3', '/static/images/2025/02/19/17400128571226610100GH020264.png;/static/ximg/2025/02/19/1740055871x光检测标准banner(2).jpg', '1226610100GH020264', '2025-02-16 16:00:00', '/static/qrcode/2025/02/19/1226610100GH020264.png', 1, 0, 1, 0, '', '2025-02-19 10:40:30', '2025-02-19 10:40:30');
+INSERT INTO `bicycle_info` VALUES ('BY20250219920834', '1', '2', '/static/images/2025/02/19/17400276571226610000GG010153.png;/static/ximg/2025/02/19/1739978545x光检测标准banner(2).jpg', '1226610000GG010153', '2025-02-17 16:00:00', '/static/qrcode/2025/02/19/1226610000GG010153.png', 1, 1, 1, 1, '', '2025-02-19 10:39:08', '2025-02-19 10:39:08');
 
 -- ----------------------------
 -- Table structure for sys_config
@@ -63,7 +63,7 @@ CREATE TABLE `sys_config`  (
   `update_time` timestamp(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `name`(`name`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 22 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '系统配置表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 23 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '系统配置表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_config
@@ -72,23 +72,24 @@ INSERT INTO `sys_config` VALUES (1, 2, 'sys', 'filings', '网站IC备案链接',
 INSERT INTO `sys_config` VALUES (2, 5, 'sys', 'webLogo', '登录页LOGO', 'https://www.server.lunwheels.com/static/config/2025/02/08/1739101614logo.png', '登录界面LOGO，建议宽高比例为320:43', '2024-01-10 22:44:41', '2025-02-08 23:49:35');
 INSERT INTO `sys_config` VALUES (3, 1, 'sys', 'webName', '登录页系统名称', '银斯贝自行车管理系统', '网站名称', '2024-01-10 22:44:41', '2025-01-17 22:49:45');
 INSERT INTO `sys_config` VALUES (4, 6, 'sys', 'webFavicon', '网站LOGO', 'https://www.server.lunwheels.com/static/config/2025/02/08/1739112466favicon.png', '网站logo', '2024-01-10 22:44:41', '2025-02-08 23:49:35');
-INSERT INTO `sys_config` VALUES (5, 3, 'qrcode', 'qrcodeWidth', '二维码生成的宽度', '400', '生成的二维码宽度', '2025-01-15 23:26:10', '2025-01-17 22:49:09');
-INSERT INTO `sys_config` VALUES (6, 4, 'qrcode', 'qrcodeHeight', '二维码生成的高度', '400', '生成的二维码高度', '2025-01-15 23:26:26', '2025-01-17 22:49:14');
+INSERT INTO `sys_config` VALUES (5, 3, 'qrcode', 'qrcodeWidth', '二维码生成的宽度', '300', '生成的二维码宽度', '2025-01-15 23:26:10', '2025-02-17 23:38:58');
+INSERT INTO `sys_config` VALUES (6, 4, 'qrcode', 'qrcodeHeight', '二维码生成的高度', '300', '生成的二维码高度', '2025-01-15 23:26:26', '2025-02-17 23:38:58');
 INSERT INTO `sys_config` VALUES (7, 3, 'sys', 'theme', '管理后台主题颜色', '#2682FC', '系统主题颜色，必须为十六进制颜色，例如#2682FC', '2025-01-15 23:27:13', '2025-01-17 23:36:49');
-INSERT INTO `sys_config` VALUES (8, 2, 'banner', 'bannerImgs', '公众号查询界面图片', '[{\"src\":\"https://www.server.lunwheels.com/static/config/2025/02/08/1739106060banner1.jpg\",\"sort\":1},{\"src\":\"https://www.server.lunwheels.com/static/config/2025/02/14/1739582382标准.jpg\",\"sort\":1}]', '轮播图列表，列表项中必须包含src属性，建议图片宽高比为4：3', '2025-01-15 23:27:44', '2025-02-14 16:28:20');
+INSERT INTO `sys_config` VALUES (8, 2, 'banner', 'bannerImgs', '公众号查询界面图片', '[{\"src\":\"/static/config/2025/02/19/1739998065banner1.jpg\",\"sort\":1}]', '轮播图列表，列表项中必须包含src属性，建议图片宽高比为4：3', '2025-01-15 23:27:44', '2025-02-19 18:21:37');
 INSERT INTO `sys_config` VALUES (9, 4, 'sys', 'loginBg', '管理后台登录背景图', 'https://www.server.lunwheels.com/static/config/2025/02/08/17391249161737405237loginbg.png', '登录界面背景图', '2025-01-15 23:30:10', '2025-02-08 23:49:35');
 INSERT INTO `sys_config` VALUES (10, 5, 'qrcode', 'qrcodeFontSize', '二维码上文字大小', '16', '生成的二维码图片下方的文字大小', '2025-01-16 14:44:28', '2025-01-17 22:49:18');
 INSERT INTO `sys_config` VALUES (11, 6, 'qrcode', 'qrcodeMargin', '二维码距离边框的距离', '0', '二维码和文字的间距', '2025-01-16 14:44:59', '2025-01-18 23:37:58');
 INSERT INTO `sys_config` VALUES (12, 1, 'sys', 'serverUrl', '二维码上传服务器地址', 'https://www.server.lunwheels.com', '文件上传时保存的服务器地址', '2025-01-16 15:15:41', '2025-02-08 23:06:56');
 INSERT INTO `sys_config` VALUES (13, 1, 'official', 'mobileTheme', '公众号主题色', '#2682FC ', '公众号查询界面的主题色，必须为十六进制颜色，例如#2682FC', '2025-01-16 15:22:53', '2025-01-19 00:54:34');
-INSERT INTO `sys_config` VALUES (14, 2, 'sys', 'filePath', '二维码上传路径', '/home/server/static', '文件上传时保存的文件夹路径', '2025-01-16 15:26:58', '2025-01-19 16:41:55');
+INSERT INTO `sys_config` VALUES (14, 2, 'sys', 'filePath', '二维码上传路径', '/home/server/static', '文件上传时保存的文件夹路径', '2025-01-16 15:26:58', '2025-02-18 23:23:06');
 INSERT INTO `sys_config` VALUES (15, 1, 'banner', 'autoplay', '轮播图播放速度', '3000', '单位为毫秒，当设置为0时不自动轮播', '2025-01-18 13:52:07', '2025-01-20 09:06:06');
 INSERT INTO `sys_config` VALUES (16, 1, 'sys', 'filingsName', '网站IC备案号', '闽ICP备11002234号-9', 'IC备案号，例如：XXX备 123456789号', '2025-01-19 19:10:59', '2025-02-12 09:04:03');
 INSERT INTO `sys_config` VALUES (17, 1, 'sys', 'loginFooterBg', '页脚背景图', 'https://www.server.lunwheels.com/static/config/2025/02/08/17391228081737398251winspace.png', '登录界面底部背景图片，宽高比例建议为1920:200', '2025-01-20 14:38:36', '2025-02-08 23:49:35');
 INSERT INTO `sys_config` VALUES (18, 1, 'excel', 'headerBgColor', '表头背景颜色', '0x2682FC ', '下载的导入模版表头背景颜色，必须使用0x开头或#号开头的十六进制开头颜色，例如0x2682FC或者#2682FC ', '2025-01-21 13:54:13', '2025-01-21 16:51:42');
-INSERT INTO `sys_config` VALUES (19, 1, 'excel', 'templateDescription', '模版说明', '*1.型号：请在下拉选项中进行选择，如果不选择或不按配置项填写将会导致导入失败！;\n*2.车架号：不能出现重复的车架号和已经录入系统的车架号，否则将导致导入失败！;\n*3.X光图片：图片不能嵌入单元格，只需要插入即可，否则会导致图片信息提取不到！;\n*4.生产日期：需要为日期格式，例如：2025/1/20！;\n*5.结论：请通过下拉选项选择，如果不进行选择默认为通过！;\n*6.空孔：请通过下拉选项选择，如果不进行选择默认为合格！;\n*7.内折：请通过下拉选项选择，如果不进行选择默认为合格！;\n*8.乱纱：请通过下拉选项选择，如果不进行选择默认为合格！;\n*9.备注：备注信息不能超过1024个字符！;\n10.数据编号和二维码编号以及二维码由系统自动生成！;', '模版说明，用于对导入格式进行描述，多条描述之间使用英文分号隔开，描述信息默认显示蓝色，如果要显示为红色，在每一条描述前面添加*号即可', '2025-01-21 13:58:35', '2025-02-15 21:07:46');
+INSERT INTO `sys_config` VALUES (19, 1, 'excel', 'templateDescription', '模版说明', '*1.型号：请在下拉选项中进行选择，如果不选择或不按配置项填写将会导致导入失败！;\n*2.车架号：不能出现重复的车架号和已经录入系统的车架号，否则将导致导入失败！;\n*3.X光图片：图片不能嵌入单元格，只需要插入即可，否则会导致图片信息提取不到！;\n*4.生产日期：需要为日期格式，例如：2025/1/20！;\n*5.结论：请通过下拉选项选择，如果不进行选择默认为通过！;\n*6.空孔：请通过下拉选项选择，如果不进行选择默认为合格！;\n*7.内折：请通过下拉选项选择，如果不进行选择默认为合格！;\n*8.乱纱：请通过下拉选项选择，如果不进行选择默认为合格！;\n*9.备注：备注信息不能超过1024个字符！;\n10.二维码由系统根据产品编号自动生成！;', '模版说明，用于对导入格式进行描述，多条描述之间使用英文分号隔开，描述信息默认显示蓝色，如果要显示为红色，在每一条描述前面添加*号即可', '2025-01-21 13:58:35', '2025-02-18 22:16:54');
 INSERT INTO `sys_config` VALUES (20, 1, 'excel', 'headerTextColor', '表头字体颜色', '0xffffff', '表头字体颜色，默认为白色，必须使用0x开头的十六进制颜色，例如0x2682FC或者#2682FC ', '2025-01-21 14:00:54', '2025-01-21 16:51:09');
 INSERT INTO `sys_config` VALUES (21, 1, 'excel', 'headerRowHeight', '导入模板描述单元格高度', '200', '批量导入模板第一行描述信息行高，默认为200', '2025-01-21 22:08:25', '2025-01-21 22:08:25');
+INSERT INTO `sys_config` VALUES (22, 1, 'xImg', 'proNameDefaultXImg', 'X光描述图片', '[{\"src\":\"/static/ximg/2025/02/19/1739978545x光检测标准banner(2).jpg\",\"dictType\":\"proName\",\"name\":\"前叉\",\"value\":\"1\"},{\"src\":\"/static/ximg/2025/02/19/1740019342x光检测标准banner(2).jpg\",\"dictType\":\"proName\",\"name\":\"车架\",\"value\":\"2\"},{\"src\":\"/static/ximg/2025/02/19/1740055871x光检测标准banner(2).jpg\",\"dictType\":\"proName\",\"name\":\"把手\",\"value\":\"3\"},{\"src\":\"/static/ximg/2025/02/19/1739979335x光检测标准banner(2).jpg\",\"dictType\":\"proName\",\"name\":\"轮组\",\"value\":\"4\"},{\"src\":\"/static/ximg/2025/02/19/1740056521x光检测标准banner(2).jpg\",\"dictType\":\"proName\",\"name\":\"座杆\",\"value\":\"5\"}]', '产品默认的X光描述图片', '2025-02-18 21:31:29', '2025-02-19 18:49:31');
 
 -- ----------------------------
 -- Table structure for sys_dept
@@ -162,17 +163,17 @@ CREATE TABLE `sys_dict`  (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `dict_name`(`dict_name`) USING BTREE,
   UNIQUE INDEX `dict_type`(`dict_type`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '字典类型表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '字典类型表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_dict
 -- ----------------------------
-INSERT INTO `sys_dict` VALUES (1, '型号', 'model', 1, '自行车类型', '2025-01-19 02:29:26', '2025-01-19 02:29:26');
+INSERT INTO `sys_dict` VALUES (1, '型号', 'model', 1, '产品类型', '2025-01-19 02:29:26', '2025-02-18 21:02:27');
 INSERT INTO `sys_dict` VALUES (2, '结论', 'conclusion', 1, '结论：0-不通过，1-通过', '2025-01-19 02:40:21', '2025-01-19 02:40:21');
 INSERT INTO `sys_dict` VALUES (7, '空孔', 'hollowHole', 1, '1-合格；0-不合格', '2025-02-15 21:12:24', '2025-02-15 21:12:24');
 INSERT INTO `sys_dict` VALUES (8, '内折', 'inFold', 1, '1-合格；0-不合格', '2025-02-15 21:12:51', '2025-02-15 21:12:51');
 INSERT INTO `sys_dict` VALUES (9, '乱纱', 'raveling', 1, '1-合格；0-不合格', '2025-02-15 21:13:14', '2025-02-15 21:13:14');
-INSERT INTO `sys_dict` VALUES (10, '产品名称', 'proName', 1, '产品名称', '2025-02-16 09:30:00', '2025-02-16 09:30:18');
+INSERT INTO `sys_dict` VALUES (10, '产品名称', 'proName', 1, '产品名称：value值请使用英文单词进行命名且要保持唯一，在系统设置中配置默认显示的X光图片时会使用到', '2025-02-16 09:30:00', '2025-02-18 21:17:21');
 
 -- ----------------------------
 -- Table structure for sys_dict_data
@@ -182,31 +183,35 @@ CREATE TABLE `sys_dict_data`  (
   `id` bigint(0) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `dict_type` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '字典类型，外键',
   `name` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '数据名称',
-  `value` bigint(0) NOT NULL COMMENT '数据值',
+  `value` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '数据值',
   `state` int(0) NOT NULL DEFAULT 1 COMMENT '数据状态：0-禁用，1-启用',
   `remark` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '数据备注',
   `sort` bigint(0) NOT NULL DEFAULT 0 COMMENT '排序',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `fk_dict_type`(`dict_type`) USING BTREE,
   CONSTRAINT `fk_dict_type` FOREIGN KEY (`dict_type`) REFERENCES `sys_dict` (`dict_type`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 16 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '字典数据表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 31 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '字典数据表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_dict_data
 -- ----------------------------
-INSERT INTO `sys_dict_data` VALUES (1, 'model', '车架', 1, 1, '', 0);
-INSERT INTO `sys_dict_data` VALUES (2, 'conclusion', '通过', 1, 1, '', 0);
-INSERT INTO `sys_dict_data` VALUES (3, 'conclusion', '不通过', 0, 1, '', 0);
-INSERT INTO `sys_dict_data` VALUES (7, 'model', '前叉', 2, 1, '', 0);
-INSERT INTO `sys_dict_data` VALUES (8, 'model', '把手', 3, 1, '', 0);
-INSERT INTO `sys_dict_data` VALUES (9, 'model', '轮组', 4, 1, '', 0);
-INSERT INTO `sys_dict_data` VALUES (10, 'hollowHole', '合格', 1, 1, '', 0);
-INSERT INTO `sys_dict_data` VALUES (11, 'hollowHole', '不合格', 0, 1, '', 0);
-INSERT INTO `sys_dict_data` VALUES (12, 'inFold', '合格', 1, 1, '', 0);
-INSERT INTO `sys_dict_data` VALUES (13, 'inFold', '不合格', 0, 1, '', 0);
-INSERT INTO `sys_dict_data` VALUES (14, 'raveling', '合格', 1, 1, '', 0);
-INSERT INTO `sys_dict_data` VALUES (15, 'raveling', '不合格', 0, 1, '', 0);
-INSERT INTO `sys_dict_data` VALUES (16, 'proName', '前叉', 1, 1, '', 0);
+INSERT INTO `sys_dict_data` VALUES (2, 'conclusion', '通过', '1', 1, '', 0);
+INSERT INTO `sys_dict_data` VALUES (3, 'conclusion', '不通过', '0', 1, '', 0);
+INSERT INTO `sys_dict_data` VALUES (10, 'hollowHole', '合格', '1', 1, '', 0);
+INSERT INTO `sys_dict_data` VALUES (11, 'hollowHole', '不合格', '0', 1, '', 0);
+INSERT INTO `sys_dict_data` VALUES (12, 'inFold', '合格', '1', 1, '', 0);
+INSERT INTO `sys_dict_data` VALUES (13, 'inFold', '不合格', '0', 1, '', 0);
+INSERT INTO `sys_dict_data` VALUES (14, 'raveling', '合格', '1', 1, '', 0);
+INSERT INTO `sys_dict_data` VALUES (15, 'raveling', '不合格', '0', 1, '', 0);
+INSERT INTO `sys_dict_data` VALUES (22, 'proName', '前叉', '1', 1, '', 0);
+INSERT INTO `sys_dict_data` VALUES (23, 'proName', '车架', '2', 1, '', 0);
+INSERT INTO `sys_dict_data` VALUES (24, 'proName', '把手', '3', 1, '', 0);
+INSERT INTO `sys_dict_data` VALUES (25, 'proName', '轮组', '4', 1, '', 0);
+INSERT INTO `sys_dict_data` VALUES (26, 'proName', '座杆', '5', 1, '', 0);
+INSERT INTO `sys_dict_data` VALUES (27, 'model', 'T1550', '1', 1, '', 0);
+INSERT INTO `sys_dict_data` VALUES (28, 'model', 'T1550-2', '2', 1, '', 0);
+INSERT INTO `sys_dict_data` VALUES (29, 'model', 'C5', '3', 1, '', 0);
+INSERT INTO `sys_dict_data` VALUES (30, 'model', 'C2', '4', 1, '', 0);
 
 -- ----------------------------
 -- Table structure for sys_menu
