@@ -6,7 +6,7 @@ public class DeleteClassFiles {
 
     public static void main(String[] args) {
         // 指定需要清理的文件夹路径
-        String folderPath = "D:\\onecent_code\\jizhi-fake\\com"; // 修改为你的目录
+        String folderPath = "F:\\workspace\\jizhi-fake\\src\\main\\java\\com\\company\\project"; // 修改为你的目录
 
         // 调用删除方法
         deleteClassFiles(folderPath);
