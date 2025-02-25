@@ -162,7 +162,7 @@
           {{ selectIds.btnText }}
         </el-button>
         <el-button
-          v-perms="['bicycle:export']"
+          v-perms="['bicycle:download:qrcode']"
           type="primary"
           :loading="qrcodeLoading"
           @click="handleDownloadQrcode"
