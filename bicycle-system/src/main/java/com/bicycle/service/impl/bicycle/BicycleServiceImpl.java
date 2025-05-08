@@ -701,17 +701,17 @@ public class BicycleServiceImpl implements BicycleService {
             }
         }
 
-        createSheetValidator(sheet, systemDictDataEntries, "proName", 2, bicycleEntries.size() + 100, 1, 1);
+        createSheetValidator(sheet, systemDictDataEntries, "proName", 1, bicycleEntries.size() + 100, 1, 1);
 
-        createSheetValidator(sheet, systemDictDataEntries, "model", 2, bicycleEntries.size() + 100, 2, 2);
+        createSheetValidator(sheet, systemDictDataEntries, "model", 1, bicycleEntries.size() + 100, 2, 2);
 
-        createSheetValidator(sheet, systemDictDataEntries, "conclusion", 2, bicycleEntries.size() + 100, 7, 7);
+        createSheetValidator(sheet, systemDictDataEntries, "conclusion", 1, bicycleEntries.size() + 100, 7, 7);
 
-        createSheetValidator(sheet, systemDictDataEntries, "hollowHole", 2, bicycleEntries.size() + 100, 8, 8);
+        createSheetValidator(sheet, systemDictDataEntries, "hollowHole", 1, bicycleEntries.size() + 100, 8, 8);
 
-        createSheetValidator(sheet, systemDictDataEntries, "inFold", 2, bicycleEntries.size() + 100, 9, 9);
+        createSheetValidator(sheet, systemDictDataEntries, "inFold", 1, bicycleEntries.size() + 100, 9, 9);
 
-        createSheetValidator(sheet, systemDictDataEntries, "raveling", 2, bicycleEntries.size() + 100, 10, 10);
+        createSheetValidator(sheet, systemDictDataEntries, "raveling", 1, bicycleEntries.size() + 100, 10, 10);
 
         // 设置响应头信息，文件名，保证浏览器能够正常识别下载
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=bicycle_export.xlsx");
