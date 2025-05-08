@@ -162,7 +162,7 @@
           {{ selectIds.btnText }}
         </el-button>
         <el-button
-          v-perms="['bicycle:export']"
+          v-perms="['bicycle:download:qrcode']"
           type="primary"
           :loading="qrcodeLoading"
           @click="handleDownloadQrcode"
@@ -171,6 +171,17 @@
             <icon name="el-icon-Download" />
           </template>
           {{ selectIds.qrcodeText }}
+        </el-button>
+        <el-button
+          v-perms="['bicycle:download:frameNo']"
+          type="primary"
+          :loading="frameNoLoading"
+          @click="handleDownloadFrameNo"
+        >
+          <template #icon>
+            <icon name="el-icon-Download" />
+          </template>
+          {{ selectIds.frameNoTxt }}
         </el-button>
         <el-button
           v-if="selectIds.isSelected"
@@ -508,6 +519,7 @@ import {
   downloadTemplate,
   exportBicycleList,
   downloadQrcode,
+  downloadFrameNo,
 } from '@/api/bicycle'
 import Detail from './detail.vue'
 import {
@@ -528,6 +540,7 @@ const showImport = ref(false)
 const importLoading = ref(false)
 const exportLoading = ref(false)
 const qrcodeLoading = ref(false)
+const frameNoLoading = ref(false)
 const fileList = ref<UploadUserFile[]>([])
 const selectRows = reactive<Record<string, Array<string>>>({})
 
@@ -566,6 +579,10 @@ const selectIds = computed(() => {
   const ids = Object.values(selectRows).flat()
   return {
     btnText: ids.length > 0 ? `批量导出${ids.length}条` : '批量导出全部',
+    frameNoTxt:
+      ids.length > 0
+        ? `批量导出${ids.length}条二维码编号`
+        : '批量导出全部二维码编号',
     qrcodeText:
       ids.length > 0 ? `批量下载${ids.length}张二维码` : '批量下载全部二维码',
     isSelected: !!ids.length,
@@ -737,6 +754,25 @@ const handleDownloadQrcode = async () => {
     feedback.msgError('下载失败，请联系管理员进行处理')
   } finally {
     qrcodeLoading.value = false
+  }
+}
+// 批量下载二维码编号
+const handleDownloadFrameNo = async () => {
+  try {
+    frameNoLoading.value = true
+    const res = await feedback.confirm(
+      `确定要${selectIds.value.frameNoTxt}吗？`,
+      '防误操作提示',
+    )
+    if (res === 'confirm') {
+      await downloadFrameNo({ ids: selectIds.value.ids || [] })
+    }
+  } catch (err) {
+    if ('cancel' === err) return
+    console.log('err ==>', err)
+    feedback.msgError('下载失败，请联系管理员进行处理')
+  } finally {
+    frameNoLoading.value = false
   }
 }
 getLists()

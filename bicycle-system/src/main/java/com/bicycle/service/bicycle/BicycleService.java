@@ -64,4 +64,6 @@ public interface BicycleService {
      * 批量下载二维码图片
      * */
     void downloadQrcode(HttpServletResponse response, List<String> ids);
+
+    void downloadFrameNo(HttpServletResponse response, List<String> ids) throws IOException;
 }

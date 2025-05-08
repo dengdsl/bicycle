@@ -154,3 +154,18 @@ export function downloadQrcode(data: { ids: string[] }) {
     { isDownloadFile: true },
   )
 }
+
+/**
+ * @description 批量下载
+ * */
+export function downloadFrameNo(data: { ids: string[] }) {
+  return request.post(
+    {
+      url: '/bicycle/download/frameNo',
+      data,
+      responseType: 'blob',
+      timeout: 30 * 60 * 1000,
+    },
+    { isDownloadFile: true },
+  )
+}

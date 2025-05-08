@@ -125,5 +125,13 @@ public class BicycleController  {
         bicycleService.downloadQrcode(response, exportValidate.getIds());
     }
 
+    /**
+     * 批量下载二维码编号
+     * */
+    @PostMapping("download/frameNo")
+    public void downloadFrameNo(@NotNull HttpServletResponse response, @Validated @RequestBody ExportValidate exportValidate) throws IOException {
+        bicycleService.downloadFrameNo(response, exportValidate.getIds());
+    }
+
 }
 

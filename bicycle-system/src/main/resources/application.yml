@@ -27,12 +27,12 @@ spring:
   data:
     redis:
       database: 0
-      host: 8.136.11.255
-#      host: localhost
+#      host: 8.136.11.255
+      host: localhost
 #      password: redis
       timeout: 30000
-      port: 9736
-#      port: 6379
+#      port: 9736
+      port: 6379
       lettuce:
         pool:
           max-wait: 30000 # 连接池最大阻塞等待时间(使用负数表示没有限制,默认-1)

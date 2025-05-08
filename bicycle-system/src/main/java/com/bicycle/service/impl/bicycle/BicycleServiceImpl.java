@@ -607,49 +607,58 @@ public class BicycleServiceImpl implements BicycleService {
                 Cell cell = row.createCell(j);
                 switch (headerList.get(j)) {
                     case "二维码图片":
-                        path = bicycleEntry.getQrImg().replaceAll("^((https?://[^/]+/static)|(/static))", ConfigUtils.getFilePath());
-                        // 获取图片后缀
-                        suffix = path.substring(path.lastIndexOf(".") + 1);
-                        sheet.setColumnWidth(j, 4000);
-                        file = new File(path);
-                        byteArrayOutputStream = new ByteArrayOutputStream();
-                        bufferedImage = ImageIO.read(file);
-                        /* dx1:图片左边界距离单元格左边框像素值,
-                         * dy1:图片上边界距离单元格上边框像素值,
-                         * dx2:图片右边界距离单元格右边框像素值（负数）,
-                         * dy2:图片下边界距离单元格下边框像素值（负数）,
-                         * col1:列下标（0开始），
-                         * row1:行下标（0开始），
-                         * col2:列下标（1开始），
-                         * row2:行下标（1开始）。*/
-                        anchor = new XSSFClientAnchor(
-                                100000, 100000, -100000, -100000,  // dx1, dy1, dx2, dy2 控制图片的边距
-                                (short) j, i + 1,
-                                (short) (j + 1), i + 2
-                        );
-                        ImageIO.write(bufferedImage, suffix, byteArrayOutputStream);
-                        anchor.setAnchorType(ClientAnchor.AnchorType.MOVE_AND_RESIZE);
-                        int pictureType = getPictureType(suffix);
-                        drawingPatriarch.createPicture(anchor, workbook.addPicture(byteArrayOutputStream.toByteArray(), pictureType));
-                        break;
-                    case "X光图片":
-                        String[] filePathList = bicycleEntry.getImage().split(";");
-                        sheet.setColumnWidth(j, 4000 * filePathList.length);
-                        for (int k = 0; k < filePathList.length; k++) {
-                            path = filePathList[k].replaceAll("^((https?://[^/]+/static)|(/static))", ConfigUtils.getFilePath());
+                        try {
+                            path = bicycleEntry.getQrImg().replaceAll("^((https?://[^/]+/static)|(/static))", ConfigUtils.getFilePath());
                             // 获取图片后缀
                             suffix = path.substring(path.lastIndexOf(".") + 1);
+                            sheet.setColumnWidth(j, 4000);
                             file = new File(path);
                             byteArrayOutputStream = new ByteArrayOutputStream();
                             bufferedImage = ImageIO.read(file);
+                            /* dx1:图片左边界距离单元格左边框像素值,
+                             * dy1:图片上边界距离单元格上边框像素值,
+                             * dx2:图片右边界距离单元格右边框像素值（负数）,
+                             * dy2:图片下边界距离单元格下边框像素值（负数）,
+                             * col1:列下标（0开始），
+                             * row1:行下标（0开始），
+                             * col2:列下标（1开始），
+                             * row2:行下标（1开始）。*/
                             anchor = new XSSFClientAnchor(
-                                    (1000000 * k) + 100000, 100000, -((1000000 * filePathList.length + 100000) - 1000000 * (k + 1)), -100000,  // dx1, dy1, dx2, dy2 控制图片的边距
+                                    100000, 100000, -100000, -100000,  // dx1, dy1, dx2, dy2 控制图片的边距
                                     (short) j, i + 1,
                                     (short) (j + 1), i + 2
                             );
                             ImageIO.write(bufferedImage, suffix, byteArrayOutputStream);
                             anchor.setAnchorType(ClientAnchor.AnchorType.MOVE_AND_RESIZE);
-                            drawingPatriarch.createPicture(anchor, workbook.addPicture(byteArrayOutputStream.toByteArray(), getPictureType(suffix)));
+                            int pictureType = getPictureType(suffix);
+                            drawingPatriarch.createPicture(anchor, workbook.addPicture(byteArrayOutputStream.toByteArray(), pictureType));
+                        } catch (IOException e) {
+                            log.error("写入二维码图片失败：" + e.getMessage());
+                        }
+
+                        break;
+                    case "X光图片":
+                        String[] filePathList = bicycleEntry.getImage().split(";");
+                        sheet.setColumnWidth(j, 4000 * filePathList.length);
+                        for (int k = 0; k < filePathList.length; k++) {
+                            try {
+                                path = filePathList[k].replaceAll("^((https?://[^/]+/static)|(/static))", ConfigUtils.getFilePath());
+                                // 获取图片后缀
+                                suffix = path.substring(path.lastIndexOf(".") + 1);
+                                file = new File(path);
+                                byteArrayOutputStream = new ByteArrayOutputStream();
+                                bufferedImage = ImageIO.read(file);
+                                anchor = new XSSFClientAnchor(
+                                        (1000000 * k) + 100000, 100000, -((1000000 * filePathList.length + 100000) - 1000000 * (k + 1)), -100000,  // dx1, dy1, dx2, dy2 控制图片的边距
+                                        (short) j, i + 1,
+                                        (short) (j + 1), i + 2
+                                );
+                                ImageIO.write(bufferedImage, suffix, byteArrayOutputStream);
+                                anchor.setAnchorType(ClientAnchor.AnchorType.MOVE_AND_RESIZE);
+                                drawingPatriarch.createPicture(anchor, workbook.addPicture(byteArrayOutputStream.toByteArray(), getPictureType(suffix)));
+                            }catch (IOException e) {
+                                log.error("写入X光片失败：" + e.getMessage());
+                            }
                         }
                         break;
                     case "生产日期":
@@ -808,6 +817,64 @@ public class BicycleServiceImpl implements BicycleService {
         }
         temp_file.delete();
         zipFile.delete();
+    }
+
+    /**
+     * 批量下载二维码编号
+     * */
+    @Override
+    public void downloadFrameNo(HttpServletResponse response, List<String> ids) throws IOException {
+        QueryWrapper<BicycleEntry> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("id", "frame_no");
+        if (!ids.isEmpty()) {
+            queryWrapper.in("id", ids);
+        }
+        List<BicycleEntry> bicycleEntries = bicycleMapper.selectList(queryWrapper);
+        // 创建excel表格将数据写入到表中最后以流的形式返回给前端
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet();
+        List<String> headerList = Arrays.asList("ID",  "二维码");
+
+        // 创建表头背景颜色样式
+        CellStyle headerStyle = workbook.createCellStyle();
+        headerStyle.setFillForegroundColor(IndexedColors.CORNFLOWER_BLUE.getIndex());
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+        // 创建表头
+        Row headerRow = sheet.createRow(0);
+        for (int i = 0; i < headerList.size(); i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headerList.get(i));
+            cell.setCellStyle(headerStyle);
+            sheet.setColumnWidth(i, 42 * 256);
+        }
+        for (int i = 0; i < bicycleEntries.size(); i++) {
+            Row row = sheet.createRow(i + 1);
+            BicycleEntry bicycleEntry = bicycleEntries.get(i);
+            // 循环headerList进行列的匹配
+            for (int j = 0; j < headerList.size(); j++) {
+                Cell cell = row.createCell(j);
+                switch (headerList.get(j)) {
+                    case "二维码":
+                        cell.setCellValue(bicycleEntry.getFrameNo());
+                        break;
+                    case "ID":
+                        cell.setCellValue(bicycleEntry.getId());
+                        break;
+                }
+            }
+        }
+
+        // 设置响应头信息，文件名，保证浏览器能够正常识别下载
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=frameNo_export.xlsx");
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setCharacterEncoding("UTF-8");
+        // 输出到响应流
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        outputStream.flush();
+        // 关闭工作簿
+        workbook.close();
     }
 
     /**
