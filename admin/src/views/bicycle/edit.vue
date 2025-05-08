@@ -118,7 +118,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="型号" prop="raveling">
+      <el-form-item label="乱纱" prop="raveling">
         <el-select v-model="formData.raveling" placeholder="请选择" clearable>
           <el-option
             v-for="item in dictData.raveling"

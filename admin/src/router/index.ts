@@ -55,15 +55,15 @@ export function createRouteRecord(
   }
   switch (route.menuType) {
     case MenuEnum.CATALOGUE:
-      // @ts-ignore
+      // @ts-expect-error
       routeRecord.component = firstRoute ? LAYOUT : RouterView
       if (!route.children) {
-        // @ts-ignore
+        // @ts-expect-error
         routeRecord.component = RouterView
       }
       break
     case MenuEnum.MENU:
-      // @ts-ignore
+      // @ts-expect-error
       routeRecord.component = loadRouteView(route.component)
       break
   }
@@ -107,6 +107,7 @@ export function findFirstValidRoute(
     }
   }
 }
+
 //通过权限字符查询路由路径
 export function getRoutePath(perms: string) {
   const routerObj = useRouter() || router
