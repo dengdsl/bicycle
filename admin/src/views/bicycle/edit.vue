@@ -99,7 +99,12 @@
         </el-select>
       </el-form-item>
       <el-form-item label="空孔" prop="hollowHole">
-        <el-select v-model="formData.hollowHole" placeholder="请选择" clearable>
+        <el-select
+          v-model="formData.hollowHole"
+          placeholder="请选择"
+          clearable
+          @change="handleHollowHoleChange"
+        >
           <el-option
             v-for="item in dictData.hollowHole"
             :key="item.id"
@@ -201,9 +206,9 @@ const formData = reactive({
   produceTime: '', // 生产日期
   remark: '', // 备注
   image: '', // X光图片
-  hollowHole: '', // 空孔
-  inFold: '', // 内折
-  raveling: '', // 乱纱
+  hollowHole: '1', // 空孔
+  inFold: '1', // 内折
+  raveling: '1', // 乱纱
 })
 
 const imageValidate = (_: any, __: any, callback: any) => {
@@ -315,6 +320,13 @@ const open = async (type: 'add' | 'edit') => {
   })
 }
 
+const handleHollowHoleChange = (val: string) => {
+  if (val === '1') {
+    formData.inFold = '1'
+    formData.raveling = '1'
+  }
+}
+
 const loadData = async (id: string) => {
   formData.id = id
   try {
@@ -329,8 +341,12 @@ const loadData = async (id: string) => {
             .map((item) => ({
               url: item,
             }))
-          fileList.value = images.slice(0, images.length - 1)
-          defaultImgUrl.value = images[images.length - 1].url
+          if (/\/static\/ximg\//.test(images[images.length - 1].url)) {
+            defaultImgUrl.value = images[images.length - 1].url
+            fileList.value = images.slice(0, images.length - 1)
+          } else {
+            fileList.value = images
+          }
         } else if (key === 'conclusion') {
           formData[key] = data[key] == 1
         } else if (key === 'model') {

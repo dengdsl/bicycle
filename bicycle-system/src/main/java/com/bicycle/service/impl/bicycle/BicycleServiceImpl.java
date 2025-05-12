@@ -246,7 +246,10 @@ public class BicycleServiceImpl implements BicycleService {
 
             String[] urlList = bicycleEntry.getImage().split((";"));
             for (String url : urlList) {
-                deleteLocalFile(url);
+                // 如果url是以/static/ximg开头则不删除
+                if(!url.startsWith("/static/ximg/")) {
+                    deleteLocalFile(url);
+                }
             }
         } catch (Exception e) {
             log.error("删除本地文件出错：", e.getMessage());
@@ -395,7 +398,7 @@ public class BicycleServiceImpl implements BicycleService {
             List<BicycleEntry> bicycleEntries = new ArrayList<>();
             // 查询数据库中已经存在的ID和车架号
             QueryWrapper<BicycleEntry> queryWrapper = new QueryWrapper<>();
-            queryWrapper.select("id", "qrcode");
+            queryWrapper.select("id");
             // 执行查询
             List<BicycleEntry> bicycleList = bicycleMapper.selectList(queryWrapper);
             List<String> ids = bicycleList.stream().map(BicycleEntry::getId).toList();
