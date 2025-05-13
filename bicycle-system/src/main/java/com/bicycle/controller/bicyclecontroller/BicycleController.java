@@ -133,5 +133,13 @@ public class BicycleController  {
         bicycleService.downloadFrameNo(response, exportValidate.getIds());
     }
 
+    /**
+     * 重新生成二维码
+     * */
+    @PostMapping("reset/qrcode")
+    public AjaxResult<Object> resetQrcode(@Validated String id)  {
+        return bicycleService.resetQrcode(id);
+    }
+
 }
 

@@ -390,7 +390,7 @@
           <el-table-column
             label="操作"
             align="center"
-            min-width="200"
+            min-width="240"
             fixed="right"
           >
             <template #default="{ row }">
@@ -409,6 +409,14 @@
                 @click="handleDetail(row)"
               >
                 详情
+              </el-button>
+              <el-button
+                v-perms="['bicycle:reset:qrcode']"
+                type="primary"
+                link
+                @click="handleResetQrcode(row)"
+              >
+                重置二维码
               </el-button>
               <el-button
                 v-perms="['bicycle:delete']"
@@ -520,6 +528,7 @@ import {
   exportBicycleList,
   downloadQrcode,
   downloadFrameNo,
+  resetQrcode,
 } from '@/api/bicycle'
 import Detail from './detail.vue'
 import {
@@ -697,6 +706,17 @@ const handleDetail = async (row: any) => {
   drawer.value = true
   await nextTick()
   detailRef.value?.loadData(row.id)
+}
+
+// 重置二维码
+const handleResetQrcode = async (row: any) => {
+  try {
+    const data = await resetQrcode(row.id)
+    feedback.msgSuccess('二维码重置成功')
+    getLists()
+  } catch (err) {
+    console.log('err ==>', err)
+  }
 }
 
 // 删除

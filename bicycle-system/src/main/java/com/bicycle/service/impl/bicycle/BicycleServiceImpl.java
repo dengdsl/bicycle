@@ -89,13 +89,13 @@ public class BicycleServiceImpl implements BicycleService {
         if (searchValidate.getConclusion() != null && !searchValidate.getConclusion().isEmpty()) {
             queryWrapper.eq("conclusion", searchValidate.getConclusion());
         }
-        if (searchValidate.getHollowHole() != null && !searchValidate.getFrameNo().isEmpty()) {
+        if (searchValidate.getHollowHole() != null && !searchValidate.getHollowHole().isEmpty()) {
             queryWrapper.eq("hollow_hole", searchValidate.getHollowHole());
         }
-        if (searchValidate.getInFold() != null && !searchValidate.getFrameNo().isEmpty()) {
+        if (searchValidate.getInFold() != null && !searchValidate.getInFold().isEmpty()) {
             queryWrapper.eq("in_fold", searchValidate.getInFold());
         }
-        if (searchValidate.getRaveling() != null && !searchValidate.getFrameNo().isEmpty()) {
+        if (searchValidate.getRaveling() != null && !searchValidate.getRaveling().isEmpty()) {
             queryWrapper.eq("raveling", searchValidate.getRaveling());
         }
         if (searchValidate.getProName() != null && !searchValidate.getProName().isEmpty()) {
@@ -878,6 +878,24 @@ public class BicycleServiceImpl implements BicycleService {
         outputStream.flush();
         // 关闭工作簿
         workbook.close();
+    }
+
+    /**
+     * 重新生成二维码
+     * */
+    @Override
+    public AjaxResult<Object> resetQrcode(String id) {
+        BicycleEntry bicycleEntry = bicycleMapper.selectById(id);
+        if (bicycleEntry == null) {
+            return AjaxResult.failed("数据不存在");
+        }
+        // 删除原有的二维码
+        deleteLocalFile(bicycleEntry.getQrImg());
+        // 生成新的二维码
+        String qrUrl = generateQrcode(bicycleEntry.getFrameNo());
+        bicycleEntry.setQrImg(qrUrl);
+        bicycleMapper.updateById(bicycleEntry);
+        return AjaxResult.success(HttpEnum.SUCCESS.getCode(), HttpEnum.SUCCESS.getMessage(), qrUrl);
     }
 
     /**

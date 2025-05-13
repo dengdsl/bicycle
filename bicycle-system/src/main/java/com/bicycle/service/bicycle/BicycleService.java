@@ -65,5 +65,12 @@ public interface BicycleService {
      * */
     void downloadQrcode(HttpServletResponse response, List<String> ids);
 
+    /**
+     * 批量导出产品编号
+     * */
     void downloadFrameNo(HttpServletResponse response, List<String> ids) throws IOException;
+    /**
+     * 重置二维码
+     * */
+    AjaxResult<Object> resetQrcode(String id) ;
 }

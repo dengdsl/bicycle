@@ -169,3 +169,13 @@ export function downloadFrameNo(data: { ids: string[] }) {
     { isDownloadFile: true },
   )
 }
+
+/**
+ * @description 重新生成二维码
+ * */
+export function resetQrcode(id: string) {
+  return request.post({
+    url: '/bicycle/reset/qrcode',
+    params: { id },
+  })
+}
