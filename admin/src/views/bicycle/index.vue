@@ -711,7 +711,7 @@ const handleDetail = async (row: any) => {
 // 重置二维码
 const handleResetQrcode = async (row: any) => {
   try {
-    const data = await resetQrcode(row.id)
+    await resetQrcode(row.id)
     feedback.msgSuccess('二维码重置成功')
     getLists()
   } catch (err) {
